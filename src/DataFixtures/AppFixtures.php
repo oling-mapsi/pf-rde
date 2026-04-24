@@ -41,14 +41,16 @@ final class AppFixtures extends Fixture
             ->setIsActive(true)
             ->addRole($roleAdmin)
             ->addRole($roleAgent);
-        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'Admin12345!'));
+        $adminPassword = $_ENV['APP_FIXTURE_ADMIN_PASSWORD'] ?? 'Admin12345!';
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, $adminPassword));
 
         $agent = (new User())
             ->setEmail('agent@routesguadeloupe.local')
             ->setDisplayName('Agent Carto')
             ->setIsActive(true)
             ->addRole($roleAgent);
-        $agent->setPassword($this->passwordHasher->hashPassword($agent, 'Agent12345!'));
+        $agentPassword = $_ENV['APP_FIXTURE_AGENT_PASSWORD'] ?? 'Agent12345!';
+        $agent->setPassword($this->passwordHasher->hashPassword($agent, $agentPassword));
 
         $manager->persist($roleAdmin);
         $manager->persist($roleAgent);
