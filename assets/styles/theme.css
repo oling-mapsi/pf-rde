@@ -1,0 +1,155 @@
+:root {
+    /* Palette strictement extraite du logo Routes de Guadeloupe */
+    --rdg-brand-primary-raw: #fc5000;
+    --rdg-brand-primary: #fc5000;
+    --rdg-brand-primary-hover: #f05000;
+    --rdg-brand-primary-active: #e24800;
+    --rdg-brand-secondary: #38b4e7;
+    --rdg-brand-secondary-hover: #38b4e7;
+    --rdg-brand-accent: #fbd002;
+    --rdg-brand-accent-2: #38b4e7;
+    --rdg-brand-accent-3: #aaae02;
+
+    /* Couleurs secondaires issues du meme logo */
+    --rdg-blue-deep: #101010;
+    --rdg-green: #aaae02;
+    --rdg-green-soft: rgba(170, 174, 2, 0.16);
+    --rdg-warning: #fbd002;
+    --rdg-warning-soft: rgba(251, 208, 2, 0.22);
+    --rdg-danger: #fc5000;
+    --rdg-danger-soft: rgba(252, 80, 0, 0.16);
+    --rdg-info: #38b4e7;
+    --rdg-info-soft: rgba(56, 180, 231, 0.18);
+
+    /* Neutres issus du logo (fond gris + texte noir) */
+    --rdg-white: #ffffff;
+    --rdg-neutral-50: #f8f8f8;
+    --rdg-neutral-100: #f0f0f0;
+    --rdg-neutral-150: #e8e8e8;
+    --rdg-neutral-200: #d8d8d8;
+    --rdg-neutral-300: #c8c8c8;
+    --rdg-neutral-400: #b0b0b0;
+    --rdg-neutral-500: #909090;
+    --rdg-neutral-700: #808080;
+    --rdg-neutral-800: #181818;
+    --rdg-neutral-900: #101010;
+
+    /* Semantic tokens */
+    --color-brand-primary: var(--rdg-brand-primary);
+    --color-brand-primary-raw: var(--rdg-brand-primary-raw);
+    --color-brand-primary-hover: var(--rdg-brand-primary-hover);
+    --color-brand-primary-active: var(--rdg-brand-primary-active);
+    --color-brand-primary-soft: rgba(252, 80, 0, 0.1);
+    --color-brand-secondary: var(--rdg-brand-secondary);
+    --color-brand-secondary-hover: var(--rdg-brand-secondary-hover);
+    --color-brand-accent: var(--rdg-brand-accent);
+    --color-brand-accent-2: var(--rdg-brand-accent-2);
+    --color-brand-accent-3: var(--rdg-brand-accent-3);
+
+    --color-success: var(--rdg-green);
+    --color-success-bg: var(--rdg-green-soft);
+    --color-warning: var(--rdg-warning);
+    --color-warning-bg: var(--rdg-warning-soft);
+    --color-danger: var(--rdg-danger);
+    --color-danger-bg: var(--rdg-danger-soft);
+    --color-info: var(--rdg-info);
+    --color-info-bg: var(--rdg-info-soft);
+
+    --color-bg-default: var(--rdg-white);
+    --color-bg-canvas: var(--rdg-neutral-100);
+    --color-bg-surface: var(--rdg-white);
+    --color-bg-surface-alt: var(--rdg-neutral-50);
+    --color-bg-surface-strong: var(--rdg-brand-secondary);
+
+    --color-border-default: var(--rdg-neutral-200);
+    --color-border-strong: var(--rdg-neutral-300);
+    --color-border-focus: var(--rdg-brand-accent-2);
+
+    --color-text-default: var(--rdg-neutral-800);
+    --color-text-heading: var(--rdg-neutral-900);
+    --color-text-muted: var(--rdg-neutral-700);
+    --color-text-subtle: var(--rdg-neutral-700);
+    --color-text-inverse: var(--rdg-white);
+
+    --color-link: var(--rdg-brand-primary);
+    --color-link-hover: var(--rdg-brand-primary-hover);
+
+    --color-overlay: rgba(16, 16, 16, 0.64);
+    --color-overlay-soft: rgba(16, 16, 16, 0.5);
+
+    --color-map-water: rgba(56, 180, 231, 0.25);
+    --color-map-land: var(--rdg-neutral-50);
+    --color-map-road-primary: var(--rdg-brand-primary);
+    --color-map-road-secondary: var(--rdg-brand-accent-3);
+    --color-map-layer-active: var(--rdg-brand-accent-2);
+    --color-map-selection: var(--rdg-brand-accent);
+
+    /* Typography */
+    --font-body: 'IBM Plex Sans', 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+    --font-heading: 'Outfit', 'Segoe UI', Arial, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+
+    --font-size-body: 1rem;
+    --font-size-h1: 2.25rem;
+    --font-size-h2: 2rem;
+    --font-size-h3: 1.75rem;
+    --font-size-h4: 1.5rem;
+    --font-size-h5: 1.25rem;
+    --font-size-h6: 1.125rem;
+
+    --line-height-body: 1.5;
+    --line-height-heading-tight: 1.1;
+    --line-height-heading: 1.2;
+
+    /* Spacing scale (8pt) */
+    --spacing-1: 0.5rem;
+    --spacing-2: 1rem;
+    --spacing-3: 1.5rem;
+    --spacing-4: 2rem;
+    --spacing-5: 2.5rem;
+    --spacing-6: 3rem;
+    --spacing-7: 3.5rem;
+    --spacing-8: 4rem;
+    --spacing-9: 4.5rem;
+    --spacing-10: 5rem;
+    --spacing-11: 5.5rem;
+    --spacing-12: 6rem;
+    --spacing-13: 6.5rem;
+    --spacing-14: 7rem;
+
+    --layout-max-width: 90rem;
+    --layout-max-width-footer: 75.75rem;
+    --layout-max-width-content: 54.25rem;
+
+    --radius-sm: 0.5rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-pill: 999px;
+
+    --shadow-xs: 0 1px 0 rgba(16, 16, 16, 0.05);
+    --shadow-sm: 0 4px 14px rgba(16, 16, 16, 0.08);
+
+    --focus-ring: 0 0 0 3px rgba(56, 180, 231, 0.35);
+    --transition-fast: 0.2s ease-in-out;
+
+    /* Compatibility aliases for previous styles */
+    --color-primary: var(--color-brand-primary);
+    --color-secondary: var(--color-brand-accent-2);
+    --color-accent: var(--color-brand-accent);
+    --color-surface: var(--color-bg-surface-alt);
+    --color-border: var(--color-border-default);
+    --color-text: var(--color-text-default);
+    --color-muted: var(--color-text-muted);
+    --container-max-width: var(--layout-max-width);
+}
+
+@media (min-width: 64em) {
+    :root {
+        --font-size-h1: 3.5rem;
+        --font-size-h2: 3rem;
+        --font-size-h3: 2.25rem;
+        --font-size-h4: 1.75rem;
+        --font-size-h5: 1.5rem;
+        --font-size-h6: 1.25rem;
+    }
+}

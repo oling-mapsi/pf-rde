@@ -1,0 +1,44 @@
+<p class="result-count">
+    {{ catalog.total }} ressource{{ catalog.total > 1 ? 's' : '' }} trouvee{{ catalog.total > 1 ? 's' : '' }}
+    {% if catalog.totalPages > 1 %}
+        - page {{ catalog.page }} / {{ catalog.totalPages }}
+    {% endif %}
+</p>
+
+{% if catalog.items is empty %}
+    <div class="empty-state">
+        <h2>Aucun resultat</h2>
+        <p>Aucune carte ne correspond aux criteres selectionnes. Elargissez la recherche ou reinitialisez les filtres.</p>
+    </div>
+{% else %}
+    <div class="grid grid-3">
+        {% for map in catalog.items %}
+            <article class="card card--dataset">
+                <p class="card__meta">
+                    <span class="badge">{{ map.theme ?: 'Sans theme' }}</span>
+                    {% if map.documentDate %}<span>{{ map.documentDate|date('d/m/Y') }}</span>{% endif %}
+                </p>
+                <h3 class="card__title"><a href="{{ path('app_static_map_show', { slug: map.slug }) }}">{{ map.title }}</a></h3>
+                <p class="card__lead">{{ map.summary ?: (map.description and map.description|length > 130 ? map.description|slice(0, 130) ~ '...' : (map.description ?: 'Description non renseignee.')) }}</p>
+                <div class="dataset-meta">
+                    <span>{{ map.assets|length }} support(s)</span>
+                    <span>{{ map.datasetResources|length }} dataset(s)</span>
+                    <span>{{ map.metadataRecord ? 'Metadonnee liee' : 'Metadonnee non liee' }}</span>
+                </div>
+                <p class="card__link"><a href="{{ path('app_static_map_show', { slug: map.slug }) }}"><span>Consulter la fiche</span></a></p>
+            </article>
+        {% endfor %}
+    </div>
+
+    {% if catalog.totalPages > 1 %}
+        <nav class="pagination" aria-label="Pagination de la cartotheque">
+            {% for p in 1..catalog.totalPages %}
+                {% if p == catalog.page %}
+                    <span class="is-current" aria-current="page">{{ p }}</span>
+                {% else %}
+                    <a data-page-link href="{{ path('app_static_map_catalog', app.request.query.all|merge({ page: p })) }}">{{ p }}</a>
+                {% endif %}
+            {% endfor %}
+        </nav>
+    {% endif %}
+{% endif %}

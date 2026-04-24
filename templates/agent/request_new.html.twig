@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle demande agent{% endblock %}
+
+{% block body %}
+    <section class="page-shell">
+        <div class="container container--content">
+            <nav class="breadcrumb" aria-label="Fil d ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li><a href="{{ path('agent_dashboard') }}">Espace agents</a></li>
+                    <li aria-current="page">Nouvelle demande</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <h1 class="page-header__title">Nouvelle demande SIG</h1>
+                <p class="page-header__lead">Saisissez votre besoin, joignez les elements utiles puis suivez le traitement depuis votre tableau de bord.</p>
+            </header>
+
+            <section class="card form-panel">
+                {{ form_start(form) }}
+                    {{ form_row(form.requestType) }}
+                    {{ form_row(form.title) }}
+                    {{ form_row(form.description) }}
+                    {{ form_row(form.attachment) }}
+                    <button type="submit" class="btn btn-primary">Soumettre la demande</button>
+                {{ form_end(form) }}
+            </section>
+        </div>
+    </section>
+{% endblock %}

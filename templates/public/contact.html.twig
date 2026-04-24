@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact{% endblock %}
+
+{% block body %}
+    <section class="page-shell">
+        <div class="container container--content">
+            <nav class="breadcrumb" aria-label="Fil d ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li aria-current="page">Contact</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <h1 class="page-header__title">Contacter le service SIG</h1>
+                <p class="page-header__lead">Pour toute demande generale, utilisez ce formulaire. Les demandes agents passent par l espace securise.</p>
+            </header>
+
+            <section class="card form-panel" data-controller="async-form">
+                <div data-async-form-target="feedback"></div>
+                {{ form_start(form, { attr: { 'data-action': 'submit->async-form#submit' } }) }}
+                    {{ form_row(form.fullName) }}
+                    {{ form_row(form.email) }}
+                    {{ form_row(form.subject) }}
+                    {{ form_row(form.message) }}
+                    {{ form_row(form.privacyConsent) }}
+                    <button type="submit" class="btn btn-primary">Envoyer le message</button>
+                {{ form_end(form) }}
+            </section>
+        </div>
+    </section>
+{% endblock %}

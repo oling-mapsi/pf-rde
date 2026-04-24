@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cartotheque statique{% endblock %}
+
+{% block body %}
+    <section class="page-shell">
+        <div class="container">
+            <nav class="breadcrumb" aria-label="Fil d ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li aria-current="page">Cartotheque statique</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <h1 class="page-header__title">Cartotheque statique</h1>
+                <p class="page-header__lead">
+                    Recherche multicritere, filtrage et consultation des cartes de reference
+                    avec fiches ressources detaillees.
+                </p>
+            </header>
+
+            <section class="card" data-controller="catalog" data-action="click->catalog#paginate">
+                <form class="filters filters--catalog" method="get" action="{{ path('app_static_map_catalog') }}" data-catalog-target="form" data-action="submit->catalog#submit">
+                    <div>
+                        <label for="q">Recherche</label>
+                        <input id="q" type="search" name="q" value="{{ criteria.query ?? '' }}" autocomplete="off" data-action="input->catalog#typeSearch" placeholder="Titre, mot-cle, territoire...">
+                        <ul class="search-suggestions" data-catalog-target="suggestions" aria-live="polite"></ul>
+                    </div>
+                    <div>
+                        <label for="theme">Theme</label>
+                        <select id="theme" name="theme" data-action="change->catalog#changeFilter">
+                            <option value="">Tous les themes</option>
+                            {% for theme in catalog.themes %}
+                                <option value="{{ theme }}" {% if criteria.theme == theme %}selected{% endif %}>{{ theme }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="year">Annee documentaire</label>
+                        <input id="year" type="number" name="year" value="{{ criteria.year ?? '' }}" min="2000" max="2100" data-action="change->catalog#changeFilter">
+                    </div>
+                    <div class="filters__actions">
+                        <button type="submit" class="btn btn-primary">Filtrer</button>
+                        <a href="{{ path('app_static_map_catalog') }}" class="btn btn-link">Reinitialiser</a>
+                    </div>
+                </form>
+
+                <p class="result-count" data-catalog-target="status" aria-live="polite"></p>
+
+                <div data-catalog-target="results">
+                    {% include 'public/cartography/_static_map_results.html.twig' with { catalog: catalog } %}
+                </div>
+            </section>
+        </div>
+    </section>
+{% endblock %}

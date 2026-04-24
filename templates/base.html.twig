@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Routes de Guadeloupe - Portail SIG{% endblock %}</title>
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    {% set currentRoute = app.request.attributes.get('_route')|default('') %}
+    <body class="{% block body_class %}public-page{% endblock %}">
+        <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+        <header class="site-header" role="banner">
+            <div class="container site-header__inner">
+                <a class="brand" href="{{ path('app_home') }}" title="Accueil du portail SIG Routes de Guadeloupe">
+                    <img class="brand__logo" src="{{ asset('images/logo-rdg.jpg') }}" alt="Logo Routes de Guadeloupe">
+                    <div class="brand__text">
+                        <p class="brand__title">Routes de Guadeloupe</p>
+                        <p class="brand__subtitle">Portail SIG public</p>
+                    </div>
+                </a>
+
+                <nav class="main-nav" aria-label="Navigation principale">
+                    <a class="main-nav__link {{ currentRoute == 'app_home' ? 'is-active' : '' }}" href="{{ path('app_home') }}">Accueil</a>
+                    <a class="main-nav__link {{ currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' ? 'is-active' : '' }}" href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}">Presentation</a>
+                    <a class="main-nav__link {{ currentRoute starts with 'app_static_map_' ? 'is-active' : '' }}" href="{{ path('app_static_map_catalog') }}">Cartotheque</a>
+                    <a class="main-nav__link {{ currentRoute starts with 'app_interactive_map_' ? 'is-active' : '' }}" href="{{ path('app_interactive_map_catalog') }}">Cartes interactives</a>
+                    <a class="main-nav__link {{ currentRoute starts with 'app_content_news_' ? 'is-active' : '' }}" href="{{ path('app_content_news_index') }}">Actualites</a>
+                    <a class="main-nav__link {{ currentRoute == 'app_contact' ? 'is-active' : '' }}" href="{{ path('app_contact') }}">Contact</a>
+                    <a
+                        class="main-nav__icon-link {{ currentRoute starts with 'agent_' or currentRoute == 'app_login' ? 'is-active' : '' }}"
+                        href="{{ is_granted('ROLE_AGENT') ? path('agent_dashboard') : path('app_login') }}"
+                        aria-label="{{ is_granted('ROLE_AGENT') ? 'Espace agents' : 'Connexion agents' }}"
+                        title="{{ is_granted('ROLE_AGENT') ? 'Espace agents' : 'Connexion agents' }}"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <main id="main-content" class="main" role="main">
+            {% set flashes = app.flashes %}
+            {% if flashes is not empty %}
+                <div class="container mt-3">
+                    {% for type, messages in flashes %}
+                        {% for message in messages %}
+                            <div class="notice {{ type == 'error' ? 'notice-error' : (type == 'info' ? 'notice-info' : 'notice-success') }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer class="site-footer" role="contentinfo">
+            <div class="site-footer__inner">
+                <div class="footer-grid">
+                    <section class="footer-col">
+                        <h2 class="footer-col__title">Routes de Guadeloupe</h2>
+                        <p><img class="footer-col__logo" src="{{ asset('images/logo-rdg.jpg') }}" alt="Logo Routes de Guadeloupe"></p>
+                        <p>Plateforme institutionnelle dediee aux donnees, cartes et services SIG du territoire.</p>
+                        <p>Usage grand public, partenaires, collectivites et agents.</p>
+                    </section>
+
+                    <section class="footer-col">
+                        <h2 class="footer-col__title">Portail</h2>
+                        <ul class="footer-links">
+                            <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                            <li><a href="{{ path('app_static_map_catalog') }}">Cartotheque statique</a></li>
+                            <li><a href="{{ path('app_interactive_map_catalog') }}">Cartes interactives</a></li>
+                            <li><a href="{{ path('app_content_partners') }}">Partenaires et financeurs</a></li>
+                        </ul>
+                    </section>
+
+                    <section class="footer-col">
+                        <h2 class="footer-col__title">Informations legales</h2>
+                        <ul class="footer-links">
+                            <li><a href="{{ path('app_content_legal_mentions') }}">Mentions legales</a></li>
+                            <li><a href="{{ path('app_content_legal_privacy') }}">Confidentialite</a></li>
+                            <li><a href="{{ path('app_content_legal_cookies') }}">Cookies</a></li>
+                            <li><a href="{{ path('app_content_legal_accessibility') }}">Accessibilite</a></li>
+                        </ul>
+                    </section>
+
+                    <section class="footer-col">
+                        <h2 class="footer-col__title">Support</h2>
+                        <ul class="footer-links">
+                            <li><a href="{{ path('app_contact') }}">Formulaire de contact</a></li>
+                            {% if is_granted('ROLE_AGENT') %}
+                                <li><a href="{{ path('agent_dashboard') }}">Tableau de bord agents</a></li>
+                            {% else %}
+                                <li><a href="{{ path('app_login') }}">Acces espace agents</a></li>
+                            {% endif %}
+                        </ul>
+                    </section>
+                </div>
+
+                <div class="footer-meta">
+                    <p class="footer-note">Portail SIG Routes de Guadeloupe - Service public territorial</p>
+                    {% if app_cookie_consent_enabled is defined and app_cookie_consent_enabled %}
+                        <button id="footer-cookie-open" type="button" class="footer-cookie-link">Gerer les cookies</button>
+                    {% endif %}
+                </div>
+            </div>
+        </footer>
+
+        {% if app_cookie_consent_enabled is defined and app_cookie_consent_enabled %}
+            <section
+                class="cookie-consent"
+                data-controller="cookie-consent"
+                data-cookie-consent-enabled-value="true"
+                data-cookie-consent-cookie-name-value="rdg_cookie_consent"
+                data-cookie-consent-matomo-enabled-value="{{ app_matomo_enabled ? 'true' : 'false' }}"
+                data-cookie-consent-matomo-site-id-value="{{ app_matomo_site_id|default(0) }}"
+                data-cookie-consent-matomo-base-url-value="{{ app_matomo_base_url|default('') }}"
+                aria-label="Gestion du consentement cookies"
+            >
+                <button type="button" class="cookie-consent__manage" data-cookie-consent-target="manageButton" data-action="cookie-consent#openPreferences" hidden>
+                    Gerer mes cookies
+                </button>
+
+                <div class="cookie-consent__panel" data-cookie-consent-target="banner" role="dialog" aria-modal="true" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-description" hidden>
+                    <h2 id="cookie-consent-title">Gestion des cookies</h2>
+                    <p id="cookie-consent-description">
+                        Nous utilisons uniquement des cookies necessaires au fonctionnement du portail.
+                        Vous pouvez autoriser ou refuser les cookies de mesure d audience et de services tiers.
+                    </p>
+                    <p class="mb-3"><a href="{{ path('app_content_legal_cookies') }}">Consulter la politique cookies</a></p>
+
+                    <div class="cookie-consent__actions">
+                        <button type="button" class="btn btn-primary" data-action="cookie-consent#acceptAll">Tout accepter</button>
+                        <button type="button" class="btn btn-outline" data-action="cookie-consent#rejectOptional">Tout refuser (hors necessaires)</button>
+                        <button type="button" class="btn btn-link" data-action="cookie-consent#showDetails">Personnaliser</button>
+                    </div>
+
+                    <div class="cookie-consent__details mt-3" data-cookie-consent-target="details" hidden>
+                        <fieldset>
+                            <legend>Preferences de consentement</legend>
+                            <div class="cookie-consent__choice">
+                                <input id="cookie-necessary" type="checkbox" checked disabled>
+                                <label for="cookie-necessary">Cookies necessaires (toujours actifs)</label>
+                            </div>
+                            <div class="cookie-consent__choice">
+                                <input id="cookie-analytics" type="checkbox" data-cookie-consent-target="analyticsInput">
+                                <label for="cookie-analytics">Mesure d audience anonyme</label>
+                            </div>
+                            <div class="cookie-consent__choice">
+                                <input id="cookie-services" type="checkbox" data-cookie-consent-target="servicesInput">
+                                <label for="cookie-services">Services tiers integres</label>
+                            </div>
+                        </fieldset>
+
+                        <div class="cookie-consent__actions mt-3">
+                            <button type="button" class="btn btn-primary" data-action="cookie-consent#savePreferences">Enregistrer mes choix</button>
+                            <button type="button" class="btn btn-link" data-action="cookie-consent#closePreferences">Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+
+        <script>
+            (() => {
+                const header = document.querySelector('.site-header');
+                const menu = header?.querySelector('.main-nav');
+                if (!menu) {
+                    return;
+                }
+
+                const mediaQuery = window.matchMedia('(min-width: 64em)');
+                const revealAt = 24;
+                const minDelta = 3;
+                let lastY = window.scrollY;
+                let ticking = false;
+
+                const showMenu = () => {
+                    header.classList.remove('is-nav-collapsed');
+                };
+
+                const hideMenu = () => {
+                    header.classList.add('is-nav-collapsed');
+                };
+
+                const update = () => {
+                    const y = window.scrollY;
+
+                    if (!mediaQuery.matches) {
+                        showMenu();
+                        lastY = y;
+                        return;
+                    }
+
+                    if (y <= revealAt) {
+                        showMenu();
+                        lastY = y;
+                        return;
+                    }
+
+                    if (y > lastY + minDelta) {
+                        hideMenu();
+                    } else if (y < lastY - minDelta) {
+                        showMenu();
+                    }
+
+                    lastY = y;
+                };
+
+                const onScroll = () => {
+                    if (ticking) {
+                        return;
+                    }
+
+                    ticking = true;
+                    window.requestAnimationFrame(() => {
+                        update();
+                        ticking = false;
+                    });
+                };
+
+                window.addEventListener('scroll', onScroll, { passive: true });
+                window.addEventListener('resize', update, { passive: true });
+                header.addEventListener('focusin', showMenu);
+                header.addEventListener('mouseenter', showMenu);
+
+                update();
+            })();
+        </script>
+
+        <script>
+            (() => {
+                const footerCookieButton = document.getElementById('footer-cookie-open');
+                if (!footerCookieButton) {
+                    return;
+                }
+
+                footerCookieButton.addEventListener('click', (event) => {
+                    event.preventDefault();
+
+                    const consentRoot = document.querySelector('.cookie-consent');
+                    if (!consentRoot) {
+                        return;
+                    }
+
+                    const manageButton = consentRoot?.querySelector('[data-cookie-consent-target="manageButton"]');
+                    if (manageButton instanceof HTMLButtonElement) {
+                        manageButton.click();
+                    }
+
+                    window.dispatchEvent(new CustomEvent('cookie-consent:open'));
+
+                    const panel = consentRoot?.querySelector('[data-cookie-consent-target="banner"]');
+                    const details = consentRoot?.querySelector('[data-cookie-consent-target="details"]');
+                    if (consentRoot && panel instanceof HTMLElement) {
+                        consentRoot.classList.add('is-open');
+                        panel.hidden = false;
+                        if (details instanceof HTMLElement) {
+                            details.hidden = false;
+                        }
+                    }
+                });
+            })();
+        </script>
+    </body>
+</html>

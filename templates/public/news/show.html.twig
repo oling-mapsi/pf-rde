@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block body %}
+    <section class="page-shell">
+        <div class="container container--content">
+            <nav class="breadcrumb" aria-label="Fil d ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li><a href="{{ path('app_content_news_index') }}">Actualites</a></li>
+                    <li aria-current="page">{{ article.title }}</li>
+                </ol>
+            </nav>
+
+            <article class="card rich-content">
+                <p class="card__meta">
+                    <span class="badge">{{ article.publishedAt ? article.publishedAt|date('d/m/Y H:i') : 'Brouillon' }}</span>
+                    <span>Communication officielle</span>
+                </p>
+                <h1>{{ article.title }}</h1>
+                {% if article.summary %}<p><strong>{{ article.summary }}</strong></p>{% endif %}
+                <div>{{ article.body|nl2br }}</div>
+            </article>
+        </div>
+    </section>
+{% endblock %}

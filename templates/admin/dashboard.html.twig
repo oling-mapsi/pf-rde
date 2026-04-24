@@ -1,0 +1,13 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title 'Tableau de bord SIG' %}
+
+{% block main %}
+    <div class="content-panel" data-controller="dashboard-refresh" data-dashboard-refresh-url-value="{{ path('api_dashboard_metrics') }}">
+        <h2>Etat des metriques</h2>
+        <ul data-dashboard-refresh-target="list">
+            <li>Chargement des metriques...</li>
+        </ul>
+        <p>Vue synthese admin prete pour brancher Matomo et les metriques metier.</p>
+    </div>
+{% endblock %}

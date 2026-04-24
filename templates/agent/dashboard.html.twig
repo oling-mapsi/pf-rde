@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace agents{% endblock %}
+
+{% block body %}
+    {% set latestRequest = requests|first %}
+    <section class="page-shell">
+        <div class="container">
+            <nav class="breadcrumb" aria-label="Fil d ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li aria-current="page">Espace agents</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <h1 class="page-header__title">Espace agents</h1>
+                <p class="page-header__lead">Creation, suivi et historisation des demandes SIG internes.</p>
+            </header>
+
+            <section class="dashboard-kpi">
+                <article class="kpi-card">
+                    <p class="kpi-card__label">Demandes recensees</p>
+                    <p class="kpi-card__value">{{ requests|length }}</p>
+                </article>
+                <article class="kpi-card">
+                    <p class="kpi-card__label">Derniere mise a jour</p>
+                    <p class="kpi-card__value">{{ latestRequest ? latestRequest.submittedAt|date('d/m/Y') : 'N/A' }}</p>
+                </article>
+                <article class="kpi-card">
+                    <p class="kpi-card__label">Action rapide</p>
+                    <p><a class="btn btn-primary" href="{{ path('agent_request_new') }}">Nouvelle demande</a></p>
+                </article>
+            </section>
+
+            <section class="card mt-4">
+                <h2 class="h4">Mes demandes</h2>
+                {% if requests is empty %}
+                    <div class="empty-state">
+                        <h3>Aucune demande enregistree</h3>
+                        <p>Utilisez le bouton "Nouvelle demande" pour saisir un besoin SIG.</p>
+                    </div>
+                {% else %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Numero</th>
+                                <th>Titre</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in requests %}
+                                {% set statusClass = req.status|lower|replace({' ': '_', '-': '_'}) %}
+                                <tr>
+                                    <td>{{ req.requestNumber }}</td>
+                                    <td>{{ req.title }}</td>
+                                    <td><span class="badge status-{{ statusClass }}">{{ req.status|replace({'_': ' '})|title }}</span></td>
+                                    <td>{{ req.submittedAt|date('d/m/Y H:i') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </section>
+        </div>
+    </section>
+{% endblock %}

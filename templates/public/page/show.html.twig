@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% set resolvedTitle = page ? page.title : (fallbackTitle ?? 'Page') %}
+{% set isLegal = (page and page.systemPage) or fallbackTitle is defined %}
+
+{% block title %}{{ resolvedTitle }}{% endblock %}
+
+{% block body %}
+    <section class="page-shell">
+        <div class="container container--content">
+            <nav class="breadcrumb" aria-label="Fil d ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li aria-current="page">{{ resolvedTitle }}</li>
+                </ol>
+            </nav>
+
+            <article class="card {{ isLegal ? 'legal-content' : 'rich-content' }}">
+                <h1>{{ resolvedTitle }}</h1>
+                {% if page %}
+                    {% if page.summary %}<p><strong>{{ page.summary }}</strong></p>{% endif %}
+                    <div>{{ page.content|nl2br }}</div>
+                {% else %}
+                    <p>Cette page n est pas encore configuree.</p>
+                {% endif %}
+            </article>
+        </div>
+    </section>
+{% endblock %}

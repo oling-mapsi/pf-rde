@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cartes interactives{% endblock %}
+
+{% block body %}
+    <section class="page-shell">
+        <div class="container">
+            <nav class="breadcrumb" aria-label="Fil d ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li aria-current="page">Cartes interactives</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <h1 class="page-header__title">Cartes interactives</h1>
+                <p class="page-header__lead">
+                    Catalogue des visualisations cartographiques dynamiques avec informations
+                    de disponibilite de service.
+                </p>
+            </header>
+
+            {% if maps is empty %}
+                <div class="empty-state">
+                    <h2>Aucune carte disponible</h2>
+                    <p>Le service publiera prochainement de nouvelles visualisations interactives.</p>
+                </div>
+            {% else %}
+                <div class="grid grid-2">
+                    {% for map in maps %}
+                        <article class="card card--interactive">
+                            <p class="card__meta">
+                                <span>{{ map.layers|length }} couche(s)</span>
+                                <span>{{ map.publishedAt ? map.publishedAt|date('d/m/Y') : 'Brouillon' }}</span>
+                            </p>
+                            <h2 class="card__title"><a href="{{ path('app_interactive_map_show', { slug: map.slug }) }}">{{ map.title }}</a></h2>
+                            <p class="card__lead">{{ map.summary ?: 'Visualisation cartographique interactive.' }}</p>
+                            <p class="card__link"><a href="{{ path('app_interactive_map_show', { slug: map.slug }) }}"><span>Ouvrir la carte</span></a></p>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

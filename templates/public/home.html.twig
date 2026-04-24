@@ -1,0 +1,138 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Portail SIG Routes de Guadeloupe{% endblock %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block body %}
+    <div class="home-hero-kpis-shell">
+        <section class="home-banner hero home-banner--institutional" aria-labelledby="home-title">
+            <div class="container container--content">
+                <h1 id="home-title">
+                    <span class="hero-title-line">La plateforme Open Data et SIG</span>
+                    <span class="hero-title-line">de Routes de Guadeloupe</span>
+                </h1>
+                <p class="hero_baseline">
+                    Plateforme de référence pour la cartographie routière de la Guadeloupe:
+                    cartothèque statique, cartes interactives, information usagers et services agents.
+                </p>
+                <div class="hero-search" aria-label="Recherche principale">
+                    <h2 class="section-subtitle">
+                        <a href="{{ path('app_static_map_catalog') }}">Rechercher une carte, un jeu de données ou une ressource SIG</a>
+                    </h2>
+                    <form class="search-bar" action="{{ path('app_static_map_catalog') }}" method="get">
+                        <input class="search-bar__input" type="search" name="q" placeholder="Ex: reseau routier principal, trafic, travaux..." aria-label="Recherche dans la cartotheque">
+                        <button class="search-bar__button" type="submit">Rechercher</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="home-kpis" aria-labelledby="home-kpis-title">
+            <div class="container">
+                <h2 id="home-kpis-title" class="section-title section-title--center">Le portail en un coup d'oeil</h2>
+                <div class="grid grid-4 home-kpis__grid">
+                    <article class="home-kpi home-kpi--orange">
+                        <span class="home-kpi__icon is-orange" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M3 7.5l5-2.5 8 3 5-2.5v11l-5 2.5-8-3-5 2.5v-11zM8 5v11M16 8v11" stroke="currentColor" stroke-width="1.8"/></svg>
+                        </span>
+                        <p class="home-kpi__label">Cartotheque statique</p>
+                        <p class="home-kpi__value">Ressources officielles</p>
+                    </article>
+                    <article class="home-kpi home-kpi--blue">
+                        <span class="home-kpi__icon is-blue" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16M8 5v14M16 5v14" stroke="currentColor" stroke-width="1.8"/></svg>
+                        </span>
+                        <p class="home-kpi__label">Cartes interactives</p>
+                        <p class="home-kpi__value">Consultation dynamique</p>
+                    </article>
+                    <article class="home-kpi home-kpi--yellow">
+                        <span class="home-kpi__icon is-yellow" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M5 18h2l8-5V7l-8 5H5v6zM15 9l3-2v10l-3-2" stroke="currentColor" stroke-width="1.8"/></svg>
+                        </span>
+                        <p class="home-kpi__label">Information publique</p>
+                        <p class="home-kpi__value">Actualites et communiques</p>
+                    </article>
+                    <article class="home-kpi home-kpi--green">
+                        <span class="home-kpi__icon is-green" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M12 4l7 3v5c0 4-2.5 6.5-7 8-4.5-1.5-7-4-7-8V7l7-3zM9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8"/></svg>
+                        </span>
+                        <p class="home-kpi__label">Espace agents</p>
+                        <p class="home-kpi__value">Demandes et suivi</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="home-refdata" aria-labelledby="home-focus-title">
+        <div class="container">
+            <h2 id="home-focus-title" class="section-title section-title--center">Focus institutionnel</h2>
+            <div class="grid grid-2">
+                <article class="card">
+                    <h3 class="card__title">Presentation du portail</h3>
+                    <p class="card__lead">
+                        {% if presentationPage %}
+                            {{ presentationPage.summary ?: (presentationPage.content|length > 200 ? presentationPage.content|slice(0, 200) ~ '...' : presentationPage.content) }}
+                        {% else %}
+                            Contexte, objectifs et cadre de diffusion des donnees geographiques routieres.
+                        {% endif %}
+                    </p>
+                    <p class="card__link"><a href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}"><span>Lire la presentation</span></a></p>
+                </article>
+                <article class="card">
+                    <h3 class="card__title">Partenaires et financeurs</h3>
+                    <p class="card__lead">Informations sur les institutions engagees dans le programme Routes de Guadeloupe et son financement.</p>
+                    <p class="card__link"><a href="{{ path('app_content_partners') }}"><span>Consulter la rubrique</span></a></p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-news" aria-labelledby="home-news-title">
+        <div class="container">
+            <h2 id="home-news-title" class="section-title section-title--center">Actualites et communiques</h2>
+            {% if latestNews is empty %}
+                <div class="notice notice-info">Aucune actualite publiee pour le moment.</div>
+            {% else %}
+                <div class="grid grid-3">
+                    {% for article in latestNews %}
+                        <article class="card">
+                            <p class="card__meta">
+                                <span>{{ article.publishedAt ? article.publishedAt|date('d/m/Y') : 'Brouillon' }}</span>
+                                <span>Communication officielle</span>
+                            </p>
+                            <h3 class="card__title">{{ article.title }}</h3>
+                            <p class="card__lead">{{ article.summary ?: (article.body|length > 180 ? article.body|slice(0, 180) ~ '...' : article.body) }}</p>
+                            <p class="card__link"><a href="{{ path('app_content_news_show', { slug: article.slug }) }}"><span>Lire le communique</span></a></p>
+                        </article>
+                    {% endfor %}
+                </div>
+                <p class="text-center mt-4">
+                    <a class="btn btn-secondary" href="{{ path('app_content_news_index') }}">Voir toutes les actualites</a>
+                </p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="home-partners" aria-labelledby="home-cadre-title">
+        <div class="container">
+            <h2 id="home-cadre-title" class="section-title section-title--center">Cadre legal et qualite de service</h2>
+            <div class="grid grid-3">
+                <article class="card">
+                    <h3 class="card__title">Disponibilite des services</h3>
+                    <p class="card__lead">Publication d informations de statut sur les services SIG et les eventuelles indisponibilites.</p>
+                </article>
+                <article class="card">
+                    <h3 class="card__title">Transparence</h3>
+                    <p class="card__lead">Mentions legales, confidentialite, cookies et declaration d accessibilite publiques.</p>
+                    <p class="card__link"><a href="{{ path('app_content_legal_mentions') }}"><span>Voir les informations legales</span></a></p>
+                </article>
+                <article class="card">
+                    <h3 class="card__title">Publics concernes</h3>
+                    <p class="card__lead">Grand public, partenaires institutionnels, collectivites et agents metier.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+{% endblock %}

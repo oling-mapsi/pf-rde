@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ map.title }}{% endblock %}
+
+{% block body %}
+    <section class="page-shell">
+        <div class="container">
+            <nav class="breadcrumb" aria-label="Fil d ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li><a href="{{ path('app_interactive_map_catalog') }}">Cartes interactives</a></li>
+                    <li aria-current="page">{{ map.title }}</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <h1 class="page-header__title">{{ map.title }}</h1>
+                <p class="page-header__lead">{{ map.summary ?: 'Visualisation cartographique dynamique du reseau routier.' }}</p>
+            </header>
+
+            {% if degradedMode %}
+                <div class="notice notice-error">
+                    Mode degrade actif: au moins un service SIG externe est indisponible.
+                    {{ map.degradedModeMessage ?: 'Certaines couches peuvent etre masquees temporairement.' }}
+                </div>
+            {% endif %}
+
+            <section class="map-layout">
+                <article class="map-stage">
+                    <div>
+                        <h2 class="h4 mb-2">Zone cartographique</h2>
+                        <p class="mb-0">Integration Leaflet/MapLibre en cours. Cette zone est reservee au rendu de la carte.</p>
+                    </div>
+                </article>
+
+                <aside class="map-side-panel">
+                    <h2 class="h5">Couches et services</h2>
+                    <h3 class="h6">Couches publiees</h3>
+                    <ul class="status-list">
+                        {% for layer in map.layers %}
+                            <li>
+                                <strong>{{ layer.label }}</strong><br>
+                                <small>{{ layer.layerType|upper }}{% if layer.serviceLayerName %} - {{ layer.serviceLayerName }}{% endif %}</small>
+                            </li>
+                        {% else %}
+                            <li>Aucune couche configuree.</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h3 class="h6 mt-3">Etat des services SIG</h3>
+                    <ul class="status-list">
+                        {% for item in healthchecks %}
+                            <li>
+                                <p class="mb-2">
+                                    <strong>{{ item.name }}</strong>
+                                    <span class="status-pill {{ item.available ? 'is-up' : 'is-down' }}">{{ item.available ? 'Disponible' : 'Indisponible' }}</span>
+                                </p>
+                                <small>{{ item.serviceType|upper }}{% if item.message %} - {{ item.message }}{% endif %}</small>
+                            </li>
+                        {% else %}
+                            <li>Aucun endpoint configure.</li>
+                        {% endfor %}
+                    </ul>
+                </aside>
+            </section>
+        </div>
+    </section>
+{% endblock %}

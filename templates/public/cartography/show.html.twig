@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ map.title }}{% endblock %}
+
+{% block body %}
+    <section class="page-shell">
+        <div class="container">
+            <nav class="breadcrumb" aria-label="Fil d ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li><a href="{{ path('app_static_map_catalog') }}">Cartotheque statique</a></li>
+                    <li aria-current="page">{{ map.title }}</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <p class="card__meta">
+                    <span class="badge">{{ map.theme ?: 'Sans theme' }}</span>
+                    {% if map.documentDate %}<span>Date documentaire: {{ map.documentDate|date('d/m/Y') }}</span>{% endif %}
+                </p>
+                <h1 class="page-header__title">{{ map.title }}</h1>
+                <p class="page-header__lead">{{ map.summary ?: 'Ressource cartographique de reference pour le territoire.' }}</p>
+            </header>
+
+            <section class="resource-layout">
+                <article class="card">
+                    <h2 class="h4">Description</h2>
+                    <p>{{ map.description ?: 'Description en cours de redaction.' }}</p>
+
+                    {% if map.metadataRecord %}
+                        <h2 class="h4 mt-4">Metadonnees</h2>
+                        <dl class="meta-list">
+                            <div>
+                                <dt>Identifiant</dt>
+                                <dd>{{ map.metadataRecord.identifier }}</dd>
+                            </div>
+                            <div>
+                                <dt>Titre metadonnee</dt>
+                                <dd>{{ map.metadataRecord.title }}</dd>
+                            </div>
+                            <div>
+                                <dt>Derniere synchronisation</dt>
+                                <dd>{{ map.metadataRecord.lastSyncedAt ? map.metadataRecord.lastSyncedAt|date('d/m/Y H:i') : 'Non renseigne' }}</dd>
+                            </div>
+                        </dl>
+                    {% endif %}
+                </article>
+
+                <aside class="resource-side">
+                    <article class="card">
+                        <h2 class="h5">Telechargements</h2>
+                        {% if map.assets is empty %}
+                            <div class="empty-state">
+                                <p>Aucun support disponible.</p>
+                            </div>
+                        {% else %}
+                            <ul class="download-list">
+                                {% for asset in map.assets %}
+                                    <li>
+                                        <span>
+                                            <strong>{{ asset.label }}</strong><br>
+                                            <small>{{ asset.assetType|upper }}{% if asset.fileSize %} - {{ (asset.fileSize / 1024)|round }} Ko{% endif %}</small>
+                                        </span>
+                                        <a class="btn btn-outline" href="{{ asset.filePath }}">Telecharger</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </article>
+
+                    <article class="card">
+                        <h2 class="h5">Jeux de donnees associes</h2>
+                        {% if map.datasetResources is empty %}
+                            <p>Aucun dataset associe.</p>
+                        {% else %}
+                            <ul class="download-list">
+                                {% for dataset in map.datasetResources %}
+                                    <li>
+                                        <span>
+                                            <strong>{{ dataset.label }}</strong><br>
+                                            <small>{{ dataset.format|upper }}{% if dataset.license %} - {{ dataset.license }}{% endif %}</small>
+                                        </span>
+                                        {% if dataset.external and dataset.url %}
+                                            <a class="btn btn-outline" href="{{ dataset.url }}" target="_blank" rel="noopener noreferrer">Ouvrir</a>
+                                        {% elseif dataset.filePath %}
+                                            <a class="btn btn-outline" href="{{ dataset.filePath }}">Telecharger</a>
+                                        {% else %}
+                                            <span class="text-muted">Lien non renseigne</span>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </article>
+                </aside>
+            </section>
+        </div>
+    </section>
+{% endblock %}

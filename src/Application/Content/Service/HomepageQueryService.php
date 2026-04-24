@@ -1,0 +1,25 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Application\Content\Service;
+
+use App\Infrastructure\Repository\NewsRepository;
+use App\Infrastructure\Repository\QuickLinkRepository;
+
+final class HomepageQueryService
+{
+    public function __construct(
+        private readonly NewsRepository $newsRepository,
+        private readonly QuickLinkRepository $quickLinkRepository,
+    ) {
+    }
+
+    public function buildHomepageViewModel(): array
+    {
+        return [
+            'latestNews' => $this->newsRepository->findLatestPublished(3),
+            'quickLinks' => $this->quickLinkRepository->findBy(['status' => 'published'], ['position' => 'ASC'], 8),
+        ];
+    }
+}
