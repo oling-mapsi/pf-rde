@@ -39,10 +39,10 @@ class StaticMapRepository extends ServiceEntityRepository
                 ->setParameter('q', '%' . mb_strtolower($criteria->query) . '%');
         }
 
-        if ($criteria->theme !== null && $criteria->theme !== '') {
+        if ($criteria->themes !== []) {
             $qb
-                ->andWhere('m.theme = :theme')
-                ->setParameter('theme', $criteria->theme);
+                ->andWhere('m.theme IN (:themes)')
+                ->setParameter('themes', $criteria->themes);
         }
 
         if ($criteria->year !== null) {
@@ -84,5 +84,51 @@ class StaticMapRepository extends ServiceEntityRepository
             ->getArrayResult();
 
         return array_values(array_filter(array_map(static fn (array $row): ?string => $row['theme'] ?? null, $rows)));
+    }
+
+    public function countPublishedThemes(): int
+    {
+        return (int) $this->createQueryBuilder('m')
+            ->select('COUNT(DISTINCT m.theme)')
+            ->andWhere('m.status = :status')
+            ->andWhere('m.theme IS NOT NULL')
+            ->andWhere('TRIM(m.theme) <> :emptyTheme')
+            ->setParameter('status', 'published')
+            ->setParameter('emptyTheme', '')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @param list<string> $themes
+     *
+     * @return list<StaticMap>
+     */
+    public function searchPublishedForDataCatalog(?string $query, array $themes): array
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->leftJoin('m.assets', 'a')->addSelect('a')
+            ->leftJoin('m.datasetResources', 'd')->addSelect('d')
+            ->andWhere('m.status = :status')
+            ->setParameter('status', 'published')
+            ->orderBy('m.publishedAt', 'DESC')
+            ->addOrderBy('m.createdAt', 'DESC');
+
+        if ($query !== null && $query !== '') {
+            $qb
+                ->andWhere('LOWER(m.title) LIKE :q OR LOWER(COALESCE(m.summary, \'\')) LIKE :q OR LOWER(COALESCE(m.theme, \'\')) LIKE :q')
+                ->setParameter('q', '%' . mb_strtolower($query) . '%');
+        }
+
+        if ($themes !== []) {
+            $qb
+                ->andWhere('m.theme IN (:themes)')
+                ->setParameter('themes', $themes);
+        }
+
+        /** @var list<StaticMap> $items */
+        $items = $qb->getQuery()->getResult();
+
+        return $items;
     }
 }

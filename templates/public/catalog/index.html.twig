@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Données et cartes{% endblock %}
+
+{% block body %}
+    <section class="page-shell page-shell--catalog">
+        <div class="container">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li aria-current="page">Données et cartes</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <p class="page-header__eyebrow">
+                    <span class="section-icon section-icon--orange" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M3 7.5l5-2.5 8 3 5-2.5v11l-5 2.5-8-3-5 2.5v-11zM8 5v11M16 8v11" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </span>
+                    <span>Catalogue unifié</span>
+                </p>
+                <h1 class="page-header__title">Données et cartes</h1>
+                <p class="page-header__lead">
+                    Interface unique pour rechercher et trier les ressources de la cartothèque
+                    et les cartes interactives.
+                </p>
+            </header>
+
+            <section
+                class="card"
+                data-controller="catalog"
+                data-catalog-autocomplete-url-value="{{ path('api_catalog_autocomplete') }}"
+                data-action="click->catalog#paginate click->catalog#retry"
+            >
+                <form class="filters filters--catalog" method="get" action="{{ path('app_data_catalog') }}" data-catalog-target="form" data-action="submit->catalog#submit">
+                    <fieldset class="filters__group">
+                        <legend class="filters__legend">Filtrer les ressources</legend>
+                        <div class="filters__grid">
+                            <div>
+                                <label for="q">Recherche</label>
+                                <input id="q" type="search" name="q" value="{{ criteria.query ?? '' }}" autocomplete="off" data-action="input->catalog#typeSearch" placeholder="Titre, mot-clé, commune, thématique...">
+                                <ul class="search-suggestions" data-catalog-target="suggestions" aria-live="polite"></ul>
+                            </div>
+                            <div>
+                                <p id="type-facets-label" class="filters__facet-label">Type de ressource</p>
+                                <div class="filters__facet-list" role="group" aria-labelledby="type-facets-label">
+                                    <label class="filters__facet-option">
+                                        <input type="checkbox" name="type[]" value="static" data-action="change->catalog#changeFilter" {% if 'static' in (criteria.types ?? []) %}checked{% endif %}>
+                                        <span>Données cartothèque ({{ catalog.typeCounters.static }})</span>
+                                    </label>
+                                    <label class="filters__facet-option">
+                                        <input type="checkbox" name="type[]" value="interactive" data-action="change->catalog#changeFilter" {% if 'interactive' in (criteria.types ?? []) %}checked{% endif %}>
+                                        <span>Cartes interactives ({{ catalog.typeCounters.interactive }})</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="filters__field filters__field--span-2">
+                                <p id="theme-facets-label" class="filters__facet-label">Thèmes cartothèque</p>
+                                <div class="filters__facet-list" role="group" aria-labelledby="theme-facets-label">
+                                    {% for theme in catalog.themes %}
+                                        <label class="filters__facet-option">
+                                            <input type="checkbox" name="theme[]" value="{{ theme }}" data-action="change->catalog#changeFilter" {% if theme in (criteria.themes ?? []) %}checked{% endif %}>
+                                            <span>{{ theme }}</span>
+                                        </label>
+                                    {% else %}
+                                        <span class="text-muted">Aucun thème disponible.</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div>
+                                <label for="per_page">Ressources par page</label>
+                                <select id="per_page" name="per_page" data-action="change->catalog#changeFilter">
+                                    {% for option in [6, 9, 12, 24] %}
+                                        <option value="{{ option }}" {% if criteria.perPage == option %}selected{% endif %}>{{ option }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="filters__actions">
+                        <button type="submit" class="btn btn-primary">Appliquer les filtres</button>
+                        <a href="{{ path('app_data_catalog') }}" class="btn btn-outline">Réinitialiser</a>
+                    </div>
+                    <div class="filters__active" data-catalog-target="activeFilters" aria-live="polite">
+                        {% if criteria.query %}
+                            <span class="filter-chip"><span class="filter-chip__key">Recherche:</span> {{ criteria.query }}</span>
+                        {% endif %}
+                        {% for selectedType in criteria.types ?? [] %}
+                            <span class="filter-chip"><span class="filter-chip__key">Type:</span> {{ selectedType == 'interactive' ? 'Carte interactive' : 'Cartothèque' }}</span>
+                        {% endfor %}
+                        {% for selectedTheme in criteria.themes ?? [] %}
+                            <span class="filter-chip"><span class="filter-chip__key">Thème:</span> {{ selectedTheme }}</span>
+                        {% endfor %}
+                        {% if criteria.perPage is defined and criteria.perPage != 9 %}
+                            <span class="filter-chip"><span class="filter-chip__key">Par page:</span> {{ criteria.perPage }}</span>
+                        {% endif %}
+                        {% if not criteria.query and (criteria.types ?? []) is empty and (criteria.themes ?? []) is empty and (criteria.perPage is not defined or criteria.perPage == 9) %}
+                            <span class="text-muted">Aucun filtre actif.</span>
+                        {% endif %}
+                    </div>
+                </form>
+
+                <p class="result-count" data-catalog-target="status" aria-live="polite"></p>
+
+                <div data-catalog-target="results">
+                    {% include 'public/catalog/_results.html.twig' with { catalog: catalog, criteria: criteria } %}
+                </div>
+            </section>
+        </div>
+    </section>
+{% endblock %}

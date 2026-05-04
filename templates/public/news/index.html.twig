@@ -1,38 +1,38 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Actualites{% endblock %}
+{% block title %}Actualités{% endblock %}
 
 {% block body %}
     <section class="page-shell">
         <div class="container">
-            <nav class="breadcrumb" aria-label="Fil d ariane">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
                 <ol>
                     <li><a href="{{ path('app_home') }}">Accueil</a></li>
-                    <li aria-current="page">Actualites</li>
+                    <li aria-current="page">Actualités</li>
                 </ol>
             </nav>
 
             <header class="page-header">
-                <h1 class="page-header__title">Actualites et communiques</h1>
-                <p class="page-header__lead">Informations officielles sur les services, publications et evolutions du portail SIG.</p>
+                <h1 class="page-header__title">Actualités et communiqués</h1>
+                <p class="page-header__lead">Informations officielles sur les services, publications et évolutions du portail SIG.</p>
             </header>
 
             {% if news is empty %}
                 <div class="empty-state">
-                    <h2>Aucune actualite publiee</h2>
-                    <p>Les prochaines communications seront publiees dans cette rubrique.</p>
+                    <h2>Aucune actualité publiée</h2>
+                    <p>Les prochaines communications seront publiées dans cette rubrique.</p>
                 </div>
             {% else %}
                 <div class="grid grid-2">
                     {% for article in news %}
                         <article class="card">
                             <p class="card__meta">
-                                <span class="badge">{{ article.publishedAt ? article.publishedAt|date('d/m/Y') : 'Brouillon' }}</span>
+                                <span class="badge badge--neutral">{{ article.publishedAt ? article.publishedAt|date('d/m/Y') : 'Brouillon' }}</span>
                                 <span>Communication institutionnelle</span>
                             </p>
                             <h2 class="card__title"><a href="{{ path('app_content_news_show', { slug: article.slug }) }}">{{ article.title }}</a></h2>
                             <p class="card__lead">{{ article.summary ?: (article.body|length > 170 ? article.body|slice(0, 170) ~ '...' : article.body) }}</p>
-                            <p class="card__link"><a href="{{ path('app_content_news_show', { slug: article.slug }) }}"><span>Lire l actualite</span></a></p>
+                            <p class="card__link"><a href="{{ path('app_content_news_show', { slug: article.slug }) }}"><span>Lire l'actualité</span></a></p>
                         </article>
                     {% endfor %}
                 </div>

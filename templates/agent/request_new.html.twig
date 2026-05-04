@@ -3,9 +3,9 @@
 {% block title %}Nouvelle demande agent{% endblock %}
 
 {% block body %}
-    <section class="page-shell">
+    <section class="page-shell page-shell--agent">
         <div class="container container--content">
-            <nav class="breadcrumb" aria-label="Fil d ariane">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
                 <ol>
                     <li><a href="{{ path('app_home') }}">Accueil</a></li>
                     <li><a href="{{ path('agent_dashboard') }}">Espace agents</a></li>
@@ -14,8 +14,14 @@
             </nav>
 
             <header class="page-header">
+                <p class="page-header__eyebrow">
+                    <span class="section-icon section-icon--green" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </span>
+                    <span>Soumission de demande</span>
+                </p>
                 <h1 class="page-header__title">Nouvelle demande SIG</h1>
-                <p class="page-header__lead">Saisissez votre besoin, joignez les elements utiles puis suivez le traitement depuis votre tableau de bord.</p>
+                <p class="page-header__lead">Saisissez votre besoin, joignez les éléments utiles puis suivez le traitement depuis votre tableau de bord.</p>
             </header>
 
             <section class="card form-panel">

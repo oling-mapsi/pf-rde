@@ -3,51 +3,146 @@
 {% block title %}{{ map.title }}{% endblock %}
 
 {% block body %}
-    <section class="page-shell">
+    <section class="page-shell page-shell--interactive">
         <div class="container">
-            <nav class="breadcrumb" aria-label="Fil d ariane">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
                 <ol>
                     <li><a href="{{ path('app_home') }}">Accueil</a></li>
-                    <li><a href="{{ path('app_interactive_map_catalog') }}">Cartes interactives</a></li>
+                    <li><a href="{{ path('app_data_catalog', { type: ['interactive'] }) }}">Données et cartes</a></li>
                     <li aria-current="page">{{ map.title }}</li>
                 </ol>
             </nav>
 
             <header class="page-header">
+                <p class="page-header__eyebrow">
+                    <span class="section-icon section-icon--blue" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16M8 5v14M16 5v14" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </span>
+                    <span>Carte interactive</span>
+                </p>
+                <p class="card__meta">
+                    <span class="badge badge--theme">{{ map.layers|length }} couche(s)</span>
+                    <span class="badge badge--neutral">{{ map.publishedAt ? map.publishedAt|date('d/m/Y') : 'Brouillon' }}</span>
+                </p>
                 <h1 class="page-header__title">{{ map.title }}</h1>
-                <p class="page-header__lead">{{ map.summary ?: 'Visualisation cartographique dynamique du reseau routier.' }}</p>
+                <p class="page-header__lead">{{ map.summary ?: 'Visualisation cartographique dynamique du réseau routier.' }}</p>
             </header>
 
             {% if degradedMode %}
                 <div class="notice notice-error">
-                    Mode degrade actif: au moins un service SIG externe est indisponible.
-                    {{ map.degradedModeMessage ?: 'Certaines couches peuvent etre masquees temporairement.' }}
+                    Mode dégradé actif: au moins un service SIG externe est indisponible.
+                    {{ map.degradedModeMessage ?: 'Certaines couches peuvent être masquées temporairement.' }}
                 </div>
             {% endif %}
 
-            <section class="map-layout">
+            <section
+                class="map-layout"
+                data-controller="interactive-map"
+                data-interactive-map-bootstrap-url-value="{{ path('api_interactive_map_bootstrap', { slug: map.slug }) }}"
+                data-interactive-map-basemap-url-value="{{ path('api_interactive_map_basemap', { slug: map.slug }) }}"
+                data-interactive-map-features-url-value="{{ path('api_interactive_map_features', { slug: map.slug }) }}"
+                data-interactive-map-legend-url-value="{{ path('api_interactive_map_legend', { slug: map.slug }) }}"
+                data-interactive-map-feature-info-url-value="{{ path('api_interactive_map_feature_info', { slug: map.slug }) }}"
+            >
                 <article class="map-stage">
-                    <div>
-                        <h2 class="h4 mb-2">Zone cartographique</h2>
-                        <p class="mb-0">Integration Leaflet/MapLibre en cours. Cette zone est reservee au rendu de la carte.</p>
+                    <div class="interactive-map-shell">
+                        <h2 class="h4 mb-2 heading-inline">
+                            <span class="section-icon section-icon--blue" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M3 7.5l5-2.5 8 3 5-2.5v11l-5 2.5-8-3-5 2.5v-11zM8 5v11M16 8v11" stroke="currentColor" stroke-width="1.8"/></svg>
+                            </span>
+                            <span>Visualisation réseau routier (simulation complète)</span>
+                        </h2>
+
+                        <div class="interactive-map-toolbar">
+                            <label class="interactive-map-toolbar__field">
+                                <span>Recherche</span>
+                                <input
+                                    id="interactive-map-search"
+                                    type="search"
+                                    placeholder="Nom de voie, commune, type d’événement..."
+                                    data-interactive-map-target="searchInput"
+                                    data-action="input->interactive-map#onSearchInput"
+                                >
+                            </label>
+
+                            <label class="interactive-map-toolbar__field">
+                                <span>Statut</span>
+                                <select
+                                    data-interactive-map-target="statusFilter"
+                                    data-action="change->interactive-map#onFilterChange"
+                                >
+                                    <option value="">Tous statuts</option>
+                                </select>
+                            </label>
+
+                            <label class="interactive-map-toolbar__field">
+                                <span>Catégorie</span>
+                                <select
+                                    data-interactive-map-target="categoryFilter"
+                                    data-action="change->interactive-map#onFilterChange"
+                                >
+                                    <option value="">Toutes catégories</option>
+                                </select>
+                            </label>
+
+                            <div class="interactive-map-toolbar__actions">
+                                <button type="button" class="btn btn-outline" data-action="interactive-map#resetFilters">Réinitialiser</button>
+                            </div>
+                        </div>
+
+                        <p class="interactive-map-status" data-interactive-map-target="status" aria-live="polite">
+                            Initialisation de la carte interactive...
+                        </p>
+
+                        <div
+                            class="interactive-map-canvas"
+                            data-interactive-map-target="canvas"
+                            role="region"
+                            aria-label="Carte interactive réseau routier de la Guadeloupe"
+                        ></div>
+
+                        <p class="interactive-map-count mb-0" data-interactive-map-target="resultCount" aria-live="polite"></p>
+
+                        <noscript>
+                            <p class="notice notice-info">
+                                JavaScript est désactivé: la visualisation cartographique dynamique MapLibre n’est pas disponible.
+                            </p>
+                        </noscript>
                     </div>
                 </article>
 
                 <aside class="map-side-panel">
-                    <h2 class="h5">Couches et services</h2>
-                    <h3 class="h6">Couches publiees</h3>
-                    <ul class="status-list">
-                        {% for layer in map.layers %}
-                            <li>
-                                <strong>{{ layer.label }}</strong><br>
-                                <small>{{ layer.layerType|upper }}{% if layer.serviceLayerName %} - {{ layer.serviceLayerName }}{% endif %}</small>
-                            </li>
-                        {% else %}
-                            <li>Aucune couche configuree.</li>
-                        {% endfor %}
+                    <h2 class="h5 heading-inline">
+                        <span class="section-icon section-icon--orange" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16M8 5v14M16 5v14" stroke="currentColor" stroke-width="1.8"/></svg>
+                        </span>
+                        <span>Couches et services</span>
+                    </h2>
+                    <h3 class="h6">Couches publiées</h3>
+                    <div data-interactive-map-target="layerList">
+                        <ul class="status-list">
+                            {% for layer in map.layers %}
+                                <li>
+                                    <strong>{{ layer.label }}</strong><br>
+                                    <small>{{ layer.layerType|upper }}{% if layer.serviceLayerName %} - {{ layer.serviceLayerName }}{% endif %}</small>
+                                </li>
+                            {% else %}
+                                <li>Aucune couche configurée.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <h3 class="h6 mt-3">Légende dynamique</h3>
+                    <ul class="status-list" data-interactive-map-target="legendList">
+                        <li>Légende en cours de chargement...</li>
                     </ul>
 
-                    <h3 class="h6 mt-3">Etat des services SIG</h3>
+                    <h3 class="h6 mt-3">GetFeatureInfo (simulation)</h3>
+                    <div class="interactive-feature-info" data-interactive-map-target="featureInfo">
+                        <p class="mb-0">Cliquez sur la carte pour obtenir la fiche détaillée de l’élément le plus proche.</p>
+                    </div>
+
+                    <h3 class="h6 mt-3">État des services SIG</h3>
                     <ul class="status-list">
                         {% for item in healthchecks %}
                             <li>
@@ -58,11 +153,13 @@
                                 <small>{{ item.serviceType|upper }}{% if item.message %} - {{ item.message }}{% endif %}</small>
                             </li>
                         {% else %}
-                            <li>Aucun endpoint configure.</li>
+                            <li>Aucun endpoint configuré.</li>
                         {% endfor %}
                     </ul>
                 </aside>
             </section>
         </div>
     </section>
+
+    <script src="{{ asset('js/interactive-map-fallback.js') }}" defer></script>
 {% endblock %}

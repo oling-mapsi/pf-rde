@@ -42,8 +42,9 @@ final class AgentController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         AuditLogger $auditLogger,
-        string $projectDir,
     ): Response {
+        $projectDir = (string) $this->getParameter('kernel.project_dir');
+
         /** @var User $user */
         $user = $this->getUser();
 

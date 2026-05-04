@@ -28,7 +28,7 @@ final class ContentController extends AbstractController
     {
         $article = $newsRepository->findOneBy(['slug' => $slug, 'status' => 'published']);
         if ($article === null) {
-            throw $this->createNotFoundException('Actualite introuvable.');
+            throw $this->createNotFoundException('Actualité introuvable.');
         }
 
         return $this->render('public/news/show.html.twig', [
@@ -56,7 +56,7 @@ final class ContentController extends AbstractController
 
         return $this->render('public/page/show.html.twig', [
             'page' => $page,
-            'fallbackTitle' => 'Mentions legales',
+            'fallbackTitle' => 'Mentions légales',
         ]);
     }
 
@@ -67,7 +67,7 @@ final class ContentController extends AbstractController
 
         return $this->render('public/page/show.html.twig', [
             'page' => $page,
-            'fallbackTitle' => 'Politique de confidentialite',
+            'fallbackTitle' => 'Politique de confidentialité',
         ]);
     }
 
@@ -89,7 +89,7 @@ final class ContentController extends AbstractController
 
         return $this->render('public/page/show.html.twig', [
             'page' => $page,
-            'fallbackTitle' => 'Accessibilite',
+            'fallbackTitle' => 'Accessibilité',
         ]);
     }
 

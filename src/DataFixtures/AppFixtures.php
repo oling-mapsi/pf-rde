@@ -32,8 +32,8 @@ final class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        $roleAdmin = (new Role('Administrateur', 'ROLE_ADMIN'))->setDescription('Acces complet au back-office');
-        $roleAgent = (new Role('Agent', 'ROLE_AGENT'))->setDescription('Acces aux demandes internes');
+        $roleAdmin = (new Role('Administrateur', 'ROLE_ADMIN'))->setDescription('Accès complet au back-office');
+        $roleAgent = (new Role('Agent', 'ROLE_AGENT'))->setDescription('Accès aux demandes internes');
 
         $admin = (new User())
             ->setEmail('admin@routesguadeloupe.local')
@@ -59,9 +59,9 @@ final class AppFixtures extends Fixture
 
         $presentation = (new Page())
             ->setSlug('presentation-portail')
-            ->setTitle('Presentation du portail')
-            ->setSummary('Portail public SIG dedie aux infrastructures routieres de la Guadeloupe.')
-            ->setContent('Ce portail centralise les informations cartographiques publiques et les services agents. Il est concu pour une evolution progressive et interoperable.')
+            ->setTitle('Présentation du portail')
+            ->setSummary('Portail public SIG dédié aux infrastructures routières de la Guadeloupe.')
+            ->setContent('Ce portail centralise les informations cartographiques publiques et les services agents. Il est conçu pour une évolution progressive et interopérable.')
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-2 days'))
             ->setCreatedBy($admin)
@@ -69,10 +69,10 @@ final class AppFixtures extends Fixture
 
         $legal = (new Page())
             ->setSlug('mentions-legales')
-            ->setTitle('Mentions legales')
+            ->setTitle('Mentions légales')
             ->setLegalType('legal_mentions')
             ->setSystemPage(true)
-            ->setContent('Editeur, hebergeur, droits et responsabilites. Contenu de demonstration a personnaliser avant mise en production.')
+            ->setContent('Éditeur, hébergeur, droits et responsabilités. Contenu de démonstration à personnaliser avant mise en production.')
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-2 days'))
             ->setCreatedBy($admin)
@@ -80,10 +80,10 @@ final class AppFixtures extends Fixture
 
         $privacy = (new Page())
             ->setSlug('politique-confidentialite')
-            ->setTitle('Politique de confidentialite')
+            ->setTitle('Politique de confidentialité')
             ->setLegalType('privacy')
             ->setSystemPage(true)
-            ->setContent('Collecte minimale des donnees, retention maitrisee, droits RGPD et modalites d exercice. Contenu de demonstration.')
+            ->setContent('Collecte minimale des données, rétention maîtrisée, droits RGPD et modalités d’exercice. Contenu de démonstration.')
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-2 days'))
             ->setCreatedBy($admin)
@@ -94,7 +94,7 @@ final class AppFixtures extends Fixture
             ->setTitle('Politique de cookies')
             ->setLegalType('cookies')
             ->setSystemPage(true)
-            ->setContent('Cette page de demonstration precise les cookies strictement necessaires, analytiques et de personnalisation ainsi que les modalites de consentement.')
+            ->setContent('Cette page de démonstration précise les cookies strictement nécessaires, analytiques et de personnalisation ainsi que les modalités de consentement.')
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-2 days'))
             ->setCreatedBy($admin)
@@ -102,10 +102,10 @@ final class AppFixtures extends Fixture
 
         $accessibility = (new Page())
             ->setSlug('declaration-accessibilite')
-            ->setTitle('Declaration d accessibilite')
+            ->setTitle('Déclaration d’accessibilité')
             ->setLegalType('accessibility')
             ->setSystemPage(true)
-            ->setContent('Le portail SIG Routes de Guadeloupe applique une demarche d accessibilite progressive. Les contenus non conformes font l objet d un plan d amelioration.')
+            ->setContent('Le portail SIG Routes de Guadeloupe applique une démarche d’accessibilité progressive. Les contenus non conformes font l’objet d’un plan d’amélioration.')
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-2 days'))
             ->setCreatedBy($admin)
@@ -114,8 +114,8 @@ final class AppFixtures extends Fixture
         $news1 = (new News())
             ->setSlug('ouverture-portail-sig')
             ->setTitle('Ouverture du portail SIG Routes de Guadeloupe')
-            ->setSummary('Mise en ligne de la premiere version du portail public et de l espace agents.')
-            ->setBody('Le projet Lot 3 est lance avec un socle Symfony, une cartotheque et des premiers services de suivi des demandes.')
+            ->setSummary('Mise en ligne de la première version du portail public et de l’espace agents.')
+            ->setBody('Le projet Lot 3 est lancé avec un socle Symfony, une cartothèque et des premiers services de suivi des demandes.')
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-1 day'))
             ->setCreatedBy($admin)
@@ -123,16 +123,16 @@ final class AppFixtures extends Fixture
 
         $news2 = (new News())
             ->setSlug('nouveaux-jeux-donnees-routiers')
-            ->setTitle('Nouveaux jeux de donnees routiers disponibles')
-            ->setSummary('Mise a disposition de couches thematiques et de cartes de reference.')
-            ->setBody('Plusieurs ressources telechargeables sont desormais disponibles dans la cartotheque statique.')
+            ->setTitle('Nouveaux jeux de données routiers disponibles')
+            ->setSummary('Mise à disposition de couches thématiques et de cartes de référence.')
+            ->setBody('Plusieurs ressources téléchargeables sont désormais disponibles dans la cartothèque statique.')
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-8 hours'))
             ->setCreatedBy($admin)
             ->setUpdatedBy($admin);
 
         $quickLink1 = (new QuickLink())
-            ->setLabel('Cartotheque')
+            ->setLabel('Cartothèque')
             ->setUrl('/cartotheque')
             ->setPosition(1)
             ->setExternal(false)
@@ -163,7 +163,7 @@ final class AppFixtures extends Fixture
 
         $partner = (new Partner())
             ->setSlug('collectivite-region-guadeloupe')
-            ->setName('Collectivite Region Guadeloupe')
+            ->setName('Collectivité Région Guadeloupe')
             ->setKind('funder')
             ->setDescription('Financeur institutionnel du programme de modernisation SIG.')
             ->setStatus('published')
@@ -174,23 +174,23 @@ final class AppFixtures extends Fixture
         $themeMob = (new TaxonomyTerm())
             ->setTaxonomy('map_theme')
             ->setSlug('mobilite')
-            ->setLabel('Mobilite')
-            ->setDescription('Donnees de mobilite et infrastructures de transport')
+            ->setLabel('Mobilité')
+            ->setDescription('Données de mobilité et infrastructures de transport')
             ->setActive(true);
 
         $metadata = (new MetadataRecord())
             ->setIdentifier('MD-RDG-001')
-            ->setTitle('Metadonnee - Inventaire reseau routier principal')
-            ->setAbstractText('Metadonnees normalisees ISO pour un jeu d informations routieres.')
+            ->setTitle('Métadonnée - Inventaire réseau routier principal')
+            ->setAbstractText('Métadonnées normalisées ISO pour un jeu d’informations routières.')
             ->setKeywords(['route', 'infrastructure', 'guadeloupe'])
             ->setLastSyncedAt(new \DateTimeImmutable('-1 hour'));
 
         $staticMap = (new StaticMap())
             ->setSlug('reseau-routier-principal')
-            ->setTitle('Reseau routier principal')
-            ->setSummary('Carte statique du reseau routier principal.')
-            ->setDescription('Version PDF et PNG du reseau routier principal. Jeux de donnees associes disponibles.')
-            ->setTheme('Mobilite')
+            ->setTitle('Réseau routier principal')
+            ->setSummary('Carte statique du réseau routier principal.')
+            ->setDescription('Version PDF et PNG du réseau routier principal. Jeux de données associés disponibles.')
+            ->setTheme('Mobilité')
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-1 day'))
             ->setDocumentDate(new \DateTimeImmutable('2025-12-01'))
@@ -213,7 +213,7 @@ final class AppFixtures extends Fixture
             ->setFileSize(732100);
 
         $dataset = (new DatasetResource())
-            ->setLabel('Jeu de donnees reseau routier')
+            ->setLabel('Jeu de données réseau routier')
             ->setFormat('geojson')
             ->setExternal(true)
             ->setUrl('https://example.local/datasets/reseau-routier.geojson')
@@ -239,11 +239,11 @@ final class AppFixtures extends Fixture
 
         $interactiveMap = (new InteractiveMap())
             ->setSlug('visualisation-reseau')
-            ->setTitle('Visualisation reseau routier')
-            ->setSummary('Carte interactive de demonstration avec couches superposables.')
+            ->setTitle('Visualisation réseau routier')
+            ->setSummary('Carte interactive de démonstration avec couches superposables.')
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-1 day'))
-            ->setDegradedModeMessage('Certaines couches distantes sont momentanement indisponibles.')
+            ->setDegradedModeMessage('Certaines couches distantes sont momentanément indisponibles.')
             ->setCreatedBy($admin)
             ->setUpdatedBy($admin);
 
@@ -251,7 +251,7 @@ final class AppFixtures extends Fixture
             ->setInteractiveMap($interactiveMap)
             ->setEndpoint($endpointUp)
             ->setName('reseau_principal')
-            ->setLabel('Reseau principal')
+            ->setLabel('Réseau principal')
             ->setServiceLayerName('rdg:reseau_principal')
             ->setLayerType('wms')
             ->setRenderOrder(1)
@@ -261,7 +261,7 @@ final class AppFixtures extends Fixture
             ->setInteractiveMap($interactiveMap)
             ->setEndpoint($endpointDown)
             ->setName('travaux_planifies')
-            ->setLabel('Travaux planifies')
+            ->setLabel('Travaux planifiés')
             ->setServiceLayerName('rdg:travaux')
             ->setLayerType('wfs')
             ->setRenderOrder(2)
@@ -271,15 +271,15 @@ final class AppFixtures extends Fixture
 
         $requestTypeData = (new AgentRequestType())
             ->setCode('DATA_REQUEST')
-            ->setLabel('Demande de donnees')
-            ->setDescription('Demande d extraction de donnees SIG')
+            ->setLabel('Demande de données')
+            ->setDescription('Demande d’extraction de données SIG')
             ->setRequiresAttachment(false)
             ->setActive(true);
 
         $requestTypeMap = (new AgentRequestType())
             ->setCode('MAP_REQUEST')
             ->setLabel('Demande de carte')
-            ->setDescription('Creation ou mise a jour de carte')
+            ->setDescription('Création ou mise à jour de carte')
             ->setRequiresAttachment(true)
             ->setActive(true);
 

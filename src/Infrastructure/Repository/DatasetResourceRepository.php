@@ -17,4 +17,15 @@ class DatasetResourceRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, DatasetResource::class);
     }
+
+    public function countPublishedResources(): int
+    {
+        return (int) $this->createQueryBuilder('resource')
+            ->select('COUNT(resource.id)')
+            ->innerJoin('resource.staticMap', 'map')
+            ->andWhere('map.status = :status')
+            ->setParameter('status', 'published')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

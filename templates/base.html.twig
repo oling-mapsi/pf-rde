@@ -9,6 +9,7 @@
         {% endblock %}
     </head>
     {% set currentRoute = app.request.attributes.get('_route')|default('') %}
+    {% set isCatalogRoute = currentRoute == 'app_data_catalog' or currentRoute starts with 'app_static_map_' or currentRoute starts with 'app_interactive_map_' %}
     <body class="{% block body_class %}public-page{% endblock %}">
         <a href="#main-content" class="skip-link">Aller au contenu principal</a>
 
@@ -22,13 +23,21 @@
                     </div>
                 </a>
 
-                <nav class="main-nav" aria-label="Navigation principale">
-                    <a class="main-nav__link {{ currentRoute == 'app_home' ? 'is-active' : '' }}" href="{{ path('app_home') }}">Accueil</a>
-                    <a class="main-nav__link {{ currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' ? 'is-active' : '' }}" href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}">Presentation</a>
-                    <a class="main-nav__link {{ currentRoute starts with 'app_static_map_' ? 'is-active' : '' }}" href="{{ path('app_static_map_catalog') }}">Cartotheque</a>
-                    <a class="main-nav__link {{ currentRoute starts with 'app_interactive_map_' ? 'is-active' : '' }}" href="{{ path('app_interactive_map_catalog') }}">Cartes interactives</a>
-                    <a class="main-nav__link {{ currentRoute starts with 'app_content_news_' ? 'is-active' : '' }}" href="{{ path('app_content_news_index') }}">Actualites</a>
-                    <a class="main-nav__link {{ currentRoute == 'app_contact' ? 'is-active' : '' }}" href="{{ path('app_contact') }}">Contact</a>
+                <button
+                    type="button"
+                    class="main-nav-toggle"
+                    aria-expanded="false"
+                    aria-controls="site-main-nav"
+                    aria-label="Ouvrir le menu principal"
+                >
+                    <span class="visually-hidden">Menu principal</span>
+                    <span class="main-nav-toggle__icon" aria-hidden="true"></span>
+                </button>
+
+                <nav id="site-main-nav" class="main-nav" aria-label="Navigation principale" hidden>
+                    <a class="main-nav__link {{ isCatalogRoute ? 'is-active' : '' }}" href="{{ path('app_data_catalog') }}" {{ isCatalogRoute ? 'aria-current="page"' : '' }}>Données et cartes</a>
+                    <a class="main-nav__link {{ currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' ? 'is-active' : '' }}" href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}" {{ currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' ? 'aria-current="page"' : '' }}>La démarche</a>
+                    <a class="main-nav__link {{ currentRoute starts with 'app_content_news_' ? 'is-active' : '' }}" href="{{ path('app_content_news_index') }}" {{ currentRoute starts with 'app_content_news_' ? 'aria-current="page"' : '' }}>Actualités</a>
                     <a
                         class="main-nav__icon-link {{ currentRoute starts with 'agent_' or currentRoute == 'app_login' ? 'is-active' : '' }}"
                         href="{{ is_granted('ROLE_AGENT') ? path('agent_dashboard') : path('app_login') }}"
@@ -38,7 +47,14 @@
                         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
+                        <span class="main-nav__icon-label">{{ is_granted('ROLE_AGENT') ? 'Espace agents' : 'Connexion agents' }}</span>
                     </a>
+                    {% if app.user %}
+                        <form method="post" action="{{ path('app_logout') }}" class="main-nav__logout-form">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                            <button type="submit" class="main-nav__link main-nav__logout-button">Déconnexion</button>
+                        </form>
+                    {% endif %}
                 </nav>
             </div>
         </header>
@@ -64,27 +80,28 @@
                     <section class="footer-col">
                         <h2 class="footer-col__title">Routes de Guadeloupe</h2>
                         <p><img class="footer-col__logo" src="{{ asset('images/logo-rdg.jpg') }}" alt="Logo Routes de Guadeloupe"></p>
-                        <p>Plateforme institutionnelle dediee aux donnees, cartes et services SIG du territoire.</p>
-                        <p>Usage grand public, partenaires, collectivites et agents.</p>
+                        <p>Plateforme institutionnelle dédiée aux données, cartes et services SIG du territoire.</p>
+                        <p>Usage grand public, partenaires, collectivités et agents.</p>
                     </section>
 
                     <section class="footer-col">
                         <h2 class="footer-col__title">Portail</h2>
                         <ul class="footer-links">
                             <li><a href="{{ path('app_home') }}">Accueil</a></li>
-                            <li><a href="{{ path('app_static_map_catalog') }}">Cartotheque statique</a></li>
-                            <li><a href="{{ path('app_interactive_map_catalog') }}">Cartes interactives</a></li>
+                            <li><a href="{{ path('app_data_catalog') }}">Données et cartes</a></li>
+                            <li><a href="{{ path('app_data_catalog', { type: ['static'] }) }}">Cartothèque statique</a></li>
+                            <li><a href="{{ path('app_data_catalog', { type: ['interactive'] }) }}">Cartes interactives</a></li>
                             <li><a href="{{ path('app_content_partners') }}">Partenaires et financeurs</a></li>
                         </ul>
                     </section>
 
                     <section class="footer-col">
-                        <h2 class="footer-col__title">Informations legales</h2>
+                        <h2 class="footer-col__title">Informations légales</h2>
                         <ul class="footer-links">
-                            <li><a href="{{ path('app_content_legal_mentions') }}">Mentions legales</a></li>
-                            <li><a href="{{ path('app_content_legal_privacy') }}">Confidentialite</a></li>
+                            <li><a href="{{ path('app_content_legal_mentions') }}">Mentions légales</a></li>
+                            <li><a href="{{ path('app_content_legal_privacy') }}">Confidentialité</a></li>
                             <li><a href="{{ path('app_content_legal_cookies') }}">Cookies</a></li>
-                            <li><a href="{{ path('app_content_legal_accessibility') }}">Accessibilite</a></li>
+                            <li><a href="{{ path('app_content_legal_accessibility') }}">Accessibilité</a></li>
                         </ul>
                     </section>
 
@@ -94,8 +111,14 @@
                             <li><a href="{{ path('app_contact') }}">Formulaire de contact</a></li>
                             {% if is_granted('ROLE_AGENT') %}
                                 <li><a href="{{ path('agent_dashboard') }}">Tableau de bord agents</a></li>
+                                <li>
+                                    <form method="post" action="{{ path('app_logout') }}" class="footer-logout-form">
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                                        <button type="submit" class="footer-link-button">Déconnexion</button>
+                                    </form>
+                                </li>
                             {% else %}
-                                <li><a href="{{ path('app_login') }}">Acces espace agents</a></li>
+                                <li><a href="{{ path('app_login') }}">Accès espace agents</a></li>
                             {% endif %}
                         </ul>
                     </section>
@@ -104,7 +127,7 @@
                 <div class="footer-meta">
                     <p class="footer-note">Portail SIG Routes de Guadeloupe - Service public territorial</p>
                     {% if app_cookie_consent_enabled is defined and app_cookie_consent_enabled %}
-                        <button id="footer-cookie-open" type="button" class="footer-cookie-link">Gerer les cookies</button>
+                        <button id="footer-cookie-open" type="button" class="footer-cookie-link">Gérer les cookies</button>
                     {% endif %}
                 </div>
             </div>
@@ -122,37 +145,42 @@
                 aria-label="Gestion du consentement cookies"
             >
                 <button type="button" class="cookie-consent__manage" data-cookie-consent-target="manageButton" data-action="cookie-consent#openPreferences" hidden>
-                    Gerer mes cookies
+                    Gérer mes cookies
                 </button>
 
                 <div class="cookie-consent__panel" data-cookie-consent-target="banner" role="dialog" aria-modal="true" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-description" hidden>
-                    <h2 id="cookie-consent-title">Gestion des cookies</h2>
+                    <div class="cookie-consent__panel-header">
+                        <h2 id="cookie-consent-title">Gestion des cookies</h2>
+                        <button type="button" class="cookie-consent__close" data-action="cookie-consent#closePreferences" aria-label="Fermer la fenêtre de gestion des cookies">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                     <p id="cookie-consent-description">
-                        Nous utilisons uniquement des cookies necessaires au fonctionnement du portail.
-                        Vous pouvez autoriser ou refuser les cookies de mesure d audience et de services tiers.
+                        Nous utilisons uniquement des cookies nécessaires au fonctionnement du portail.
+                        Vous pouvez autoriser ou refuser les cookies de mesure d’audience et de services tiers.
                     </p>
                     <p class="mb-3"><a href="{{ path('app_content_legal_cookies') }}">Consulter la politique cookies</a></p>
 
                     <div class="cookie-consent__actions">
-                        <button type="button" class="btn btn-primary" data-action="cookie-consent#acceptAll">Tout accepter</button>
-                        <button type="button" class="btn btn-outline" data-action="cookie-consent#rejectOptional">Tout refuser (hors necessaires)</button>
+                        <button type="button" class="btn btn-primary" data-cookie-consent-target="firstAction" data-action="cookie-consent#acceptAll">Tout accepter</button>
+                        <button type="button" class="btn btn-outline" data-action="cookie-consent#rejectOptional">Tout refuser (hors nécessaires)</button>
                         <button type="button" class="btn btn-link" data-action="cookie-consent#showDetails">Personnaliser</button>
                     </div>
 
                     <div class="cookie-consent__details mt-3" data-cookie-consent-target="details" hidden>
                         <fieldset>
-                            <legend>Preferences de consentement</legend>
+                            <legend>Préférences de consentement</legend>
                             <div class="cookie-consent__choice">
                                 <input id="cookie-necessary" type="checkbox" checked disabled>
-                                <label for="cookie-necessary">Cookies necessaires (toujours actifs)</label>
+                                <label for="cookie-necessary">Cookies nécessaires (toujours actifs)</label>
                             </div>
                             <div class="cookie-consent__choice">
                                 <input id="cookie-analytics" type="checkbox" data-cookie-consent-target="analyticsInput">
-                                <label for="cookie-analytics">Mesure d audience anonyme</label>
+                                <label for="cookie-analytics">Mesure d’audience anonyme</label>
                             </div>
                             <div class="cookie-consent__choice">
                                 <input id="cookie-services" type="checkbox" data-cookie-consent-target="servicesInput">
-                                <label for="cookie-services">Services tiers integres</label>
+                                <label for="cookie-services">Services tiers intégrés</label>
                             </div>
                         </fieldset>
 
@@ -168,48 +196,201 @@
         <script>
             (() => {
                 const header = document.querySelector('.site-header');
-                const menu = header?.querySelector('.main-nav');
-                if (!menu) {
+                const toggle = document.querySelector('.main-nav-toggle');
+                const menu = document.getElementById('site-main-nav');
+
+                if (!header || !toggle || !menu) {
                     return;
                 }
 
                 const mediaQuery = window.matchMedia('(min-width: 64em)');
                 const revealAt = 24;
-                const minDelta = 3;
-                let lastY = window.scrollY;
+                const hideStartAt = 140;
+                const hideDirectionDelta = 8;
+                const showDirectionDelta = 2;
+                const hideToggleDistance = 64;
+                const pinnedClass = 'is-nav-pinned';
+                const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+                let isMobileMenuOpen = false;
+                let isHeaderCollapsed = header.classList.contains('is-nav-collapsed');
+                let lastY = Math.max(window.scrollY, 0);
+                let lastToggleY = lastY;
                 let ticking = false;
 
-                const showMenu = () => {
+                const setHeaderHeightVar = () => {
+                    const headerHeight = Math.round(header.getBoundingClientRect().height);
+                    document.documentElement.style.setProperty('--site-header-height', `${headerHeight}px`);
+                };
+
+                const getFocusableItems = () => {
+                    return [...header.querySelectorAll(focusableSelector)].filter((element) => {
+                        if (!(element instanceof HTMLElement) || element.hidden) {
+                            return false;
+                        }
+
+                        return element.offsetParent !== null;
+                    });
+                };
+
+                const setMobileMenuState = (isOpen, { restoreFocus = false } = {}) => {
+                    isMobileMenuOpen = isOpen;
+                    header.classList.toggle('is-mobile-menu-open', isOpen);
+                    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    toggle.setAttribute('aria-label', isOpen ? 'Fermer le menu principal' : 'Ouvrir le menu principal');
+
+                    if (isOpen) {
+                        menu.hidden = false;
+                        menu.setAttribute('aria-hidden', 'false');
+                        document.body.classList.add('has-mobile-menu-open');
+                        const firstMenuItem = menu.querySelector('a, button');
+                        if (firstMenuItem instanceof HTMLElement) {
+                            firstMenuItem.focus();
+                        }
+                    } else {
+                        menu.hidden = true;
+                        menu.setAttribute('aria-hidden', 'true');
+                        document.body.classList.remove('has-mobile-menu-open');
+                        if (restoreFocus) {
+                            toggle.focus();
+                        }
+                    }
+
+                    setHeaderHeightVar();
+                };
+
+                const showDesktopHeader = ({ pinned = false } = {}) => {
+                    isHeaderCollapsed = false;
                     header.classList.remove('is-nav-collapsed');
+                    header.classList.toggle(pinnedClass, pinned);
+                    setHeaderHeightVar();
                 };
 
-                const hideMenu = () => {
+                const hideDesktopHeader = () => {
+                    isHeaderCollapsed = true;
+                    header.classList.remove(pinnedClass);
                     header.classList.add('is-nav-collapsed');
+                    setHeaderHeightVar();
                 };
 
-                const update = () => {
-                    const y = window.scrollY;
+                const applyMode = () => {
+                    if (mediaQuery.matches) {
+                        isMobileMenuOpen = false;
+                        header.classList.remove('is-mobile-menu-open');
+                        document.body.classList.remove('has-mobile-menu-open');
+                        menu.hidden = false;
+                        menu.setAttribute('aria-hidden', 'false');
+                        toggle.setAttribute('aria-expanded', 'false');
+                        toggle.setAttribute('aria-label', 'Ouvrir le menu principal');
+                        return;
+                    }
+
+                    header.classList.remove('is-nav-collapsed', pinnedClass);
+                    isHeaderCollapsed = false;
+                    if (!isMobileMenuOpen) {
+                        menu.hidden = true;
+                        menu.setAttribute('aria-hidden', 'true');
+                    }
+                };
+
+                const updateDesktopOnScroll = () => {
+                    const y = Math.max(window.scrollY, 0);
+                    setHeaderHeightVar();
 
                     if (!mediaQuery.matches) {
-                        showMenu();
                         lastY = y;
+                        lastToggleY = y;
                         return;
                     }
 
                     if (y <= revealAt) {
-                        showMenu();
+                        showDesktopHeader();
+                        lastY = y;
+                        lastToggleY = y;
+                        return;
+                    }
+
+                    if (header.classList.contains(pinnedClass)) {
                         lastY = y;
                         return;
                     }
 
-                    if (y > lastY + minDelta) {
-                        hideMenu();
-                    } else if (y < lastY - minDelta) {
-                        showMenu();
+                    if (y < hideStartAt && !isHeaderCollapsed) {
+                        lastY = y;
+                        return;
+                    }
+
+                    const delta = y - lastY;
+
+                    if (delta > hideDirectionDelta && !isHeaderCollapsed && y - lastToggleY >= hideToggleDistance) {
+                        hideDesktopHeader();
+                        lastToggleY = y;
+                    } else if (delta < -showDirectionDelta && isHeaderCollapsed) {
+                        showDesktopHeader();
+                        lastToggleY = y;
                     }
 
                     lastY = y;
                 };
+
+                toggle.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    if (mediaQuery.matches) {
+                        return;
+                    }
+
+                    setMobileMenuState(!isMobileMenuOpen);
+                });
+
+                menu.addEventListener('click', (event) => {
+                    if (mediaQuery.matches || !isMobileMenuOpen) {
+                        return;
+                    }
+
+                    const interactiveElement = event.target.closest('a,button');
+                    if (interactiveElement) {
+                        setMobileMenuState(false);
+                    }
+                });
+
+                document.addEventListener('pointerdown', (event) => {
+                    if (mediaQuery.matches || !isMobileMenuOpen) {
+                        return;
+                    }
+
+                    if (!header.contains(event.target)) {
+                        setMobileMenuState(false);
+                    }
+                });
+
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && isMobileMenuOpen && !mediaQuery.matches) {
+                        event.preventDefault();
+                        setMobileMenuState(false, { restoreFocus: true });
+                        return;
+                    }
+
+                    if (event.key !== 'Tab' || !isMobileMenuOpen || mediaQuery.matches) {
+                        return;
+                    }
+
+                    const focusableItems = getFocusableItems();
+                    if (focusableItems.length === 0) {
+                        return;
+                    }
+
+                    const first = focusableItems[0];
+                    const last = focusableItems[focusableItems.length - 1];
+                    const active = document.activeElement;
+
+                    if (event.shiftKey && active === first) {
+                        event.preventDefault();
+                        last.focus();
+                    } else if (!event.shiftKey && active === last) {
+                        event.preventDefault();
+                        first.focus();
+                    }
+                });
 
                 const onScroll = () => {
                     if (ticking) {
@@ -218,21 +399,58 @@
 
                     ticking = true;
                     window.requestAnimationFrame(() => {
-                        update();
+                        updateDesktopOnScroll();
                         ticking = false;
                     });
                 };
 
+                const onViewportChange = () => {
+                    applyMode();
+                    updateDesktopOnScroll();
+                    setHeaderHeightVar();
+                };
+
                 window.addEventListener('scroll', onScroll, { passive: true });
-                window.addEventListener('resize', update, { passive: true });
-                header.addEventListener('focusin', showMenu);
-                header.addEventListener('mouseenter', showMenu);
+                window.addEventListener('resize', onViewportChange, { passive: true });
 
-                update();
+                if (typeof mediaQuery.addEventListener === 'function') {
+                    mediaQuery.addEventListener('change', onViewportChange);
+                } else if (typeof mediaQuery.addListener === 'function') {
+                    mediaQuery.addListener(onViewportChange);
+                }
+
+                header.addEventListener('focusin', () => {
+                    if (mediaQuery.matches) {
+                        showDesktopHeader({ pinned: true });
+                    }
+                });
+                header.addEventListener('focusout', () => {
+                    if (!mediaQuery.matches) {
+                        return;
+                    }
+
+                    window.setTimeout(() => {
+                        if (!header.contains(document.activeElement)) {
+                            header.classList.remove(pinnedClass);
+                        }
+                    }, 0);
+                });
+                header.addEventListener('mouseenter', () => {
+                    if (mediaQuery.matches) {
+                        showDesktopHeader({ pinned: true });
+                    }
+                });
+                header.addEventListener('mouseleave', () => {
+                    if (mediaQuery.matches) {
+                        header.classList.remove(pinnedClass);
+                    }
+                });
+
+                applyMode();
+                updateDesktopOnScroll();
+                setHeaderHeightVar();
             })();
-        </script>
 
-        <script>
             (() => {
                 const footerCookieButton = document.getElementById('footer-cookie-open');
                 if (!footerCookieButton) {
@@ -252,17 +470,7 @@
                         manageButton.click();
                     }
 
-                    window.dispatchEvent(new CustomEvent('cookie-consent:open'));
-
-                    const panel = consentRoot?.querySelector('[data-cookie-consent-target="banner"]');
-                    const details = consentRoot?.querySelector('[data-cookie-consent-target="details"]');
-                    if (consentRoot && panel instanceof HTMLElement) {
-                        consentRoot.classList.add('is-open');
-                        panel.hidden = false;
-                        if (details instanceof HTMLElement) {
-                            details.hidden = false;
-                        }
-                    }
+                    window.dispatchEvent(new CustomEvent('cookie-consent:open', { detail: { showDetails: true } }));
                 });
             })();
         </script>

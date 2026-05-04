@@ -77,6 +77,13 @@ En prod:
 - Auto-complete: `/api/static-maps/autocomplete`
 - Health SIG mock: `/api/sig/health`
 - Dashboard admin: `/api/admin/dashboard/metrics`
+- Cartes interactives (MapLibre + mock complet):
+  - `/api/interactive-maps/{slug}/bootstrap`
+  - `/api/interactive-maps/{slug}/features`
+  - `/api/interactive-maps/{slug}/legend`
+  - `/api/interactive-maps/{slug}/feature-info`
+  - assets MapLibre embarques en local (mode CSP): `public/vendor/maplibre/maplibre-gl-csp.js`, `public/vendor/maplibre/maplibre-gl-csp-worker.js`, `public/vendor/maplibre/maplibre-gl.css`
+  - fond de carte local (sans tuiles externes): `public/data/basemap/guadeloupe_land.geojson` + `public/data/basemap/guadeloupe_context.geojson`
 
 ## Notes interop lots 1/2
 - Interface: `App\Application\Interop\Sig\MapServiceProviderInterface`

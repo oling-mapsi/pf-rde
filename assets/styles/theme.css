@@ -77,6 +77,63 @@
     --color-overlay: rgba(16, 16, 16, 0.64);
     --color-overlay-soft: rgba(16, 16, 16, 0.5);
 
+    /* Component tokens */
+    --component-card-bg: var(--color-bg-surface);
+    --component-card-border: var(--color-border-default);
+    --component-card-border-hover: var(--color-border-strong);
+    --component-card-shadow: var(--shadow-xs);
+
+    --component-button-primary-bg: var(--color-brand-primary);
+    --component-button-primary-border: var(--color-brand-primary);
+    --component-button-primary-text: var(--color-text-inverse);
+    --component-button-primary-bg-hover: var(--color-brand-primary-hover);
+    --component-button-primary-border-hover: var(--color-brand-primary-hover);
+    --component-button-primary-text-hover: var(--color-text-inverse);
+
+    --component-button-outline-bg: var(--color-bg-default);
+    --component-button-outline-border: var(--color-brand-accent-2);
+    --component-button-outline-text: var(--color-brand-accent-2);
+    --component-button-outline-bg-hover: transparent;
+    --component-button-outline-border-hover: var(--color-brand-primary);
+    --component-button-outline-text-hover: var(--color-brand-primary);
+
+    --component-badge-bg: rgba(252, 80, 0, 0.12);
+    --component-badge-text: var(--color-brand-primary);
+    --component-badge-border: transparent;
+
+    --component-filter-bg: var(--color-bg-surface-alt);
+    --component-filter-border: var(--color-border-default);
+    --component-filter-border-focus: var(--color-border-focus);
+
+    --component-chip-bg: rgba(56, 180, 231, 0.12);
+    --component-chip-border: rgba(56, 180, 231, 0.35);
+    --component-chip-text: var(--color-text-heading);
+
+    --component-facet-option-bg: var(--color-bg-default);
+    --component-facet-option-bg-hover: rgba(56, 180, 231, 0.08);
+    --component-facet-option-bg-selected: rgba(56, 180, 231, 0.14);
+    --component-facet-option-border: var(--color-border-default);
+    --component-facet-option-border-selected: var(--color-brand-accent-2);
+
+    --component-table-head-bg: var(--color-bg-surface-alt);
+    --component-table-head-text: var(--color-text-heading);
+    --component-table-row-alt: var(--rdg-neutral-50);
+    --component-table-row-hover: rgba(56, 180, 231, 0.08);
+    --component-table-border: var(--color-border-default);
+    --component-table-sort-icon: var(--color-text-muted);
+    --component-table-sort-icon-active: var(--color-brand-primary);
+
+    --component-data-state-bg: var(--color-bg-surface-alt);
+    --component-data-state-border: var(--color-border-default);
+    --component-data-state-error-bg: var(--color-danger-bg);
+    --component-data-state-error-border: var(--color-danger);
+
+    --component-skeleton-base: var(--rdg-neutral-150);
+    --component-skeleton-highlight: rgba(255, 255, 255, 0.66);
+
+    --state-hover-overlay-soft: rgba(16, 16, 16, 0.03);
+    --state-active-overlay-soft: rgba(16, 16, 16, 0.06);
+
     --color-map-water: rgba(56, 180, 231, 0.25);
     --color-map-land: var(--rdg-neutral-50);
     --color-map-road-primary: var(--rdg-brand-primary);
@@ -86,7 +143,7 @@
 
     /* Typography */
     --font-body: 'IBM Plex Sans', 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
-    --font-heading: 'Outfit', 'Segoe UI', Arial, sans-serif;
+    --font-heading: 'IBM Plex Sans', 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
     --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
 
     --font-size-body: 1rem;
@@ -122,15 +179,21 @@
     --layout-max-width-content: 54.25rem;
 
     --radius-sm: 0.5rem;
-    --radius-md: 1rem;
+    --radius-md: 0.875rem;
     --radius-lg: 1.5rem;
     --radius-pill: 999px;
 
     --shadow-xs: 0 1px 0 rgba(16, 16, 16, 0.05);
     --shadow-sm: 0 4px 14px rgba(16, 16, 16, 0.08);
+    --shadow-md: 0 10px 28px rgba(16, 16, 16, 0.12);
 
     --focus-ring: 0 0 0 3px rgba(56, 180, 231, 0.35);
     --transition-fast: 0.2s ease-in-out;
+
+    --component-shell-bg: rgba(255, 255, 255, 0.92);
+    --component-shell-border: rgba(16, 16, 16, 0.08);
+    --component-hero-panel-bg: rgba(255, 255, 255, 0.9);
+    --component-hero-panel-border: rgba(16, 16, 16, 0.08);
 
     /* Compatibility aliases for previous styles */
     --color-primary: var(--color-brand-primary);

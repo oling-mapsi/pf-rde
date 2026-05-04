@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\UI\Controller\Admin;
 
-use App\Domain\Access\Entity\User;
-use App\Domain\Content\Entity\ContactMessage;
-use App\Domain\Content\Entity\News;
-use App\Domain\Content\Entity\Page;
-use App\Domain\Cartography\Entity\StaticMap;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -33,12 +28,12 @@ final class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-chart-line');
         yield MenuItem::section('Contenus');
-        yield MenuItem::linkToCrud('Pages', 'fa fa-file-lines', Page::class);
-        yield MenuItem::linkToCrud('Actualites', 'fa fa-newspaper', News::class);
-        yield MenuItem::linkToCrud('Cartes statiques', 'fa fa-map', StaticMap::class);
-        yield MenuItem::linkToCrud('Messages contact', 'fa fa-envelope', ContactMessage::class);
-        yield MenuItem::section('Acces');
-        yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-users', User::class);
+        yield MenuItem::linkTo(PageCrudController::class, 'Pages', 'fa fa-file-lines');
+        yield MenuItem::linkTo(NewsCrudController::class, 'Actualités', 'fa fa-newspaper');
+        yield MenuItem::linkTo(StaticMapCrudController::class, 'Cartes statiques', 'fa fa-map');
+        yield MenuItem::linkTo(ContactMessageCrudController::class, 'Messages contact', 'fa fa-envelope');
+        yield MenuItem::section('Accès');
+        yield MenuItem::linkTo(UserCrudController::class, 'Utilisateurs', 'fa fa-users');
         yield MenuItem::linkToRoute('Retour au site', 'fa fa-home', 'app_home');
     }
 }

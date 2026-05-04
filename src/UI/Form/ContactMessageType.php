@@ -20,7 +20,7 @@ final class ContactMessageType extends AbstractType
     {
         $builder
             ->add('fullName', TextType::class, [
-                'label' => 'Nom et prenom',
+                'label' => 'Nom et prénom',
                 'constraints' => [
                     new Assert\NotBlank(),
                     new Assert\Length(max: 150),
@@ -49,7 +49,7 @@ final class ContactMessageType extends AbstractType
                 'attr' => ['rows' => 6],
             ])
             ->add('privacyConsent', CheckboxType::class, [
-                'label' => 'Je consens au traitement de mes donnees conformement a la politique de confidentialite.',
+                'label' => 'Je consens au traitement de mes données conformément à la politique de confidentialité.',
                 'constraints' => [new Assert\IsTrue(message: 'Le consentement est requis.')],
             ]);
     }

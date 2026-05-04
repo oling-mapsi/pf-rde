@@ -4,7 +4,7 @@ const CONSENT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 180;
 const CONSENT_VERSION = 1;
 
 export default class extends Controller {
-    static targets = ['banner', 'manageButton', 'analyticsInput', 'servicesInput', 'details'];
+    static targets = ['banner', 'manageButton', 'analyticsInput', 'servicesInput', 'details', 'firstAction'];
     static values = {
         enabled: Boolean,
         cookieName: String,
@@ -20,7 +20,11 @@ export default class extends Controller {
         }
 
         this.openFromEventHandler = this.openPreferences.bind(this);
+        this.onKeydownHandler = this.onKeydown.bind(this);
+        this.onOutsideClickHandler = this.onOutsideClick.bind(this);
         window.addEventListener('cookie-consent:open', this.openFromEventHandler);
+        window.addEventListener('keydown', this.onKeydownHandler);
+        this.element.addEventListener('mousedown', this.onOutsideClickHandler);
 
         const consent = this.readConsent();
         if (consent === null) {
@@ -38,6 +42,12 @@ export default class extends Controller {
         if (this.openFromEventHandler) {
             window.removeEventListener('cookie-consent:open', this.openFromEventHandler);
         }
+        if (this.onKeydownHandler) {
+            window.removeEventListener('keydown', this.onKeydownHandler);
+        }
+        if (this.onOutsideClickHandler) {
+            this.element.removeEventListener('mousedown', this.onOutsideClickHandler);
+        }
     }
 
     acceptAll() {
@@ -54,10 +64,13 @@ export default class extends Controller {
         });
     }
 
-    openPreferences() {
+    openPreferences(event) {
+        const showDetailsFromEvent = event?.detail?.showDetails;
         const consent = this.readConsent() ?? this.defaultConsent();
         this.syncForm(consent);
-        this.openBanner({ showDetails: true });
+        this.openBanner({
+            showDetails: typeof showDetailsFromEvent === 'boolean' ? showDetailsFromEvent : true,
+        });
     }
 
     showDetails() {
@@ -75,9 +88,15 @@ export default class extends Controller {
 
     closePreferences() {
         const consent = this.readConsent();
-        if (consent !== null) {
-            this.closeBanner();
+        if (consent === null) {
+            this.saveConsent({
+                analytics: false,
+                services: false,
+            });
+            return;
         }
+
+        this.closeBanner();
     }
 
     saveConsent(rawConsent) {
@@ -101,22 +120,31 @@ export default class extends Controller {
     }
 
     openBanner({ showDetails }) {
+        this.lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
         this.element.classList.add('is-open');
+        document.body.classList.add('has-cookie-modal-open');
         if (this.hasBannerTarget) {
             this.bannerTarget.hidden = false;
         }
         if (this.hasDetailsTarget) {
             this.detailsTarget.hidden = !showDetails;
         }
+
+        this.focusFirstAction();
     }
 
     closeBanner() {
         this.element.classList.remove('is-open');
+        document.body.classList.remove('has-cookie-modal-open');
         if (this.hasBannerTarget) {
             this.bannerTarget.hidden = true;
         }
         if (this.hasDetailsTarget) {
             this.detailsTarget.hidden = true;
+        }
+
+        if (this.lastFocusedElement && document.contains(this.lastFocusedElement)) {
+            this.lastFocusedElement.focus();
         }
     }
 
@@ -195,6 +223,41 @@ export default class extends Controller {
 
     resolvedCookieName() {
         return this.cookieNameValue || 'rdg_cookie_consent';
+    }
+
+    focusFirstAction() {
+        if (this.hasFirstActionTarget) {
+            this.firstActionTarget.focus();
+            return;
+        }
+
+        const focusable = this.bannerTarget?.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (focusable instanceof HTMLElement) {
+            focusable.focus();
+        }
+    }
+
+    onKeydown(event) {
+        if (!this.element.classList.contains('is-open')) {
+            return;
+        }
+
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            this.closePreferences();
+        }
+    }
+
+    onOutsideClick(event) {
+        if (!this.element.classList.contains('is-open') || !this.hasBannerTarget) {
+            return;
+        }
+
+        if (this.bannerTarget.contains(event.target)) {
+            return;
+        }
+
+        this.closePreferences();
     }
 
     enableMatomoTracking() {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\UI\Controller;
 
-use App\Application\Cartography\DTO\StaticMapSearchCriteria;
-use App\Application\Cartography\Service\StaticMapCatalogService;
+use App\Application\Cartography\DTO\DataCatalogSearchCriteria;
+use App\Application\Cartography\Service\DataCatalogService;
 use App\Application\Interop\Sig\SigHealthcheckService;
 use App\Infrastructure\Repository\InteractiveMapRepository;
 use App\Infrastructure\Repository\StaticMapRepository;
@@ -16,19 +16,22 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class CartographyController extends AbstractController
 {
+    #[Route('/donnees-cartes', name: 'app_data_catalog', methods: ['GET'])]
     #[Route('/cartotheque', name: 'app_static_map_catalog', methods: ['GET'])]
-    public function staticCatalog(Request $request, StaticMapCatalogService $catalogService): Response
+    #[Route('/cartes-interactives', name: 'app_interactive_map_catalog', methods: ['GET'])]
+    public function dataCatalog(Request $request, DataCatalogService $catalogService): Response
     {
-        $criteria = StaticMapSearchCriteria::fromRequest($request);
+        $criteria = DataCatalogSearchCriteria::fromRequest($request);
         $catalog = $catalogService->search($criteria);
 
         if ($request->isXmlHttpRequest() || $request->query->getBoolean('partial')) {
-            return $this->render('public/cartography/_static_map_results.html.twig', [
+            return $this->render('public/catalog/_results.html.twig', [
                 'catalog' => $catalog,
+                'criteria' => $criteria,
             ]);
         }
 
-        return $this->render('public/cartography/index.html.twig', [
+        return $this->render('public/catalog/index.html.twig', [
             'catalog' => $catalog,
             'criteria' => $criteria,
         ]);
@@ -44,16 +47,6 @@ final class CartographyController extends AbstractController
 
         return $this->render('public/cartography/show.html.twig', [
             'map' => $map,
-        ]);
-    }
-
-    #[Route('/cartes-interactives', name: 'app_interactive_map_catalog', methods: ['GET'])]
-    public function interactiveCatalog(InteractiveMapRepository $repository): Response
-    {
-        $maps = $repository->findBy(['status' => 'published'], ['publishedAt' => 'DESC']);
-
-        return $this->render('public/interactive/index.html.twig', [
-            'maps' => $maps,
         ]);
     }
 

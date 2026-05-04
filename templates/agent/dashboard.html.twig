@@ -4,9 +4,9 @@
 
 {% block body %}
     {% set latestRequest = requests|first %}
-    <section class="page-shell">
+    <section class="page-shell page-shell--agent">
         <div class="container">
-            <nav class="breadcrumb" aria-label="Fil d ariane">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
                 <ol>
                     <li><a href="{{ path('app_home') }}">Accueil</a></li>
                     <li aria-current="page">Espace agents</li>
@@ -14,54 +14,91 @@
             </nav>
 
             <header class="page-header">
+                <p class="page-header__eyebrow">
+                    <span class="section-icon section-icon--green" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 4l7 3v5c0 4-2.5 6.5-7 8-4.5-1.5-7-4-7-8V7l7-3zM9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </span>
+                    <span>Espace agents sécurisé</span>
+                </p>
                 <h1 class="page-header__title">Espace agents</h1>
-                <p class="page-header__lead">Creation, suivi et historisation des demandes SIG internes.</p>
+                <p class="page-header__lead">Création, suivi et historisation des demandes SIG internes.</p>
             </header>
 
             <section class="dashboard-kpi">
                 <article class="kpi-card">
-                    <p class="kpi-card__label">Demandes recensees</p>
+                    <span class="kpi-card__icon section-icon section-icon--orange" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </span>
+                    <p class="kpi-card__label">Demandes recensées</p>
                     <p class="kpi-card__value">{{ requests|length }}</p>
                 </article>
                 <article class="kpi-card">
-                    <p class="kpi-card__label">Derniere mise a jour</p>
+                    <span class="kpi-card__icon section-icon section-icon--blue" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M6 3v4M18 3v4M4 9h16M5 6h14v15H5z" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </span>
+                    <p class="kpi-card__label">Dernière mise à jour</p>
                     <p class="kpi-card__value">{{ latestRequest ? latestRequest.submittedAt|date('d/m/Y') : 'N/A' }}</p>
                 </article>
                 <article class="kpi-card">
+                    <span class="kpi-card__icon section-icon section-icon--green" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </span>
                     <p class="kpi-card__label">Action rapide</p>
                     <p><a class="btn btn-primary" href="{{ path('agent_request_new') }}">Nouvelle demande</a></p>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <p class="mt-2"><a class="btn btn-outline" href="{{ path('admin_dashboard') }}">Accéder au backoffice admin</a></p>
+                    {% endif %}
                 </article>
             </section>
 
             <section class="card mt-4">
                 <h2 class="h4">Mes demandes</h2>
                 {% if requests is empty %}
-                    <div class="empty-state">
-                        <h3>Aucune demande enregistree</h3>
+                    <div class="empty-state data-state">
+                        <h3>Aucune demande enregistrée</h3>
                         <p>Utilisez le bouton "Nouvelle demande" pour saisir un besoin SIG.</p>
                     </div>
                 {% else %}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Numero</th>
-                                <th>Titre</th>
-                                <th>Statut</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for req in requests %}
-                                {% set statusClass = req.status|lower|replace({' ': '_', '-': '_'}) %}
+                    <div class="table-wrap" data-controller="sort-table">
+                        <table class="table table--data" data-sort-table-target="table">
+                            <caption class="visually-hidden">Liste des demandes agents</caption>
+                            <thead>
                                 <tr>
-                                    <td>{{ req.requestNumber }}</td>
-                                    <td>{{ req.title }}</td>
-                                    <td><span class="badge status-{{ statusClass }}">{{ req.status|replace({'_': ' '})|title }}</span></td>
-                                    <td>{{ req.submittedAt|date('d/m/Y H:i') }}</td>
+                                    <th scope="col" aria-sort="none">
+                                        <button type="button" class="table-sort__button" data-action="sort-table#sort" data-sort-table-index-param="0" data-sort-table-type-param="text" aria-sort-state="none" aria-pressed="false" aria-label="Trier par numéro">
+                                            Numéro
+                                        </button>
+                                    </th>
+                                    <th scope="col" aria-sort="none">
+                                        <button type="button" class="table-sort__button" data-action="sort-table#sort" data-sort-table-index-param="1" data-sort-table-type-param="text" aria-sort-state="none" aria-pressed="false" aria-label="Trier par titre">
+                                            Titre
+                                        </button>
+                                    </th>
+                                    <th scope="col" aria-sort="none">
+                                        <button type="button" class="table-sort__button" data-action="sort-table#sort" data-sort-table-index-param="2" data-sort-table-type-param="text" aria-sort-state="none" aria-pressed="false" aria-label="Trier par statut">
+                                            Statut
+                                        </button>
+                                    </th>
+                                    <th scope="col" aria-sort="none">
+                                        <button type="button" class="table-sort__button" data-action="sort-table#sort" data-sort-table-index-param="3" data-sort-table-type-param="date" aria-sort-state="none" aria-pressed="false" aria-label="Trier par date">
+                                            Date
+                                        </button>
+                                    </th>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {% for req in requests %}
+                                    {% set statusClass = req.status|lower|replace({' ': '_', '-': '_'}) %}
+                                    <tr>
+                                        <td data-label="Numéro">{{ req.requestNumber }}</td>
+                                        <td data-label="Titre"><strong>{{ req.title }}</strong></td>
+                                        <td data-label="Statut"><span class="badge status-{{ statusClass }}">{{ req.status|replace({'_': ' '})|title }}</span></td>
+                                        <td data-label="Date">{{ req.submittedAt|date('d/m/Y H:i') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 {% endif %}
             </section>
         </div>

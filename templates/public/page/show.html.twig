@@ -8,7 +8,7 @@
 {% block body %}
     <section class="page-shell">
         <div class="container container--content">
-            <nav class="breadcrumb" aria-label="Fil d ariane">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
                 <ol>
                     <li><a href="{{ path('app_home') }}">Accueil</a></li>
                     <li aria-current="page">{{ resolvedTitle }}</li>
@@ -21,7 +21,7 @@
                     {% if page.summary %}<p><strong>{{ page.summary }}</strong></p>{% endif %}
                     <div>{{ page.content|nl2br }}</div>
                 {% else %}
-                    <p>Cette page n est pas encore configuree.</p>
+                    <p>Cette page n’est pas encore configurée.</p>
                 {% endif %}
             </article>
         </div>

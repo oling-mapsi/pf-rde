@@ -5,7 +5,7 @@
 {% block body %}
     <section class="page-shell">
         <div class="container container--content">
-            <nav class="breadcrumb" aria-label="Fil d ariane">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
                 <ol>
                     <li><a href="{{ path('app_home') }}">Accueil</a></li>
                     <li aria-current="page">Connexion agents</li>
@@ -14,7 +14,7 @@
 
             <section class="card form-panel auth-panel">
                 <h1>Connexion espace agents</h1>
-                <p class="text-muted">Acces securise reserve aux agents habilites.</p>
+                <p class="text-muted">Accès sécurisé réservé aux agents habilités.</p>
 
                 {% if error %}
                     <div class="notice notice-error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>

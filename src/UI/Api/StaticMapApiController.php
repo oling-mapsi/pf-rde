@@ -35,7 +35,7 @@ final class StaticMapApiController extends AbstractController
     public function autocomplete(Request $request, StaticMapCatalogService $catalogService): JsonResponse
     {
         $criteria = StaticMapSearchCriteria::fromRequest($request);
-        $criteria = new StaticMapSearchCriteria($criteria->query, null, null, 1, 8);
+        $criteria = new StaticMapSearchCriteria($criteria->query, [], null, 1, 8);
         $catalog = $catalogService->search($criteria);
 
         $suggestions = array_map(static fn (StaticMap $map): array => [

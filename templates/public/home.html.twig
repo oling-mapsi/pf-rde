@@ -6,84 +6,144 @@
 
 {% block body %}
     <div class="home-hero-kpis-shell">
-        <section class="home-banner hero home-banner--institutional" aria-labelledby="home-title">
-            <div class="container container--content">
-                <h1 id="home-title">
-                    <span class="hero-title-line">La plateforme Open Data et SIG</span>
-                    <span class="hero-title-line">de Routes de Guadeloupe</span>
-                </h1>
-                <p class="hero_baseline">
-                    Plateforme de référence pour la cartographie routière de la Guadeloupe:
-                    cartothèque statique, cartes interactives, information usagers et services agents.
-                </p>
-                <div class="hero-search" aria-label="Recherche principale">
-                    <h2 class="section-subtitle">
-                        <a href="{{ path('app_static_map_catalog') }}">Rechercher une carte, un jeu de données ou une ressource SIG</a>
-                    </h2>
-                    <form class="search-bar" action="{{ path('app_static_map_catalog') }}" method="get">
-                        <input class="search-bar__input" type="search" name="q" placeholder="Ex: reseau routier principal, trafic, travaux..." aria-label="Recherche dans la cartotheque">
-                        <button class="search-bar__button" type="submit">Rechercher</button>
-                    </form>
+        <section class="home-banner hero hero--standard home-banner--institutional" aria-labelledby="home-title">
+            <div class="container container--content hero__content">
+                <div class="hero__intro">
+                    <h1 id="home-title">
+                        <span class="hero-title-line">La plateforme Open Data et SIG</span>
+                        <span class="hero-title-line">de Routes de Guadeloupe</span>
+                    </h1>
+                    <p class="hero_baseline">
+                        <span class="hero-baseline-line">Plateforme de référence pour la cartographie routière de la Guadeloupe.</span>
+                        <span class="hero-baseline-line">Cartothèque statique, cartes interactives, information usagers et services agents.</span>
+                    </p>
                 </div>
+                <section class="home-hero-search" aria-label="Recherche principale">
+                    <p class="home-kpis__search-subtitle">
+                        Explorer les {{ datasetCount }} jeux de données dans les {{ themeCount }} thèmes
+                    </p>
+
+                    <form class="search-bar search-bar--hero-floating" role="search" action="{{ path('app_data_catalog') }}" method="get" aria-label="Recherche principale">
+                        <label class="visually-hidden" for="home-search-input">Recherche dans la cartothèque</label>
+                        <input id="home-search-input" class="search-bar__input" type="search" name="q" placeholder="Rechercher une carte, un jeu de données ou une ressource SIG" aria-label="Recherche dans la cartothèque">
+                        <button class="search-bar__icon-submit" type="submit" aria-label="Lancer la recherche">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="11" cy="11" r="6.5" stroke="#4f5460" stroke-width="2"/>
+                                <path d="M16 16l4.5 4.5" stroke="#4f5460" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </form>
+                </section>
             </div>
         </section>
 
-        <section class="home-kpis" aria-labelledby="home-kpis-title">
+        <section class="home-kpis" aria-label="Accès principaux du portail">
             <div class="container">
-                <h2 id="home-kpis-title" class="section-title section-title--center">Le portail en un coup d'oeil</h2>
                 <div class="grid grid-4 home-kpis__grid">
-                    <article class="home-kpi home-kpi--orange">
+                    <a class="home-kpi home-kpi--orange home-kpi--link" href="{{ path('app_data_catalog', { type: ['static'] }) }}" aria-label="Accéder à la cartothèque statique">
                         <span class="home-kpi__icon is-orange" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="none"><path d="M3 7.5l5-2.5 8 3 5-2.5v11l-5 2.5-8-3-5 2.5v-11zM8 5v11M16 8v11" stroke="currentColor" stroke-width="1.8"/></svg>
                         </span>
-                        <p class="home-kpi__label">Cartotheque statique</p>
-                        <p class="home-kpi__value">Ressources officielles</p>
-                    </article>
-                    <article class="home-kpi home-kpi--blue">
+                        <p class="home-kpi__label">Cartothèque statique</p>
+                    </a>
+                    <a class="home-kpi home-kpi--blue home-kpi--link" href="{{ path('app_data_catalog', { type: ['interactive'] }) }}" aria-label="Accéder aux cartes interactives">
                         <span class="home-kpi__icon is-blue" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16M8 5v14M16 5v14" stroke="currentColor" stroke-width="1.8"/></svg>
                         </span>
                         <p class="home-kpi__label">Cartes interactives</p>
-                        <p class="home-kpi__value">Consultation dynamique</p>
-                    </article>
-                    <article class="home-kpi home-kpi--yellow">
+                    </a>
+                    <a class="home-kpi home-kpi--yellow home-kpi--link" href="{{ path('app_content_news_index') }}" aria-label="Accéder aux informations publiques et actualités">
                         <span class="home-kpi__icon is-yellow" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="none"><path d="M5 18h2l8-5V7l-8 5H5v6zM15 9l3-2v10l-3-2" stroke="currentColor" stroke-width="1.8"/></svg>
                         </span>
                         <p class="home-kpi__label">Information publique</p>
-                        <p class="home-kpi__value">Actualites et communiques</p>
-                    </article>
-                    <article class="home-kpi home-kpi--green">
+                    </a>
+                    <a class="home-kpi home-kpi--green home-kpi--link" href="{{ is_granted('ROLE_AGENT') ? path('agent_dashboard') : path('app_login') }}" aria-label="Accéder à l’espace agents">
                         <span class="home-kpi__icon is-green" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="none"><path d="M12 4l7 3v5c0 4-2.5 6.5-7 8-4.5-1.5-7-4-7-8V7l7-3zM9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8"/></svg>
                         </span>
                         <p class="home-kpi__label">Espace agents</p>
-                        <p class="home-kpi__value">Demandes et suivi</p>
-                    </article>
+                    </a>
                 </div>
             </div>
         </section>
     </div>
 
-    <section class="home-refdata" aria-labelledby="home-focus-title">
+    <section class="home-mostviewed" aria-labelledby="home-mostviewed-title">
         <div class="container">
-            <h2 id="home-focus-title" class="section-title section-title--center">Focus institutionnel</h2>
-            <div class="grid grid-2">
-                <article class="card">
-                    <h3 class="card__title">Presentation du portail</h3>
-                    <p class="card__lead">
-                        {% if presentationPage %}
-                            {{ presentationPage.summary ?: (presentationPage.content|length > 200 ? presentationPage.content|slice(0, 200) ~ '...' : presentationPage.content) }}
-                        {% else %}
-                            Contexte, objectifs et cadre de diffusion des donnees geographiques routieres.
-                        {% endif %}
-                    </p>
-                    <p class="card__link"><a href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}"><span>Lire la presentation</span></a></p>
+            <div class="home-mostviewed__panel">
+                <h2 id="home-mostviewed-title" class="h2 text-center mb-7">Visualisations à la une</h2>
+                <div class="mostviewed__grid grid grid-3 mb-7">
+                    <article class="card mostviewed__item">
+                        <h3 class="card__title h6">Réseau routier principal</h3>
+                        <img class="card__img" src="{{ asset('images/hero-guadeloupe-map-v5.png') }}" alt="Aperçu de la visualisation du réseau routier principal">
+                        <p class="card__lead">Lecture synthétique des axes structurants et des continuités de circulation à l’échelle du territoire.</p>
+                        <p class="card__link"><a href="{{ path('app_data_catalog', { type: ['interactive'], q: 'réseau routier' }) }}"><span>Consulter la visualisation</span></a></p>
+                    </article>
+                    <article class="card mostviewed__item">
+                        <h3 class="card__title h6">Travaux et incidents</h3>
+                        <img class="card__img" src="{{ asset('images/hero-guadeloupe-map-v4.png') }}" alt="Aperçu de la visualisation des travaux et incidents">
+                        <p class="card__lead">Identification des zones en travaux, événements de circulation et points de vigilance opérationnels.</p>
+                        <p class="card__link"><a href="{{ path('app_data_catalog', { type: ['interactive'], q: 'travaux' }) }}"><span>Accéder à la carte</span></a></p>
+                    </article>
+                    <article class="card mostviewed__item">
+                        <h3 class="card__title h6">Services SIG disponibles</h3>
+                        <img class="card__img" src="{{ asset('images/hero-guadeloupe-map-v6.png') }}" alt="Aperçu de la visualisation des services SIG">
+                        <p class="card__lead">Vérification de disponibilité des couches interactives et accès direct aux ressources cartographiques.</p>
+                        <p class="card__link"><a href="{{ path('app_data_catalog', { type: ['interactive'] }) }}"><span>Voir les cartes interactives</span></a></p>
+                    </article>
+                </div>
+                <p class="text-center">
+                    <a class="btn btn-primary" href="{{ path('app_data_catalog', { type: ['interactive'] }) }}">Voir le catalogue des visualisations</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-refdata" aria-labelledby="home-refdata-title">
+        <div class="container">
+            <h2 id="home-refdata-title" class="h2 text-center mb-7">Les données de référence</h2>
+            <div class="refdata__grid grid grid-3">
+                <article class="card refdata__item">
+                    <h3 class="card__title h6">Cartothèque statique officielle</h3>
+                    <img class="card__img" src="{{ asset('images/hero-guadeloupe-map-v3.png') }}" alt="Aperçu de la cartothèque statique">
+                    <p class="card__lead">Cartes de référence validées, documents de diffusion institutionnelle et ressources prêtes au téléchargement.</p>
+                    <p class="card__link"><a href="{{ path('app_data_catalog', { type: ['static'] }) }}"><span>Accéder à la cartothèque</span></a></p>
                 </article>
-                <article class="card">
-                    <h3 class="card__title">Partenaires et financeurs</h3>
-                    <p class="card__lead">Informations sur les institutions engagees dans le programme Routes de Guadeloupe et son financement.</p>
-                    <p class="card__link"><a href="{{ path('app_content_partners') }}"><span>Consulter la rubrique</span></a></p>
+                <article class="card refdata__item">
+                    <h3 class="card__title h6">Jeux de données SIG publiés</h3>
+                    <img class="card__img" src="{{ asset('images/hero-guadeloupe-map-v2.png') }}" alt="Aperçu du catalogue de jeux de données">
+                    <p class="card__lead">{{ datasetCount }} jeu{{ datasetCount > 1 ? 'x' : '' }} de données publié{{ datasetCount > 1 ? 's' : '' }} au format réutilisable.</p>
+                    <p class="card__link"><a href="{{ path('app_data_catalog') }}"><span>Explorer le catalogue</span></a></p>
+                </article>
+                <article class="card refdata__item">
+                    <h3 class="card__title h6">Thèmes de diffusion</h3>
+                    <img class="card__img" src="{{ asset('images/hero-guadeloupe-map.png') }}" alt="Aperçu des thèmes de diffusion de données">
+                    <p class="card__lead">{{ themeCount }} thème{{ themeCount > 1 ? 's' : '' }} organisé{{ themeCount > 1 ? 's' : '' }} pour faciliter la recherche et la comparaison.</p>
+                    <p class="card__link"><a href="{{ path('app_data_catalog') }}"><span>Parcourir les thèmes</span></a></p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-usingdata" aria-labelledby="home-usingdata-title">
+        <div class="container">
+            <h2 id="home-usingdata-title" class="h2 text-center mb-7">Utiliser les données</h2>
+            <div class="usingdata__grid grid grid-3">
+                <article class="card usingdata__item">
+                    <h3 class="card__title h6">Rechercher et filtrer</h3>
+                    <img class="card__img" src="{{ asset('images/hero-guadeloupe-map-v6.png') }}" alt="Illustration de la recherche dans le portail">
+                    <p class="card__link"><a href="{{ path('app_data_catalog') }}"><span>Lancer une recherche</span></a></p>
+                </article>
+                <article class="card usingdata__item">
+                    <h3 class="card__title h6">Télécharger les ressources</h3>
+                    <img class="card__img" src="{{ asset('images/hero-guadeloupe-map-v5.png') }}" alt="Illustration du téléchargement des ressources">
+                    <p class="card__link"><a href="{{ path('app_data_catalog', { type: ['static'] }) }}"><span>Télécharger des cartes</span></a></p>
+                </article>
+                <article class="card usingdata__item">
+                    <h3 class="card__title h6">Consulter les services agents</h3>
+                    <img class="card__img" src="{{ asset('images/hero-guadeloupe-map-v4.png') }}" alt="Illustration de l’espace agents">
+                    <p class="card__link"><a href="{{ is_granted('ROLE_AGENT') ? path('agent_dashboard') : path('app_login') }}"><span>Accéder à l’espace agents</span></a></p>
                 </article>
             </div>
         </div>
@@ -91,46 +151,59 @@
 
     <section class="home-news" aria-labelledby="home-news-title">
         <div class="container">
-            <h2 id="home-news-title" class="section-title section-title--center">Actualites et communiques</h2>
+            <h2 id="home-news-title" class="h2 text-center mb-7">Actualités et communiqués</h2>
             {% if latestNews is empty %}
-                <div class="notice notice-info">Aucune actualite publiee pour le moment.</div>
+                <div class="notice notice-info">Aucune actualité publiée pour le moment.</div>
             {% else %}
                 <div class="grid grid-3">
                     {% for article in latestNews %}
                         <article class="card">
                             <p class="card__meta">
-                                <span>{{ article.publishedAt ? article.publishedAt|date('d/m/Y') : 'Brouillon' }}</span>
+                                <span class="badge badge--neutral">{{ article.publishedAt ? article.publishedAt|date('d/m/Y') : 'Brouillon' }}</span>
                                 <span>Communication officielle</span>
                             </p>
                             <h3 class="card__title">{{ article.title }}</h3>
                             <p class="card__lead">{{ article.summary ?: (article.body|length > 180 ? article.body|slice(0, 180) ~ '...' : article.body) }}</p>
-                            <p class="card__link"><a href="{{ path('app_content_news_show', { slug: article.slug }) }}"><span>Lire le communique</span></a></p>
+                            <p class="card__link"><a href="{{ path('app_content_news_show', { slug: article.slug }) }}"><span>Lire le communiqué</span></a></p>
                         </article>
                     {% endfor %}
                 </div>
                 <p class="text-center mt-4">
-                    <a class="btn btn-secondary" href="{{ path('app_content_news_index') }}">Voir toutes les actualites</a>
+                    <a class="btn btn-secondary" href="{{ path('app_content_news_index') }}">Voir toutes les actualités</a>
                 </p>
             {% endif %}
         </div>
     </section>
 
-    <section class="home-partners" aria-labelledby="home-cadre-title">
+    <section class="home-governance" aria-labelledby="home-governance-title">
         <div class="container">
-            <h2 id="home-cadre-title" class="section-title section-title--center">Cadre legal et qualite de service</h2>
-            <div class="grid grid-3">
-                <article class="card">
-                    <h3 class="card__title">Disponibilite des services</h3>
-                    <p class="card__lead">Publication d informations de statut sur les services SIG et les eventuelles indisponibilites.</p>
+            <h2 id="home-governance-title" class="h2 text-center mb-7">Focus institutionnel, cadre légal et qualité de service</h2>
+            <div class="grid grid-2 home-governance__grid">
+                <article class="card card--governance">
+                    <h3 class="card__title">Présentation du portail</h3>
+                    <p class="card__lead">
+                        {% if presentationPage %}
+                            {{ presentationPage.summary ?: (presentationPage.content|length > 200 ? presentationPage.content|slice(0, 200) ~ '...' : presentationPage.content) }}
+                        {% else %}
+                            Contexte, objectifs et cadre de diffusion des données géographiques routières.
+                        {% endif %}
+                    </p>
+                    <p class="card__link"><a href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}"><span>Lire la présentation</span></a></p>
                 </article>
-                <article class="card">
-                    <h3 class="card__title">Transparence</h3>
-                    <p class="card__lead">Mentions legales, confidentialite, cookies et declaration d accessibilite publiques.</p>
-                    <p class="card__link"><a href="{{ path('app_content_legal_mentions') }}"><span>Voir les informations legales</span></a></p>
+                <article class="card card--governance">
+                    <h3 class="card__title">Partenaires et financeurs</h3>
+                    <p class="card__lead">Informations sur les institutions engagées dans le programme Routes de Guadeloupe et son financement.</p>
+                    <p class="card__link"><a href="{{ path('app_content_partners') }}"><span>Consulter la rubrique</span></a></p>
                 </article>
-                <article class="card">
-                    <h3 class="card__title">Publics concernes</h3>
-                    <p class="card__lead">Grand public, partenaires institutionnels, collectivites et agents metier.</p>
+                <article class="card card--governance">
+                    <h3 class="card__title">Transparence et conformité</h3>
+                    <p class="card__lead">Mentions légales, confidentialité, cookies et déclaration d’accessibilité accessibles publiquement.</p>
+                    <p class="card__link"><a href="{{ path('app_content_legal_mentions') }}"><span>Voir les informations légales</span></a></p>
+                </article>
+                <article class="card card--governance">
+                    <h3 class="card__title">Qualité de service</h3>
+                    <p class="card__lead">Publication de la disponibilité des services, information des usagers et accès dédié pour les agents.</p>
+                    <p class="card__link"><a href="{{ path('app_data_catalog', { type: ['interactive'] }) }}"><span>Suivre les services SIG</span></a></p>
                 </article>
             </div>
         </div>

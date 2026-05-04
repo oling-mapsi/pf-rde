@@ -17,4 +17,28 @@ class InteractiveMapRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, InteractiveMap::class);
     }
+
+    /**
+     * @return list<InteractiveMap>
+     */
+    public function searchPublishedForDataCatalog(?string $query): array
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->leftJoin('m.layers', 'l')->addSelect('l')
+            ->andWhere('m.status = :status')
+            ->setParameter('status', 'published')
+            ->orderBy('m.publishedAt', 'DESC')
+            ->addOrderBy('m.createdAt', 'DESC');
+
+        if ($query !== null && $query !== '') {
+            $qb
+                ->andWhere('LOWER(m.title) LIKE :q OR LOWER(COALESCE(m.summary, \'\')) LIKE :q')
+                ->setParameter('q', '%' . mb_strtolower($query) . '%');
+        }
+
+        /** @var list<InteractiveMap> $items */
+        $items = $qb->getQuery()->getResult();
+
+        return $items;
+    }
 }

@@ -1,0 +1,102 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Axe contextuel Jarry - Les Abymes"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-61.63, 16.25],
+          [-61.58, 16.25],
+          [-61.54, 16.25],
+          [-61.49, 16.26],
+          [-61.45, 16.26]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Axe contextuel Le Gosier - Sainte-Anne"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-61.49, 16.22],
+          [-61.44, 16.24],
+          [-61.40, 16.27],
+          [-61.36, 16.30],
+          [-61.33, 16.31]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Liaison maritime contextuelle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-61.60, 15.90],
+          [-61.57, 15.95],
+          [-61.53, 16.00],
+          [-61.50, 16.04]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pointe-a-Pitre"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-61.535, 16.243]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Basse-Terre"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-61.732, 15.999]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Le Gosier"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-61.487, 16.206]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sainte-Anne"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-61.378, 16.225]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Saint-Francois"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-61.275, 16.254]
+      }
+    }
+  ]
+}

@@ -5,17 +5,17 @@
 {% block body %}
     <section class="page-shell">
         <div class="container container--content">
-            <nav class="breadcrumb" aria-label="Fil d ariane">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
                 <ol>
                     <li><a href="{{ path('app_home') }}">Accueil</a></li>
-                    <li><a href="{{ path('app_content_news_index') }}">Actualites</a></li>
+                    <li><a href="{{ path('app_content_news_index') }}">Actualités</a></li>
                     <li aria-current="page">{{ article.title }}</li>
                 </ol>
             </nav>
 
             <article class="card rich-content">
                 <p class="card__meta">
-                    <span class="badge">{{ article.publishedAt ? article.publishedAt|date('d/m/Y H:i') : 'Brouillon' }}</span>
+                    <span class="badge badge--neutral">{{ article.publishedAt ? article.publishedAt|date('d/m/Y H:i') : 'Brouillon' }}</span>
                     <span>Communication officielle</span>
                 </p>
                 <h1>{{ article.title }}</h1>
