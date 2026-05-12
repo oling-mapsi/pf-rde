@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\UI\Api;
 
+use App\Application\Access\Service\VisibilityScopeResolver;
 use App\Application\Cartography\DTO\DataCatalogSearchCriteria;
 use App\Application\Cartography\Service\DataCatalogService;
+use App\Domain\Cartography\Entity\DataSource;
 use App\Domain\Cartography\Entity\InteractiveMap;
 use App\Domain\Cartography\Entity\StaticMap;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,6 +18,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/catalog', name: 'api_catalog_')]
 final class DataCatalogApiController extends AbstractController
 {
+    public function __construct(private readonly VisibilityScopeResolver $visibilityScopeResolver)
+    {
+    }
+
     #[Route('/autocomplete', name: 'autocomplete', methods: ['GET'])]
     public function autocomplete(Request $request, DataCatalogService $catalogService): JsonResponse
     {
@@ -24,49 +30,78 @@ final class DataCatalogApiController extends AbstractController
             return $this->json(['suggestions' => []]);
         }
 
-        $rawParams = $request->query->all();
-        $themeValues = $rawParams['theme'] ?? [];
-        $typeValues = $rawParams['type'] ?? [];
-        $themes = is_array($themeValues) ? array_values(array_filter(array_map('strval', $themeValues))) : [];
-        $types = is_array($typeValues) ? array_values(array_filter(array_map('strval', $typeValues))) : [];
-        $types = array_values(array_filter($types, static fn (string $type): bool => in_array($type, ['static', 'interactive'], true)));
+        $baseCriteria = DataCatalogSearchCriteria::fromRequest($request);
 
         $criteria = new DataCatalogSearchCriteria(
             query: $query,
-            themes: $themes,
-            types: $types,
+            themes: $baseCriteria->themes,
+            types: $baseCriteria->types,
+            categories: $baseCriteria->categories,
             page: 1,
             perPage: 8,
         );
-        $catalog = $catalogService->search($criteria);
+        $catalog = $catalogService->search(
+            $criteria,
+            $this->visibilityScopeResolver->resolveForUser($this->getUser()),
+        );
 
         $suggestions = array_map(function (array $item): array {
             $entity = $item['entity'];
             $type = $item['type'];
 
-            if ($type === 'interactive' && $entity instanceof InteractiveMap) {
+            if ($item['kind'] === 'interactive_map' && $entity instanceof InteractiveMap) {
                 return [
                     'title' => $entity->getTitle(),
-                    'type' => 'interactive',
-                    'typeLabel' => 'Carte interactive',
+                    'type' => DataSource::TYPE_CARTOGRAPHY_LINK,
+                    'typeLabel' => DataSource::TYPE_LABELS[DataSource::TYPE_CARTOGRAPHY_LINK],
                     'theme' => null,
                     'url' => $this->generateUrl('app_interactive_map_show', ['slug' => $entity->getSlug()]),
                 ];
             }
 
-            if ($entity instanceof StaticMap) {
+            if ($item['kind'] === 'static_map' && $entity instanceof StaticMap) {
                 return [
                     'title' => $entity->getTitle(),
-                    'type' => 'static',
-                    'typeLabel' => 'Donnée cartothèque',
+                    'type' => DataSource::TYPE_STATIC_MAP,
+                    'typeLabel' => DataSource::TYPE_LABELS[DataSource::TYPE_STATIC_MAP],
                     'theme' => $entity->getTheme(),
                     'url' => $this->generateUrl('app_static_map_show', ['slug' => $entity->getSlug()]),
                 ];
             }
 
+            if ($entity instanceof DataSource) {
+                $url = $this->generateUrl('app_data_source_show', ['slug' => $entity->getSlug()]);
+
+                if ($entity->getLinkedInteractiveMap() !== null) {
+                    $url = $this->generateUrl('app_interactive_map_show', ['slug' => $entity->getLinkedInteractiveMap()->getSlug()]);
+                } elseif ($entity->getLinkedStaticMap() !== null) {
+                    $url = $this->generateUrl('app_static_map_show', ['slug' => $entity->getLinkedStaticMap()->getSlug()]);
+                } elseif ($entity->getSourceUrl() !== null && trim($entity->getSourceUrl()) !== '') {
+                    $url = trim($entity->getSourceUrl());
+                    if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://') && !str_starts_with($url, '/')) {
+                        $url = '/'.$url;
+                    }
+                } elseif ($entity->getFilePath() !== null && trim($entity->getFilePath()) !== '') {
+                    $url = trim($entity->getFilePath());
+                    if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://') && !str_starts_with($url, '/')) {
+                        $url = '/'.$url;
+                    }
+                } elseif ($entity->getServiceEndpoint() !== null && $entity->getServiceEndpoint()->getBaseUrl() !== null) {
+                    $url = (string) $entity->getServiceEndpoint()->getBaseUrl();
+                }
+
+                return [
+                    'title' => $entity->getTitle(),
+                    'type' => $type,
+                    'typeLabel' => DataSource::TYPE_LABELS[$type] ?? 'Source de données',
+                    'theme' => $entity->getTheme(),
+                    'url' => $url,
+                ];
+            }
+
             return [
                 'title' => 'Ressource',
-                'type' => 'static',
+                'type' => DataSource::TYPE_DATA_FILE,
                 'typeLabel' => 'Ressource',
                 'theme' => null,
                 'url' => $this->generateUrl('app_data_catalog'),

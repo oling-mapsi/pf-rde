@@ -1,38 +1,54 @@
 :root {
-    /* Palette strictement extraite du logo Routes de Guadeloupe */
-    --rdg-brand-primary-raw: #fc5000;
-    --rdg-brand-primary: #fc5000;
-    --rdg-brand-primary-hover: #f05000;
-    --rdg-brand-primary-active: #e24800;
-    --rdg-brand-secondary: #38b4e7;
-    --rdg-brand-secondary-hover: #38b4e7;
-    --rdg-brand-accent: #fbd002;
-    --rdg-brand-accent-2: #38b4e7;
-    --rdg-brand-accent-3: #aaae02;
+    /* Palette provisoire RDG */
+    --rdg-blue: #0E5AA7;
+    --rdg-sky: #2FA7D9;
+    --rdg-yellow: #F3C623;
+    --rdg-green: #7AA63A;
+    --rdg-orange-road: #E57A22;
+    --rdg-text: #1F2937;
+    --rdg-muted: #6B7280;
+    --rdg-bg: #FFFFFF;
+    --rdg-surface: #F7F9FB;
+    --rdg-border: #D9E2EC;
 
-    /* Couleurs secondaires issues du meme logo */
-    --rdg-blue-deep: #101010;
-    --rdg-green: #aaae02;
-    --rdg-green-soft: rgba(170, 174, 2, 0.16);
-    --rdg-warning: #fbd002;
-    --rdg-warning-soft: rgba(251, 208, 2, 0.22);
-    --rdg-danger: #fc5000;
-    --rdg-danger-soft: rgba(252, 80, 0, 0.16);
-    --rdg-info: #38b4e7;
-    --rdg-info-soft: rgba(56, 180, 231, 0.18);
+    --rdg-blue-rgb: 14, 90, 167;
+    --rdg-sky-rgb: 47, 167, 217;
+    --rdg-yellow-rgb: 243, 198, 35;
+    --rdg-green-rgb: 122, 166, 58;
+    --rdg-orange-road-rgb: 229, 122, 34;
+    --rdg-text-rgb: 31, 41, 55;
 
-    /* Neutres issus du logo (fond gris + texte noir) */
-    --rdg-white: #ffffff;
-    --rdg-neutral-50: #f8f8f8;
-    --rdg-neutral-100: #f0f0f0;
-    --rdg-neutral-150: #e8e8e8;
-    --rdg-neutral-200: #d8d8d8;
-    --rdg-neutral-300: #c8c8c8;
-    --rdg-neutral-400: #b0b0b0;
-    --rdg-neutral-500: #909090;
-    --rdg-neutral-700: #808080;
-    --rdg-neutral-800: #181818;
-    --rdg-neutral-900: #101010;
+    /* Compatibility aliases used by existing components */
+    --rdg-brand-primary-raw: var(--rdg-blue);
+    --rdg-brand-primary: var(--rdg-blue);
+    --rdg-brand-primary-hover: #0A4B8E;
+    --rdg-brand-primary-active: #083F78;
+    --rdg-brand-secondary: var(--rdg-sky);
+    --rdg-brand-secondary-hover: #238DC0;
+    --rdg-brand-accent: var(--rdg-yellow);
+    --rdg-brand-accent-2: var(--rdg-sky);
+    --rdg-brand-accent-3: var(--rdg-green);
+
+    --rdg-blue-deep: #12314F;
+    --rdg-green-soft: rgba(var(--rdg-green-rgb), 0.16);
+    --rdg-warning: var(--rdg-yellow);
+    --rdg-warning-soft: rgba(var(--rdg-yellow-rgb), 0.2);
+    --rdg-danger: var(--rdg-orange-road);
+    --rdg-danger-soft: rgba(var(--rdg-orange-road-rgb), 0.15);
+    --rdg-info: var(--rdg-sky);
+    --rdg-info-soft: rgba(var(--rdg-sky-rgb), 0.16);
+
+    --rdg-white: var(--rdg-bg);
+    --rdg-neutral-50: var(--rdg-surface);
+    --rdg-neutral-100: #EEF4F8;
+    --rdg-neutral-150: #E5EDF4;
+    --rdg-neutral-200: var(--rdg-border);
+    --rdg-neutral-300: #C4D3E1;
+    --rdg-neutral-400: #9AAEC0;
+    --rdg-neutral-500: #7B8794;
+    --rdg-neutral-700: var(--rdg-muted);
+    --rdg-neutral-800: var(--rdg-text);
+    --rdg-neutral-900: #111827;
 
     /* Semantic tokens */
     --color-brand-primary: var(--rdg-brand-primary);

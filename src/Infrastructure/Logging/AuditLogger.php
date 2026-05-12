@@ -31,6 +31,7 @@ final class AuditLogger
         ?string $userAgent = null,
         ?array $context = null,
         bool $sensitive = false,
+        bool $flush = false,
     ): void {
         $entry = (new AuditLog())
             ->setAction($action)
@@ -53,5 +54,9 @@ final class AuditLogger
             'sensitive' => $sensitive,
             'context' => $context,
         ]);
+
+        if ($flush) {
+            $this->entityManager->flush();
+        }
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Application\Cartography\DTO\StaticMapSearchCriteria;
+use App\Domain\Access\VisibilityScope;
 use App\Domain\Cartography\Entity\StaticMap;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -21,15 +22,19 @@ class StaticMapRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param list<string> $allowedScopes
+     *
      * @return array{items: list<StaticMap>, total: int, page: int, perPage: int}
      */
-    public function searchPublished(StaticMapSearchCriteria $criteria): array
+    public function searchPublished(StaticMapSearchCriteria $criteria, array $allowedScopes): array
     {
         $qb = $this->createQueryBuilder('m')
             ->leftJoin('m.assets', 'a')->addSelect('a')
             ->leftJoin('m.datasetResources', 'd')->addSelect('d')
             ->andWhere('m.status = :status')
+            ->andWhere('m.visibilityScope IN (:scopes)')
             ->setParameter('status', 'published')
+            ->setParameter('scopes', $allowedScopes)
             ->orderBy('m.publishedAt', 'DESC')
             ->addOrderBy('m.createdAt', 'DESC');
 
@@ -72,13 +77,15 @@ class StaticMapRepository extends ServiceEntityRepository
     }
 
     /** @return list<string> */
-    public function findAvailableThemes(): array
+    public function findAvailableThemes(array $allowedScopes): array
     {
         $rows = $this->createQueryBuilder('m')
             ->select('DISTINCT m.theme as theme')
             ->andWhere('m.theme IS NOT NULL')
             ->andWhere('m.status = :status')
+            ->andWhere('m.visibilityScope IN (:scopes)')
             ->setParameter('status', 'published')
+            ->setParameter('scopes', $allowedScopes)
             ->orderBy('m.theme', 'ASC')
             ->getQuery()
             ->getArrayResult();
@@ -86,31 +93,76 @@ class StaticMapRepository extends ServiceEntityRepository
         return array_values(array_filter(array_map(static fn (array $row): ?string => $row['theme'] ?? null, $rows)));
     }
 
-    public function countPublishedThemes(): int
+    public function countPublishedThemes(array $allowedScopes = [VisibilityScope::PUBLIC]): int
     {
         return (int) $this->createQueryBuilder('m')
             ->select('COUNT(DISTINCT m.theme)')
             ->andWhere('m.status = :status')
+            ->andWhere('m.visibilityScope IN (:scopes)')
             ->andWhere('m.theme IS NOT NULL')
             ->andWhere('TRIM(m.theme) <> :emptyTheme')
             ->setParameter('status', 'published')
+            ->setParameter('scopes', $allowedScopes)
             ->setParameter('emptyTheme', '')
             ->getQuery()
             ->getSingleScalarResult();
     }
 
     /**
-     * @param list<string> $themes
+     * @param array<string, mixed> $filters
      *
      * @return list<StaticMap>
      */
-    public function searchPublishedForDataCatalog(?string $query, array $themes): array
+    public function findPublishedForHomepage(
+        int $limit = 3,
+        array $filters = [],
+        array $allowedScopes = [VisibilityScope::PUBLIC]
+    ): array
     {
         $qb = $this->createQueryBuilder('m')
             ->leftJoin('m.assets', 'a')->addSelect('a')
             ->leftJoin('m.datasetResources', 'd')->addSelect('d')
             ->andWhere('m.status = :status')
+            ->andWhere('m.visibilityScope IN (:scopes)')
             ->setParameter('status', 'published')
+            ->setParameter('scopes', $allowedScopes)
+            ->orderBy('m.publishedAt', 'DESC')
+            ->addOrderBy('m.createdAt', 'DESC')
+            ->setMaxResults(max(1, $limit));
+
+        if (($filters['theme'] ?? null) !== null && trim((string) $filters['theme']) !== '') {
+            $qb
+                ->andWhere('m.theme = :theme')
+                ->setParameter('theme', trim((string) $filters['theme']));
+        }
+
+        if (($filters['query'] ?? null) !== null && trim((string) $filters['query']) !== '') {
+            $qb
+                ->andWhere('LOWER(m.title) LIKE :q OR LOWER(COALESCE(m.summary, \'\')) LIKE :q OR LOWER(COALESCE(m.theme, \'\')) LIKE :q')
+                ->setParameter('q', '%' . mb_strtolower(trim((string) $filters['query'])) . '%');
+        }
+
+        /** @var list<StaticMap> $items */
+        $items = $qb->getQuery()->getResult();
+
+        return $items;
+    }
+
+    /**
+     * @param list<string> $themes
+     * @param list<string> $allowedScopes
+     *
+     * @return list<StaticMap>
+     */
+    public function searchPublishedForDataCatalog(?string $query, array $themes, array $allowedScopes): array
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->leftJoin('m.assets', 'a')->addSelect('a')
+            ->leftJoin('m.datasetResources', 'd')->addSelect('d')
+            ->andWhere('m.status = :status')
+            ->andWhere('m.visibilityScope IN (:scopes)')
+            ->setParameter('status', 'published')
+            ->setParameter('scopes', $allowedScopes)
             ->orderBy('m.publishedAt', 'DESC')
             ->addOrderBy('m.createdAt', 'DESC');
 
@@ -130,5 +182,24 @@ class StaticMapRepository extends ServiceEntityRepository
         $items = $qb->getQuery()->getResult();
 
         return $items;
+    }
+
+    /**
+     * @param list<string> $allowedScopes
+     */
+    public function findOnePublishedVisibleBySlug(string $slug, array $allowedScopes): ?StaticMap
+    {
+        return $this->createQueryBuilder('m')
+            ->leftJoin('m.assets', 'a')->addSelect('a')
+            ->leftJoin('m.datasetResources', 'd')->addSelect('d')
+            ->andWhere('m.slug = :slug')
+            ->andWhere('m.status = :status')
+            ->andWhere('m.visibilityScope IN (:scopes)')
+            ->setParameter('slug', $slug)
+            ->setParameter('status', 'published')
+            ->setParameter('scopes', $allowedScopes)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

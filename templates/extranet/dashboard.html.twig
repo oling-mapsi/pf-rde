@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon extranet{% endblock %}
+
+{% block body %}
+    <section class="page-shell page-shell--agent">
+        <div class="container">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li aria-current="page">Mon extranet</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <p class="page-header__eyebrow">
+                    <span class="section-icon section-icon--blue" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <span>Espace privé</span>
+                </p>
+                <h1 class="page-header__title">Mon extranet</h1>
+                <p class="page-header__lead">Gérez vos favoris et envoyez vos demandes de ressources complémentaires.</p>
+            </header>
+
+            <section class="dashboard-kpi">
+                <article class="kpi-card">
+                    <p class="kpi-card__label">Favoris</p>
+                    <p class="kpi-card__value">{{ favorites|length }}</p>
+                </article>
+                <article class="kpi-card">
+                    <p class="kpi-card__label">Demandes envoyées</p>
+                    <p class="kpi-card__value">{{ resourceRequests|length }}</p>
+                </article>
+                <article class="kpi-card">
+                    <p class="kpi-card__label">Mon compte</p>
+                    <p><a class="btn btn-outline" href="{{ path('app_account_change_password') }}">Changer mon mot de passe</a></p>
+                </article>
+            </section>
+
+            <section class="card mt-4">
+                <h2 class="h4">Mes favoris</h2>
+                {% if favorites is empty %}
+                    <p>Aucun favori pour le moment.</p>
+                {% else %}
+                    <ul class="download-list">
+                        {% for favorite in favorites %}
+                            <li>
+                                <span>
+                                    <strong>{{ favorite.resourceTitle }}</strong><br>
+                                    <small>{{ favorite.kindLabel }}</small>
+                                </span>
+                                <span>
+                                    <a class="btn btn-outline" href="{{ favorite.resourceUrl }}">Ouvrir</a>
+                                    <form method="post" action="{{ path('extranet_favorite_remove', { id: favorite.id }) }}">
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('favorite_remove_' ~ favorite.id) }}">
+                                        <button type="submit" class="btn btn-outline">Retirer</button>
+                                    </form>
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </section>
+
+            <section class="card mt-4 form-panel">
+                <h2 class="h4">Demander une ressource supplémentaire</h2>
+                {{ form_start(requestForm) }}
+                    {{ form_row(requestForm.subject) }}
+                    {{ form_row(requestForm.message) }}
+                    <button type="submit" class="btn btn-primary">Envoyer la demande</button>
+                {{ form_end(requestForm) }}
+            </section>
+
+            <section class="card mt-4">
+                <h2 class="h4">Historique de mes demandes</h2>
+                {% if resourceRequests is empty %}
+                    <p>Aucune demande envoyée.</p>
+                {% else %}
+                    <div class="table-wrap">
+                        <table class="table table--data">
+                            <thead>
+                                <tr>
+                                    <th>Objet</th>
+                                    <th>Statut</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in resourceRequests %}
+                                    <tr>
+                                        <td data-label="Objet">{{ item.subject }}</td>
+                                        <td data-label="Statut">{{ item.status|replace({'_': ' '})|title }}</td>
+                                        <td data-label="Date">{{ item.submittedAt|date('d/m/Y H:i') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+    </section>
+{% endblock %}

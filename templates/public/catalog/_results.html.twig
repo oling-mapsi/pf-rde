@@ -1,11 +1,3 @@
-<p class="result-count">
-    {{ catalog.total }} ressource{{ catalog.total > 1 ? 's' : '' }} trouvée{{ catalog.total > 1 ? 's' : '' }}
-    ({{ catalog.typeCounters.static }} cartothèque / {{ catalog.typeCounters.interactive }} interactives)
-    {% if catalog.totalPages > 1 %}
-        - page {{ catalog.page }} / {{ catalog.totalPages }}
-    {% endif %}
-</p>
-
 {% if catalog.items is empty %}
     <div class="empty-state data-state" role="status" aria-live="polite">
         <h2>Aucun résultat</h2>
@@ -18,36 +10,36 @@
     <div class="grid grid-3">
         {% for item in catalog.items %}
             {% set entryType = item.type %}
+            {% set entryTypeLabel = catalog.typeLabels[entryType] ?? 'Source de données' %}
             {% set entry = item.entity %}
-            {% if entryType == 'interactive' %}
-                <article class="card card--interactive card--catalog-item">
-                    <p class="card__meta">
-                        <span class="badge badge--theme">Carte interactive</span>
-                        <span class="badge badge--neutral">{{ entry.publishedAt ? entry.publishedAt|date('d/m/Y') : 'Brouillon' }}</span>
-                    </p>
-                    <h3 class="card__title"><a href="{{ path('app_interactive_map_show', { slug: entry.slug }) }}">{{ entry.title }}</a></h3>
-                    <p class="card__lead">{{ entry.summary ?: 'Visualisation cartographique interactive.' }}</p>
-                    <div class="dataset-meta">
-                        <span class="dataset-meta__item">{{ entry.layers|length }} couche(s)</span>
-                        <span class="dataset-meta__item">Web-SIG</span>
-                    </div>
-                    <p class="card__link"><a href="{{ path('app_interactive_map_show', { slug: entry.slug }) }}"><span>Ouvrir la carte</span></a></p>
-                </article>
-            {% else %}
-                <article class="card card--dataset card--catalog-item">
-                    <p class="card__meta">
-                        <span class="badge badge--theme">Donnée cartothèque</span>
-                        {% if entry.theme %}<span class="badge badge--neutral">{{ entry.theme }}</span>{% endif %}
-                    </p>
-                    <h3 class="card__title"><a href="{{ path('app_static_map_show', { slug: entry.slug }) }}">{{ entry.title }}</a></h3>
-                    <p class="card__lead">{{ entry.summary ?: (entry.description and entry.description|length > 130 ? entry.description|slice(0, 130) ~ '...' : (entry.description ?: 'Description non renseignée.')) }}</p>
-                    <div class="dataset-meta">
-                        <span class="dataset-meta__item">{{ entry.assets|length }} support(s)</span>
-                        <span class="dataset-meta__item">{{ entry.datasetResources|length }} dataset(s)</span>
-                    </div>
-                    <p class="card__link"><a href="{{ path('app_static_map_show', { slug: entry.slug }) }}"><span>Consulter la fiche</span></a></p>
-                </article>
+            {% set entryUrl = path('app_data_source_show', { slug: entry.slug }) %}
+            {% set entryCtaLabel = 'Consulter la fiche ressource' %}
+            {% set thumbnailSrc = entry.thumbnailPath %}
+            {% if thumbnailSrc and not (thumbnailSrc starts with 'http://' or thumbnailSrc starts with 'https://' or thumbnailSrc starts with '/') %}
+                {% set thumbnailSrc = '/uploads/data-sources/' ~ thumbnailSrc %}
             {% endif %}
+            <article class="card card--dataset card--catalog-item">
+                {% if thumbnailSrc %}
+                    <img class="card__img" src="{{ thumbnailSrc }}" alt="Illustration {{ entry.title }}">
+                {% endif %}
+                <p class="card__meta">
+                    <span class="badge badge--theme">{{ entryTypeLabel }}</span>
+                    {% if entry.iconKey %}
+                        {% include 'public/catalog/_source_icon.html.twig' with { iconKey: entry.iconKey, label: entryTypeLabel } only %}
+                    {% endif %}
+                    {% for category in entry.categories|slice(0, 2) %}
+                        <span class="badge badge--neutral">{{ category.name }}</span>
+                    {% endfor %}
+                    {% if entry.theme %}<span class="badge badge--neutral">{{ entry.theme }}</span>{% endif %}
+                </p>
+                <h3 class="card__title"><a href="{{ entryUrl }}">{{ entry.title }}</a></h3>
+                <p class="card__lead">{{ entry.summary ?: (entry.description and entry.description|length > 130 ? entry.description|slice(0, 130) ~ '...' : (entry.description ?: 'Description non renseignée.')) }}</p>
+                <div class="dataset-meta">
+                    <span class="dataset-meta__item">{{ entry.format ?: entryTypeLabel }}</span>
+                    {% if entry.license %}<span class="dataset-meta__item">{{ entry.license }}</span>{% endif %}
+                </div>
+                <p class="card__link"><a href="{{ entryUrl }}"><span>{{ entryCtaLabel }}</span></a></p>
+            </article>
         {% endfor %}
     </div>
 

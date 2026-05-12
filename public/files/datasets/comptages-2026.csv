@@ -1,0 +1,6 @@
+id_point;axe;commune;date_releve;heure;vehicules_legers;poids_lourds;vitesse_moyenne_kmh
+PT-001;RN1;Baie-Mahault;2026-03-14;08:00;1248;92;47.3
+PT-002;RN2;Le Gosier;2026-03-14;08:00;978;64;42.1
+PT-003;RN3;Basse-Terre;2026-03-14;08:00;756;58;39.8
+PT-004;RN4;Sainte-Anne;2026-03-14;08:00;1102;71;45.7
+PT-005;RN5;Pointe-a-Pitre;2026-03-14;08:00;1394;105;34.6

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UI\Api;
 
+use App\Application\Access\Service\VisibilityScopeResolver;
 use App\Application\Cartography\Service\InteractiveMapMockDataService;
 use App\Application\Interop\Sig\SigHealthcheckService;
 use App\Domain\Cartography\Entity\MapLayer;
@@ -18,6 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class InteractiveMapApiController extends AbstractController
 {
     public function __construct(
+        private readonly VisibilityScopeResolver $visibilityScopeResolver,
         #[Autowire('%env(string:MAP_BASEMAP_TILES_URL)%')]
         private readonly string $basemapTilesUrl,
         #[Autowire('%env(string:MAP_BASEMAP_ATTRIBUTION)%')]
@@ -34,7 +36,10 @@ final class InteractiveMapApiController extends AbstractController
         SigHealthcheckService $sigHealthcheckService,
         InteractiveMapMockDataService $dataService,
     ): JsonResponse {
-        $map = $repository->findOneBy(['slug' => $slug, 'status' => 'published']);
+        $map = $repository->findOnePublishedVisibleBySlug(
+            $slug,
+            $this->visibilityScopeResolver->resolveForUser($this->getUser()),
+        );
         if ($map === null) {
             return $this->json(['message' => 'Carte interactive introuvable.'], 404);
         }
@@ -95,7 +100,10 @@ final class InteractiveMapApiController extends AbstractController
         InteractiveMapRepository $repository,
         InteractiveMapMockDataService $dataService,
     ): JsonResponse {
-        $map = $repository->findOneBy(['slug' => $slug, 'status' => 'published']);
+        $map = $repository->findOnePublishedVisibleBySlug(
+            $slug,
+            $this->visibilityScopeResolver->resolveForUser($this->getUser()),
+        );
         if ($map === null) {
             return $this->json(['message' => 'Carte interactive introuvable.'], 404);
         }
@@ -117,7 +125,10 @@ final class InteractiveMapApiController extends AbstractController
         InteractiveMapRepository $repository,
         InteractiveMapMockDataService $dataService,
     ): JsonResponse {
-        $map = $repository->findOneBy(['slug' => $slug, 'status' => 'published']);
+        $map = $repository->findOnePublishedVisibleBySlug(
+            $slug,
+            $this->visibilityScopeResolver->resolveForUser($this->getUser()),
+        );
         if ($map === null) {
             return $this->json(['message' => 'Carte interactive introuvable.'], 404);
         }
@@ -132,7 +143,10 @@ final class InteractiveMapApiController extends AbstractController
         InteractiveMapRepository $repository,
         InteractiveMapMockDataService $dataService,
     ): JsonResponse {
-        $map = $repository->findOneBy(['slug' => $slug, 'status' => 'published']);
+        $map = $repository->findOnePublishedVisibleBySlug(
+            $slug,
+            $this->visibilityScopeResolver->resolveForUser($this->getUser()),
+        );
         if ($map === null) {
             return $this->json(['message' => 'Carte interactive introuvable.'], 404);
         }
@@ -155,7 +169,10 @@ final class InteractiveMapApiController extends AbstractController
         InteractiveMapRepository $repository,
         InteractiveMapMockDataService $dataService,
     ): JsonResponse {
-        $map = $repository->findOneBy(['slug' => $slug, 'status' => 'published']);
+        $map = $repository->findOnePublishedVisibleBySlug(
+            $slug,
+            $this->visibilityScopeResolver->resolveForUser($this->getUser()),
+        );
         if ($map === null) {
             return $this->json(['message' => 'Carte interactive introuvable.'], 404);
         }

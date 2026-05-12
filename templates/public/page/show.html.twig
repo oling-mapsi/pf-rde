@@ -19,7 +19,7 @@
                 <h1>{{ resolvedTitle }}</h1>
                 {% if page %}
                     {% if page.summary %}<p><strong>{{ page.summary }}</strong></p>{% endif %}
-                    <div>{{ page.content|nl2br }}</div>
+                    <div>{{ page.content|raw }}</div>
                 {% else %}
                     <p>Cette page n’est pas encore configurée.</p>
                 {% endif %}

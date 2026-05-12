@@ -12,7 +12,8 @@ security:
                 property: email
 
     role_hierarchy:
-        ROLE_AGENT: ROLE_USER
+        ROLE_EXTERNAL: ROLE_USER
+        ROLE_AGENT: ROLE_EXTERNAL
         ROLE_ADMIN: [ROLE_AGENT, ROLE_ALLOWED_TO_SWITCH]
 
     firewalls:
@@ -39,8 +40,13 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
+        - { path: ^/sso/connexion, roles: PUBLIC_ACCESS }
+        - { path: ^/sso/callback, roles: PUBLIC_ACCESS }
+        - { path: ^/inscription, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/agents, roles: ROLE_AGENT }
+        - { path: ^/espace-prive, roles: ROLE_EXTERNAL }
+        - { path: ^/extranet, roles: ROLE_EXTERNAL }
         - { path: ^/api/admin, roles: ROLE_ADMIN }
 
 when@test:

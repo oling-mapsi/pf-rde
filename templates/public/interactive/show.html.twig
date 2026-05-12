@@ -26,6 +26,12 @@
                 </p>
                 <h1 class="page-header__title">{{ map.title }}</h1>
                 <p class="page-header__lead">{{ map.summary ?: 'Visualisation cartographique dynamique du réseau routier.' }}</p>
+                {% if favoriteMeta.enabled %}
+                    <form method="post" action="{{ path('extranet_favorite_add', { kind: 'interactive_map', slug: map.slug }) }}" class="mt-3">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('favorite_add_interactive_map_' ~ map.slug) }}">
+                        <button type="submit" class="btn btn-outline">{{ favoriteMeta.isFavorite ? 'Déjà en favori' : 'Ajouter aux favoris' }}</button>
+                    </form>
+                {% endif %}
             </header>
 
             {% if degradedMode %}

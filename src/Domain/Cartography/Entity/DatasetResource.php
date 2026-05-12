@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Cartography\Entity;
 
+use App\Domain\Access\VisibilityScope;
 use App\Domain\Common\Entity\Traits\IdentifierTrait;
 use App\Domain\Common\Entity\Traits\MetadataTrait;
 use App\Domain\Common\Entity\Traits\TimestampableTrait;
@@ -41,6 +42,9 @@ class DatasetResource
 
     #[ORM\Column(type: Types::STRING, length: 160, nullable: true)]
     private ?string $license = null;
+
+    #[ORM\Column(type: Types::STRING, length: 16, options: ['default' => VisibilityScope::PUBLIC])]
+    private string $visibilityScope = VisibilityScope::PUBLIC;
 
     public function getStaticMap(): ?StaticMap
     {
@@ -122,6 +126,18 @@ class DatasetResource
     public function setLicense(?string $license): static
     {
         $this->license = $license;
+
+        return $this;
+    }
+
+    public function getVisibilityScope(): string
+    {
+        return $this->visibilityScope;
+    }
+
+    public function setVisibilityScope(string $visibilityScope): static
+    {
+        $this->visibilityScope = strtolower(trim($visibilityScope));
 
         return $this;
     }

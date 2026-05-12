@@ -1,0 +1,19 @@
+.ea-icon-choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 600;
+    color: #1f2937;
+    line-height: 1.2;
+}
+
+.ea-icon-choice .fa {
+    width: 1.1rem;
+    text-align: center;
+    color: #2f4f81;
+}
+
+.ea-icon-choice--empty {
+    color: #6b7280;
+    font-weight: 500;
+}

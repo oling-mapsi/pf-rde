@@ -9,6 +9,7 @@ use App\Domain\Agent\Entity\AgentRequest;
 use App\Domain\Agent\Entity\AgentRequestAttachment;
 use App\Infrastructure\Logging\AuditLogger;
 use App\Infrastructure\Repository\AgentRequestRepository;
+use App\Infrastructure\Repository\UserFavoriteRepository;
 use App\UI\Form\AgentRequestSubmissionType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,15 +26,20 @@ use Symfony\Component\Uid\Uuid;
 final class AgentController extends AbstractController
 {
     #[Route('', name: 'dashboard', methods: ['GET'])]
-    public function dashboard(AgentRequestRepository $agentRequestRepository): Response
+    public function dashboard(
+        AgentRequestRepository $agentRequestRepository,
+        UserFavoriteRepository $favoriteRepository,
+    ): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
         $requests = $agentRequestRepository->findBy(['requester' => $user], ['submittedAt' => 'DESC'], 20);
+        $favorites = $favoriteRepository->findLatestForUser($user);
 
         return $this->render('agent/dashboard.html.twig', [
             'requests' => $requests,
+            'favorites' => $favorites,
         ]);
     }
 

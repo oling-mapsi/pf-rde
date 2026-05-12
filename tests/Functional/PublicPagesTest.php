@@ -14,7 +14,16 @@ final class PublicPagesTest extends WebTestCase
         $client->request('GET', '/connexion');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('h1', 'Connexion espace agents');
+        self::assertSelectorTextContains('h1', 'Connexion espace privé');
+    }
+
+    public function testExternalRegistrationPageIsReachable(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/inscription');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Créer un compte externe');
     }
 
     public function testContactPageIsReachable(): void

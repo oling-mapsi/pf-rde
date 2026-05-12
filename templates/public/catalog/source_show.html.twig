@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ source.title }}{% endblock %}
+
+{% block body %}
+    {% set thumbnailSrc = source.thumbnailPath %}
+    {% if thumbnailSrc and not (thumbnailSrc starts with 'http://' or thumbnailSrc starts with 'https://' or thumbnailSrc starts with '/') %}
+        {% set thumbnailSrc = '/uploads/data-sources/' ~ thumbnailSrc %}
+    {% endif %}
+
+    <section class="page-shell">
+        <div class="container">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li><a href="{{ path('app_data_catalog') }}">Données et cartes</a></li>
+                    <li aria-current="page">{{ source.title }}</li>
+                </ol>
+            </nav>
+
+            <article class="detail-layout">
+                <header class="page-header">
+                    <p class="page-header__eyebrow">
+                        <span class="section-icon section-icon--orange" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        </span>
+                        <span>{{ source.sourceTypeLabel }}</span>
+                    </p>
+                    <p class="text-muted">Fiche complète de la ressource</p>
+                    <h1 class="page-header__title">{{ source.title }}</h1>
+                    {% if source.summary %}
+                        <p class="page-header__lead">{{ source.summary }}</p>
+                    {% endif %}
+                </header>
+
+                <section class="card">
+                    {% if thumbnailSrc %}
+                        <img class="card__img" src="{{ thumbnailSrc }}" alt="Illustration {{ source.title }}">
+                    {% endif %}
+
+                    {% if source.description %}
+                        <div class="content-prose">
+                            {{ source.description|nl2br }}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Description non renseignée.</p>
+                    {% endif %}
+
+                    <div class="dataset-meta mt-3">
+                        {% if source.iconKey %}
+                            {% include 'public/catalog/_source_icon.html.twig' with { iconKey: source.iconKey, label: source.sourceTypeLabel } only %}
+                        {% endif %}
+                        {% for category in source.categories %}
+                            <span class="dataset-meta__item">{{ category.name }}</span>
+                        {% endfor %}
+                        {% if source.theme %}<span class="dataset-meta__item">{{ source.theme }}</span>{% endif %}
+                        {% if source.format %}<span class="dataset-meta__item">{{ source.format }}</span>{% endif %}
+                        {% if source.license %}<span class="dataset-meta__item">{{ source.license }}</span>{% endif %}
+                        {% if source.publishedAt %}<span class="dataset-meta__item">Publié le {{ source.publishedAt|date('d/m/Y') }}</span>{% endif %}
+                    </div>
+
+                    <h2 class="h5 mt-4">Accès et contenus</h2>
+                    <dl class="meta-list">
+                        <div>
+                            <dt>Type</dt>
+                            <dd>{{ source.sourceTypeLabel }}</dd>
+                        </div>
+                        {% if source.filePath %}
+                            <div>
+                                <dt>Fichier principal</dt>
+                                <dd><code>{{ source.filePath }}</code></dd>
+                            </div>
+                        {% endif %}
+                        {% if source.sourceUrl %}
+                            <div>
+                                <dt>URL source</dt>
+                                <dd><code>{{ source.sourceUrl }}</code></dd>
+                            </div>
+                        {% endif %}
+                        {% if source.serviceEndpoint %}
+                            <div>
+                                <dt>Endpoint service</dt>
+                                <dd><code>{{ source.serviceEndpoint.baseUrl }}</code></dd>
+                            </div>
+                        {% endif %}
+                        {% if source.linkedStaticMap %}
+                            <div>
+                                <dt>Carte statique liée</dt>
+                                <dd>{{ source.linkedStaticMap.title }}</dd>
+                            </div>
+                        {% endif %}
+                        {% if source.linkedInteractiveMap %}
+                            <div>
+                                <dt>Carte interactive liée</dt>
+                                <dd>{{ source.linkedInteractiveMap.title }}</dd>
+                            </div>
+                        {% endif %}
+                    </dl>
+
+                    {% if primaryAccess.url %}
+                        {% set isExternalPrimary = primaryAccess.url starts with 'http://' or primaryAccess.url starts with 'https://' %}
+                        <p class="card__link mt-3">
+                            <a href="{{ primaryAccess.url }}"{% if isExternalPrimary %} target="_blank" rel="noopener noreferrer"{% endif %}><span>{{ primaryAccess.label }}</span></a>
+                        </p>
+                    {% elseif primaryAccess.reason %}
+                        <p class="text-muted mt-3">{{ primaryAccess.reason }}</p>
+                    {% endif %}
+
+                    {% if favoriteMeta.enabled %}
+                        <form method="post" action="{{ path('extranet_favorite_add', { kind: 'data_source', slug: source.slug }) }}" class="mt-3">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('favorite_add_data_source_' ~ source.slug) }}">
+                            <button type="submit" class="btn btn-outline">{{ favoriteMeta.isFavorite ? 'Déjà en favori' : 'Ajouter aux favoris' }}</button>
+                        </form>
+                    {% endif %}
+                </section>
+            </article>
+        </div>
+    </section>
+{% endblock %}

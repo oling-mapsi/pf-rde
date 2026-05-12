@@ -15,17 +15,19 @@ final class StaticMapCatalogService
     }
 
     /**
+     * @param list<string> $allowedScopes
+     *
      * @return array{items: list<StaticMap>, total: int, page: int, perPage: int, totalPages: int, themes: list<string>}
      */
-    public function search(StaticMapSearchCriteria $criteria): array
+    public function search(StaticMapSearchCriteria $criteria, array $allowedScopes): array
     {
-        $result = $this->staticMapRepository->searchPublished($criteria);
+        $result = $this->staticMapRepository->searchPublished($criteria, $allowedScopes);
         $totalPages = (int) max(1, (int) ceil($result['total'] / max(1, $result['perPage'])));
 
         return [
             ...$result,
             'totalPages' => $totalPages,
-            'themes' => $this->staticMapRepository->findAvailableThemes(),
+            'themes' => $this->staticMapRepository->findAvailableThemes($allowedScopes),
         ];
     }
 }

@@ -19,6 +19,43 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 class TaxonomyTerm
 {
+    public const MAP_THEME_TAXONOMY = 'map_theme';
+
+    public const ICON_CHOICES = [
+        'Map - Cartographie' => 'map',
+        'Layers - Couches' => 'layers',
+        'Database - Donnees' => 'database',
+        'Chart - Indicateurs' => 'chart',
+        'Business - Activite' => 'business',
+        'Briefcase - Metier' => 'briefcase',
+        'Building - Institution' => 'building',
+        'Handshake - Partenariat' => 'handshake',
+        'Digital - Numerique' => 'digital',
+        'SI - Systeme d information' => 'si',
+        'SIG - Geomatique' => 'sig',
+        'Network - Reseau' => 'network',
+        'Cloud - Cloud' => 'cloud',
+        'Server - Serveur' => 'server',
+        'Code - Developpement' => 'code',
+        'Route - Reseau routier' => 'route',
+        'Roadwork - Travaux' => 'roadwork',
+        'Transport - Mobilite' => 'transport',
+        'Truck - Camion' => 'truck',
+        'Car - Voiture' => 'car',
+        'Bus - Bus' => 'bus',
+        'Traffic - Trafic' => 'traffic',
+        'Bridge - Ouvrage' => 'bridge',
+        'Cone - Signalisation' => 'cone',
+        'Map Pin - Localisation' => 'map-pin',
+        'Satellite - Imagerie' => 'satellite',
+        'Compass - Orientation' => 'compass',
+        'Clipboard - Reporting' => 'clipboard',
+        'Wrench - Maintenance' => 'wrench',
+        'Globe - Territoire' => 'globe',
+        'Search - Recherche' => 'search',
+        'Download - Telechargement' => 'download',
+    ];
+
     use IdentifierTrait;
     use TimestampableTrait;
     use MetadataTrait;
@@ -123,8 +160,118 @@ class TaxonomyTerm
         return $this;
     }
 
+    public function getIconKey(): string
+    {
+        $icon = $this->readMetadataString('iconKey');
+
+        if ($icon === '' || !\in_array($icon, self::allowedIconKeys(), true)) {
+            return 'map';
+        }
+
+        return $icon;
+    }
+
+    public function setIconKey(?string $iconKey): static
+    {
+        $icon = strtolower(trim((string) $iconKey));
+        if ($icon === '' || !\in_array($icon, self::allowedIconKeys(), true)) {
+            $icon = 'map';
+        }
+
+        return $this->writeMetadataValue('iconKey', $icon);
+    }
+
+    public function getColorHex(): string
+    {
+        $color = strtoupper($this->readMetadataString('colorHex'));
+        if ($color === '') {
+            return '#3CB4DF';
+        }
+        if (!str_starts_with($color, '#')) {
+            $color = '#'.$color;
+        }
+        if (!preg_match('/^#[0-9A-F]{6}$/', $color)) {
+            return '#3CB4DF';
+        }
+
+        return $color;
+    }
+
+    public function setColorHex(?string $colorHex): static
+    {
+        $color = strtoupper(trim((string) $colorHex));
+        if ($color === '') {
+            $color = '#3CB4DF';
+        }
+        if (!str_starts_with($color, '#')) {
+            $color = '#'.$color;
+        }
+        if (!preg_match('/^#[0-9A-F]{6}$/', $color)) {
+            $color = '#3CB4DF';
+        }
+
+        return $this->writeMetadataValue('colorHex', $color);
+    }
+
+    public function isFeaturedOnHomepage(): bool
+    {
+        $value = $this->readMetadataValue('featuredOnHomepage');
+
+        return \is_bool($value) ? $value : false;
+    }
+
+    public function setFeaturedOnHomepage(bool $featuredOnHomepage): static
+    {
+        return $this->writeMetadataValue('featuredOnHomepage', $featuredOnHomepage);
+    }
+
+    public function getPosition(): int
+    {
+        $value = $this->readMetadataValue('position');
+        if (\is_int($value)) {
+            return $value;
+        }
+        if (\is_string($value) && is_numeric($value)) {
+            return (int) $value;
+        }
+
+        return 0;
+    }
+
+    public function setPosition(int $position): static
+    {
+        return $this->writeMetadataValue('position', $position);
+    }
+
     public function __toString(): string
     {
         return $this->label;
+    }
+
+    /** @return list<string> */
+    public static function allowedIconKeys(): array
+    {
+        return array_values(self::ICON_CHOICES);
+    }
+
+    private function readMetadataString(string $key): string
+    {
+        $value = $this->readMetadataValue($key);
+
+        return \is_string($value) ? trim($value) : '';
+    }
+
+    private function readMetadataValue(string $key): mixed
+    {
+        return $this->metadata[$key] ?? null;
+    }
+
+    private function writeMetadataValue(string $key, mixed $value): static
+    {
+        $metadata = $this->metadata ?? [];
+        $metadata[$key] = $value;
+        $this->metadata = $metadata;
+
+        return $this;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UI\Api;
 
+use App\Application\Access\Service\VisibilityScopeResolver;
 use App\Application\Cartography\DTO\StaticMapSearchCriteria;
 use App\Application\Cartography\Service\StaticMapCatalogService;
 use App\Domain\Cartography\Entity\StaticMap;
@@ -15,11 +16,18 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/static-maps', name: 'api_static_maps_')]
 final class StaticMapApiController extends AbstractController
 {
+    public function __construct(private readonly VisibilityScopeResolver $visibilityScopeResolver)
+    {
+    }
+
     #[Route('', name: 'search', methods: ['GET'])]
     public function search(Request $request, StaticMapCatalogService $catalogService): JsonResponse
     {
         $criteria = StaticMapSearchCriteria::fromRequest($request);
-        $catalog = $catalogService->search($criteria);
+        $catalog = $catalogService->search(
+            $criteria,
+            $this->visibilityScopeResolver->resolveForUser($this->getUser()),
+        );
 
         return $this->json([
             'items' => array_map($this->normalizeMap(...), $catalog['items']),
@@ -36,7 +44,10 @@ final class StaticMapApiController extends AbstractController
     {
         $criteria = StaticMapSearchCriteria::fromRequest($request);
         $criteria = new StaticMapSearchCriteria($criteria->query, [], null, 1, 8);
-        $catalog = $catalogService->search($criteria);
+        $catalog = $catalogService->search(
+            $criteria,
+            $this->visibilityScopeResolver->resolveForUser($this->getUser()),
+        );
 
         $suggestions = array_map(static fn (StaticMap $map): array => [
             'title' => $map->getTitle(),

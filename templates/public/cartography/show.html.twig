@@ -55,6 +55,13 @@
                             </div>
                         </dl>
                     {% endif %}
+
+                    {% if favoriteMeta.enabled %}
+                        <form method="post" action="{{ path('extranet_favorite_add', { kind: 'static_map', slug: map.slug }) }}" class="mt-3">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('favorite_add_static_map_' ~ map.slug) }}">
+                            <button type="submit" class="btn btn-outline">{{ favoriteMeta.isFavorite ? 'Déjà en favori' : 'Ajouter aux favoris' }}</button>
+                        </form>
+                    {% endif %}
                 </article>
 
                 <aside class="resource-side">
@@ -91,11 +98,11 @@
                             </span>
                             <span>Jeux de données associés</span>
                         </h2>
-                        {% if map.datasetResources is empty %}
+                        {% if visibleDatasets is empty %}
                             <p>Aucun dataset associé.</p>
                         {% else %}
                             <ul class="download-list">
-                                {% for dataset in map.datasetResources %}
+                                {% for dataset in visibleDatasets %}
                                     <li>
                                         <span>
                                             <strong>{{ dataset.label }}</strong><br>

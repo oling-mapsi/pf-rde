@@ -21,91 +21,417 @@
                 </p>
                 <h1 class="page-header__title">Données et cartes</h1>
                 <p class="page-header__lead">
-                    Interface unique pour rechercher et trier les ressources de la cartothèque
-                    et les cartes interactives.
+                    Interface unique pour rechercher et trier les sources de données,
+                    les services cartographiques et les cartes publiées.
                 </p>
             </header>
 
             <section
                 class="card"
-                data-controller="catalog"
-                data-catalog-autocomplete-url-value="{{ path('api_catalog_autocomplete') }}"
-                data-action="click->catalog#paginate click->catalog#retry"
+                id="catalog-panel"
             >
-                <form class="filters filters--catalog" method="get" action="{{ path('app_data_catalog') }}" data-catalog-target="form" data-action="submit->catalog#submit">
-                    <fieldset class="filters__group">
-                        <legend class="filters__legend">Filtrer les ressources</legend>
-                        <div class="filters__grid">
-                            <div>
-                                <label for="q">Recherche</label>
-                                <input id="q" type="search" name="q" value="{{ criteria.query ?? '' }}" autocomplete="off" data-action="input->catalog#typeSearch" placeholder="Titre, mot-clé, commune, thématique...">
-                                <ul class="search-suggestions" data-catalog-target="suggestions" aria-live="polite"></ul>
-                            </div>
-                            <div>
-                                <p id="type-facets-label" class="filters__facet-label">Type de ressource</p>
-                                <div class="filters__facet-list" role="group" aria-labelledby="type-facets-label">
-                                    <label class="filters__facet-option">
-                                        <input type="checkbox" name="type[]" value="static" data-action="change->catalog#changeFilter" {% if 'static' in (criteria.types ?? []) %}checked{% endif %}>
-                                        <span>Données cartothèque ({{ catalog.typeCounters.static }})</span>
-                                    </label>
-                                    <label class="filters__facet-option">
-                                        <input type="checkbox" name="type[]" value="interactive" data-action="change->catalog#changeFilter" {% if 'interactive' in (criteria.types ?? []) %}checked{% endif %}>
-                                        <span>Cartes interactives ({{ catalog.typeCounters.interactive }})</span>
-                                    </label>
+                <div class="catalog-layout">
+                    <aside class="catalog-layout__filters" aria-label="Filtres des ressources">
+                        <form id="catalog-filters-form" class="filters filters--catalog" method="get" action="{{ path('app_data_catalog') }}">
+                            <fieldset class="filters__group">
+                                <legend class="filters__legend">Filtrer les ressources</legend>
+                                <div class="filters__grid">
+                                    <div>
+                                        <label for="q">Recherche</label>
+                                        <input id="q" type="search" name="q" value="{{ criteria.query ?? '' }}" autocomplete="off" placeholder="Titre, mot-clé, commune, thématique...">
+                                        <ul class="search-suggestions" id="catalog-search-suggestions" aria-live="polite"></ul>
+                                    </div>
+                                    <div>
+                                        <p id="type-facets-label" class="filters__facet-label">Type de source</p>
+                                        <div class="filters__facet-list" role="group" aria-labelledby="type-facets-label">
+                                            {% for typeValue, typeLabel in catalog.typeLabels %}
+                                                <label class="filters__facet-option" data-facet-option="type" data-value="{{ typeValue }}">
+                                                    <input type="checkbox" name="type[]" value="{{ typeValue }}" data-label="{{ typeLabel }}" {% if typeValue in (criteria.types ?? []) %}checked{% endif %}>
+                                                    <span class="filters__facet-text">{{ typeLabel }}</span>
+                                                    <span class="filters__facet-count" data-facet-count="type" data-value="{{ typeValue }}">{{ catalog.typeCounters[typeValue] ?? 0 }}</span>
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="filters__field filters__field--span-2">
+                                        <p id="category-facets-label" class="filters__facet-label">Catégories</p>
+                                        <div class="filters__facet-list" role="group" aria-labelledby="category-facets-label">
+                                            {% for category in catalog.categories %}
+                                                <label class="filters__facet-option" data-facet-option="category" data-value="{{ category.slug }}">
+                                                    <input type="checkbox" name="category[]" value="{{ category.slug }}" data-label="{{ category.name }}" {% if category.slug in (criteria.categories ?? []) %}checked{% endif %}>
+                                                    <span class="filters__facet-text">{{ category.name }}</span>
+                                                    <span class="filters__facet-count" data-facet-count="category" data-value="{{ category.slug }}">{{ catalog.categoryCounters[category.slug] ?? 0 }}</span>
+                                                </label>
+                                            {% else %}
+                                                <span class="text-muted">Aucune catégorie disponible.</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="filters__field filters__field--span-2">
+                                        <p id="theme-facets-label" class="filters__facet-label">Thèmes cartothèque</p>
+                                        <div class="filters__facet-list" role="group" aria-labelledby="theme-facets-label">
+                                            {% for theme in catalog.themes %}
+                                                <label class="filters__facet-option" data-facet-option="theme" data-value="{{ theme }}">
+                                                    <input type="checkbox" name="theme[]" value="{{ theme }}" data-label="{{ theme }}" {% if theme in (criteria.themes ?? []) %}checked{% endif %}>
+                                                    <span class="filters__facet-text">{{ theme }}</span>
+                                                    <span class="filters__facet-count" data-facet-count="theme" data-value="{{ theme }}">{{ catalog.themeCounters[theme] ?? 0 }}</span>
+                                                </label>
+                                            {% else %}
+                                                <span class="text-muted">Aucun thème disponible.</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="per_page">Ressources par page</label>
+                                        <select id="per_page" name="per_page">
+                                            {% for option in [6, 9, 12, 24] %}
+                                                <option value="{{ option }}" {% if criteria.perPage == option %}selected{% endif %}>{{ option }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
                                 </div>
+                            </fieldset>
+                            <div class="filters__actions">
+                                <a id="catalog-reset-link" href="{{ path('app_data_catalog') }}" class="btn btn-outline">Réinitialiser</a>
+                                <noscript>
+                                    <button type="submit" class="btn btn-primary">Appliquer les filtres</button>
+                                </noscript>
                             </div>
-                            <div class="filters__field filters__field--span-2">
-                                <p id="theme-facets-label" class="filters__facet-label">Thèmes cartothèque</p>
-                                <div class="filters__facet-list" role="group" aria-labelledby="theme-facets-label">
-                                    {% for theme in catalog.themes %}
-                                        <label class="filters__facet-option">
-                                            <input type="checkbox" name="theme[]" value="{{ theme }}" data-action="change->catalog#changeFilter" {% if theme in (criteria.themes ?? []) %}checked{% endif %}>
-                                            <span>{{ theme }}</span>
-                                        </label>
-                                    {% else %}
-                                        <span class="text-muted">Aucun thème disponible.</span>
+                        </form>
+                    </aside>
+
+                    <div class="catalog-layout__results">
+                        <div class="catalog-results-head">
+                            <p class="result-count" id="catalog-live-status" aria-live="polite">
+                                {{ catalog.total }} source{{ catalog.total > 1 ? 's' : '' }} trouvée{{ catalog.total > 1 ? 's' : '' }}
+                                {% if catalog.totalPages > 1 %}
+                                    - page {{ catalog.page }} / {{ catalog.totalPages }}
+                                {% endif %}
+                            </p>
+                            <div class="filters__active catalog-results-head__filters" id="catalog-active-filters" aria-live="polite">
+                                {% set typeValues = [] %}
+                                {% for selectedType in criteria.types ?? [] %}
+                                    {% set typeValues = typeValues|merge([catalog.typeLabels[selectedType] ?? selectedType]) %}
+                                {% endfor %}
+
+                                {% set categoryValues = [] %}
+                                {% for selectedCategory in criteria.categories ?? [] %}
+                                    {% set selectedCategoryLabel = selectedCategory %}
+                                    {% for category in catalog.categories %}
+                                        {% if category.slug == selectedCategory %}
+                                            {% set selectedCategoryLabel = category.name %}
+                                        {% endif %}
                                     {% endfor %}
-                                </div>
-                            </div>
-                            <div>
-                                <label for="per_page">Ressources par page</label>
-                                <select id="per_page" name="per_page" data-action="change->catalog#changeFilter">
-                                    {% for option in [6, 9, 12, 24] %}
-                                        <option value="{{ option }}" {% if criteria.perPage == option %}selected{% endif %}>{{ option }}</option>
-                                    {% endfor %}
-                                </select>
+                                    {% set categoryValues = categoryValues|merge([selectedCategoryLabel]) %}
+                                {% endfor %}
+
+                                {% set themeValues = [] %}
+                                {% for selectedTheme in criteria.themes ?? [] %}
+                                    {% set themeValues = themeValues|merge([selectedTheme]) %}
+                                {% endfor %}
+
+                                {% if criteria.query %}
+                                    <span class="filter-chip"><span class="filter-chip__key">Recherche:</span> {{ criteria.query }}</span>
+                                {% endif %}
+                                {% if typeValues is not empty %}
+                                    <span class="filter-chip"><span class="filter-chip__key">Type de source:</span> {{ typeValues|join(', ') }}</span>
+                                {% endif %}
+                                {% if categoryValues is not empty %}
+                                    <span class="filter-chip"><span class="filter-chip__key">Catégorie:</span> {{ categoryValues|join(', ') }}</span>
+                                {% endif %}
+                                {% if themeValues is not empty %}
+                                    <span class="filter-chip"><span class="filter-chip__key">Thèmes cartothèque:</span> {{ themeValues|join(', ') }}</span>
+                                {% endif %}
+                                {% if criteria.perPage is defined and criteria.perPage != 9 %}
+                                    <span class="filter-chip"><span class="filter-chip__key">Cartothèque:</span> {{ criteria.perPage }} / page</span>
+                                {% endif %}
+                                {% if not criteria.query and typeValues is empty and categoryValues is empty and themeValues is empty and (criteria.perPage is not defined or criteria.perPage == 9) %}
+                                    <span class="text-muted">Aucun filtre actif.</span>
+                                {% endif %}
                             </div>
                         </div>
-                    </fieldset>
-                    <div class="filters__actions">
-                        <button type="submit" class="btn btn-primary">Appliquer les filtres</button>
-                        <a href="{{ path('app_data_catalog') }}" class="btn btn-outline">Réinitialiser</a>
+                        <div id="catalog-results">
+                            {% include 'public/catalog/_results.html.twig' with { catalog: catalog, criteria: criteria } %}
+                        </div>
                     </div>
-                    <div class="filters__active" data-catalog-target="activeFilters" aria-live="polite">
-                        {% if criteria.query %}
-                            <span class="filter-chip"><span class="filter-chip__key">Recherche:</span> {{ criteria.query }}</span>
-                        {% endif %}
-                        {% for selectedType in criteria.types ?? [] %}
-                            <span class="filter-chip"><span class="filter-chip__key">Type:</span> {{ selectedType == 'interactive' ? 'Carte interactive' : 'Cartothèque' }}</span>
-                        {% endfor %}
-                        {% for selectedTheme in criteria.themes ?? [] %}
-                            <span class="filter-chip"><span class="filter-chip__key">Thème:</span> {{ selectedTheme }}</span>
-                        {% endfor %}
-                        {% if criteria.perPage is defined and criteria.perPage != 9 %}
-                            <span class="filter-chip"><span class="filter-chip__key">Par page:</span> {{ criteria.perPage }}</span>
-                        {% endif %}
-                        {% if not criteria.query and (criteria.types ?? []) is empty and (criteria.themes ?? []) is empty and (criteria.perPage is not defined or criteria.perPage == 9) %}
-                            <span class="text-muted">Aucun filtre actif.</span>
-                        {% endif %}
-                    </div>
-                </form>
-
-                <p class="result-count" data-catalog-target="status" aria-live="polite"></p>
-
-                <div data-catalog-target="results">
-                    {% include 'public/catalog/_results.html.twig' with { catalog: catalog, criteria: criteria } %}
                 </div>
             </section>
         </div>
     </section>
+
+    <style>
+        @media (min-width: 56em) {
+            .page-shell.page-shell--catalog #catalog-panel > .catalog-layout {
+                display: grid !important;
+                grid-template-columns: minmax(16rem, 1fr) minmax(0, 3fr) !important;
+                gap: 1rem !important;
+                align-items: start !important;
+            }
+
+            .page-shell.page-shell--catalog #catalog-panel .catalog-layout__filters {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .page-shell.page-shell--catalog #catalog-panel .catalog-layout__results {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .page-shell.page-shell--catalog #catalog-panel .catalog-layout__filters .filters--catalog {
+                position: sticky;
+                top: 5.6rem;
+                margin-bottom: 0;
+            }
+
+            .page-shell.page-shell--catalog #catalog-panel .catalog-layout__filters .filters--catalog .filters__grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .page-shell.page-shell--catalog #catalog-panel .catalog-layout__filters .filters__field--span-2 {
+                grid-column: auto !important;
+            }
+
+            .page-shell.page-shell--catalog #catalog-panel .catalog-layout__results #catalog-results .grid.grid-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            }
+        }
+    </style>
+
+    <script>
+        (() => {
+            if (window.__rdgCatalogAjaxReady) {
+                return;
+            }
+            window.__rdgCatalogAjaxReady = true;
+
+            const form = document.getElementById('catalog-filters-form');
+            const panel = document.getElementById('catalog-panel');
+            const results = document.getElementById('catalog-results');
+            const status = document.getElementById('catalog-live-status');
+            const resetLink = document.getElementById('catalog-reset-link');
+            const searchInput = document.getElementById('q');
+            const activeFilters = document.getElementById('catalog-active-filters');
+            const suggestions = document.getElementById('catalog-search-suggestions');
+
+            if (!form || !results || !status) {
+                return;
+            }
+
+            let debounceHandle = null;
+            let requestSerial = 0;
+            let activeController = null;
+
+            const escapeHtml = (value) => String(value)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+
+            const formatResultCount = (total, page, totalPages) => {
+                const nTotal = Number.isFinite(Number(total)) ? Number(total) : 0;
+                const nPage = Number.isFinite(Number(page)) ? Number(page) : 1;
+                const nTotalPages = Number.isFinite(Number(totalPages)) ? Number(totalPages) : 1;
+                let text = `${nTotal} source${nTotal > 1 ? 's' : ''} trouvée${nTotal > 1 ? 's' : ''}`;
+                if (nTotalPages > 1) {
+                    text += ` - page ${nPage} / ${nTotalPages}`;
+                }
+
+                return text;
+            };
+
+            const buildUrlFromForm = () => {
+                const url = new URL(form.action, window.location.origin);
+                const data = new FormData(form);
+
+                for (const [key, value] of data.entries()) {
+                    if (typeof value !== 'string') {
+                        continue;
+                    }
+
+                    const trimmed = value.trim();
+                    if (trimmed === '') {
+                        continue;
+                    }
+
+                    if (key.endsWith('[]')) {
+                        url.searchParams.append(key, trimmed);
+                    } else {
+                        url.searchParams.set(key, trimmed);
+                    }
+                }
+
+                return url;
+            };
+
+            const syncActiveFilters = () => {
+                if (!activeFilters) {
+                    return;
+                }
+
+                const chips = [];
+                const query = (searchInput?.value || '').trim();
+                if (query !== '') {
+                    chips.push(`<span class="filter-chip"><span class="filter-chip__key">Recherche:</span> ${escapeHtml(query)}</span>`);
+                }
+
+                const typeValues = Array.from(form.querySelectorAll('input[name="type[]"]:checked'))
+                    .map((input) => input.dataset.label?.trim() || input.value)
+                    .filter((value) => value !== '');
+                if (typeValues.length > 0) {
+                    chips.push(`<span class="filter-chip"><span class="filter-chip__key">Type de source:</span> ${typeValues.map((value) => escapeHtml(value)).join(', ')}</span>`);
+                }
+
+                const categoryValues = Array.from(form.querySelectorAll('input[name="category[]"]:checked'))
+                    .map((input) => input.dataset.label?.trim() || input.value)
+                    .filter((value) => value !== '');
+                if (categoryValues.length > 0) {
+                    chips.push(`<span class="filter-chip"><span class="filter-chip__key">Catégorie:</span> ${categoryValues.map((value) => escapeHtml(value)).join(', ')}</span>`);
+                }
+
+                const themeValues = Array.from(form.querySelectorAll('input[name="theme[]"]:checked'))
+                    .map((input) => input.dataset.label?.trim() || input.value)
+                    .filter((value) => value !== '');
+                if (themeValues.length > 0) {
+                    chips.push(`<span class="filter-chip"><span class="filter-chip__key">Thèmes cartothèque:</span> ${themeValues.map((value) => escapeHtml(value)).join(', ')}</span>`);
+                }
+
+                const perPage = form.querySelector('[name="per_page"]')?.value || '9';
+                if (perPage !== '9') {
+                    chips.push(`<span class="filter-chip"><span class="filter-chip__key">Cartothèque:</span> ${escapeHtml(perPage)} / page</span>`);
+                }
+
+                activeFilters.innerHTML = chips.length > 0 ? chips.join('') : '<span class="text-muted">Aucun filtre actif.</span>';
+            };
+
+            const updateFacetCounts = (facetName, counters) => {
+                if (!counters || typeof counters !== 'object') {
+                    return;
+                }
+
+                form.querySelectorAll(`[data-facet-count="${facetName}"]`).forEach((node) => {
+                    const key = node.getAttribute('data-value') || '';
+                    node.textContent = String(counters[key] ?? 0);
+                });
+            };
+
+            const setLoadingState = (isLoading, message = '') => {
+                if (isLoading) {
+                    panel?.classList.add('is-loading');
+                    status.textContent = message || 'Mise à jour des résultats...';
+                    results.setAttribute('aria-busy', 'true');
+                    return;
+                }
+
+                panel?.classList.remove('is-loading');
+                status.textContent = message;
+                results.removeAttribute('aria-busy');
+            };
+
+            const refreshFromUrl = async (url, pushState = true) => {
+                const fetchUrl = new URL(url.toString());
+                fetchUrl.searchParams.set('partial', '1');
+                fetchUrl.searchParams.set('ajax', '1');
+                const currentSerial = ++requestSerial;
+
+                if (activeController) {
+                    activeController.abort();
+                }
+                activeController = new AbortController();
+
+                setLoadingState(true);
+
+                try {
+                    const response = await fetch(fetchUrl.toString(), {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        signal: activeController.signal,
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('fetch_failed');
+                    }
+
+                    const payload = await response.json();
+                    if (currentSerial !== requestSerial) {
+                        return;
+                    }
+
+                    const html = typeof payload?.html === 'string' ? payload.html : '';
+                    results.innerHTML = html;
+                    updateFacetCounts('type', payload?.typeCounters || {});
+                    updateFacetCounts('category', payload?.categoryCounters || {});
+                    updateFacetCounts('theme', payload?.themeCounters || {});
+                    setLoadingState(false, formatResultCount(payload?.total ?? 0, payload?.page ?? 1, payload?.totalPages ?? 1));
+                    syncActiveFilters();
+
+                    if (pushState) {
+                        const cleanUrl = new URL(fetchUrl.toString());
+                        cleanUrl.searchParams.delete('partial');
+                        cleanUrl.searchParams.delete('ajax');
+                        window.history.replaceState({}, '', cleanUrl.toString());
+                    }
+                } catch (error) {
+                    if (error instanceof DOMException && error.name === 'AbortError') {
+                        return;
+                    }
+                    setLoadingState(false, 'Erreur de chargement.');
+                } finally {
+                    if (currentSerial !== requestSerial) {
+                        return;
+                    }
+                    panel?.classList.remove('is-loading');
+                }
+            };
+
+            const refreshFromForm = () => refreshFromUrl(buildUrlFromForm(), true);
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                refreshFromForm();
+            });
+
+            form.querySelectorAll('input[type="checkbox"], select').forEach((field) => {
+                field.addEventListener('change', () => {
+                    refreshFromForm();
+                });
+            });
+
+            if (searchInput) {
+                searchInput.addEventListener('input', () => {
+                    if (debounceHandle) {
+                        clearTimeout(debounceHandle);
+                    }
+                    debounceHandle = window.setTimeout(() => {
+                        refreshFromForm();
+                    }, 280);
+                });
+            }
+
+            if (resetLink) {
+                resetLink.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    form.reset();
+                    if (suggestions) {
+                        suggestions.innerHTML = '';
+                    }
+                    refreshFromUrl(new URL(form.action, window.location.origin), true);
+                });
+            }
+
+            results.addEventListener('click', (event) => {
+                if (!(event.target instanceof Element)) {
+                    return;
+                }
+
+                const pageLink = event.target.closest('[data-page-link]');
+                if (!(pageLink instanceof HTMLAnchorElement)) {
+                    return;
+                }
+
+                event.preventDefault();
+                refreshFromUrl(new URL(pageLink.href), true);
+            });
+        })();
+    </script>
 {% endblock %}

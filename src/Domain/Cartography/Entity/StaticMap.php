@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Cartography\Entity;
 
+use App\Domain\Access\VisibilityScope;
 use App\Domain\Common\Entity\Traits\BlameableTrait;
 use App\Domain\Common\Entity\Traits\IdentifierTrait;
 use App\Domain\Common\Entity\Traits\MetadataTrait;
@@ -54,6 +55,9 @@ class StaticMap
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $thumbnailPath = null;
+
+    #[ORM\Column(type: Types::STRING, length: 16, options: ['default' => VisibilityScope::PUBLIC])]
+    private string $visibilityScope = VisibilityScope::PUBLIC;
 
     #[ORM\ManyToOne(targetEntity: MetadataRecord::class)]
     #[ORM\JoinColumn(onDelete: 'SET NULL', nullable: true)]
@@ -167,6 +171,18 @@ class StaticMap
     public function setThumbnailPath(?string $thumbnailPath): static
     {
         $this->thumbnailPath = $thumbnailPath;
+
+        return $this;
+    }
+
+    public function getVisibilityScope(): string
+    {
+        return $this->visibilityScope;
+    }
+
+    public function setVisibilityScope(string $visibilityScope): static
+    {
+        $this->visibilityScope = strtolower(trim($visibilityScope));
 
         return $this;
     }

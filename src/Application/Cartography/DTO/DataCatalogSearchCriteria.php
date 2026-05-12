@@ -4,16 +4,24 @@ declare(strict_types=1);
 
 namespace App\Application\Cartography\DTO;
 
+use App\Domain\Cartography\Entity\DataSource;
 use Symfony\Component\HttpFoundation\Request;
 
 final class DataCatalogSearchCriteria
 {
+    private const LEGACY_TYPE_ALIASES = [
+        'static' => DataSource::TYPE_STATIC_MAP,
+        'interactive' => DataSource::TYPE_CARTOGRAPHY_LINK,
+    ];
+
     /** @param list<string> $themes */
     public function __construct(
         public readonly ?string $query,
         public readonly array $themes,
-        /** @var list<'static'|'interactive'> */
+        /** @var list<string> */
         public readonly array $types,
+        /** @var list<string> */
+        public readonly array $categories,
         public readonly int $page,
         public readonly int $perPage,
     ) {
@@ -26,11 +34,14 @@ final class DataCatalogSearchCriteria
 
         $themes = self::normalizeStringList($rawParams['theme'] ?? []);
         $typesRaw = self::normalizeStringList($rawParams['type'] ?? []);
+        $categories = self::normalizeStringList($rawParams['category'] ?? []);
 
         $types = [];
+        $validTypes = array_flip(array_keys(DataSource::TYPE_LABELS));
         foreach ($typesRaw as $type) {
-            if ($type === 'static' || $type === 'interactive') {
-                $types[] = $type;
+            $normalizedType = self::LEGACY_TYPE_ALIASES[$type] ?? $type;
+            if (isset($validTypes[$normalizedType])) {
+                $types[] = $normalizedType;
             }
         }
         $types = array_values(array_unique($types));
@@ -42,6 +53,7 @@ final class DataCatalogSearchCriteria
             query: $query !== '' ? $query : null,
             themes: $themes,
             types: $types,
+            categories: $categories,
             page: $page,
             perPage: $perPage,
         );

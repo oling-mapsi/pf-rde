@@ -23,7 +23,7 @@ final class StaticMapSearchCriteriaTest extends TestCase
         $criteria = StaticMapSearchCriteria::fromRequest($request);
 
         self::assertSame('reseau', $criteria->query);
-        self::assertSame('Mobilite', $criteria->theme);
+        self::assertSame(['Mobilite'], $criteria->themes);
         self::assertSame(2025, $criteria->year);
         self::assertSame(3, $criteria->page);
         self::assertSame(12, $criteria->perPage);

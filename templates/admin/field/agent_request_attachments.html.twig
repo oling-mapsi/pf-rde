@@ -1,0 +1,19 @@
+{% set attachments = field.value %}
+
+{% if attachments is empty %}
+    <span class="text-muted">Aucune pièce jointe</span>
+{% elseif ea().crud.currentAction == 'detail' %}
+    <div class="d-flex flex-column gap-2">
+        {% for attachment in attachments %}
+            {% set size = attachment.sizeBytes %}
+            {% set sizeLabel = size >= 1048576 ? (size / 1048576)|number_format(1, ',', ' ') ~ ' Mo' : (size / 1024)|number_format(0, ',', ' ') ~ ' Ko' %}
+            <a class="d-inline-flex align-items-center gap-2" href="{{ path('admin_agent_request_attachment_download', { id: attachment.id }) }}">
+                <i class="fa fa-paperclip" aria-hidden="true"></i>
+                <span>{{ attachment.originalName }}</span>
+                <span class="text-muted">({{ sizeLabel }}, {{ attachment.mimeType }})</span>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <span class="badge badge-secondary">{{ attachments|length }}</span>
+{% endif %}

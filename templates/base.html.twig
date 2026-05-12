@@ -7,6 +7,94 @@
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
+        <style>
+            #site-main-nav .main-nav__account-menu {
+                min-width: 20rem;
+                max-width: min(24rem, calc(100vw - 2rem));
+                padding: 0.82rem 0.65rem 0.65rem;
+                border: 1px solid rgba(16, 16, 16, 0.14);
+                border-radius: 0.9rem;
+                background: linear-gradient(180deg, rgba(250, 253, 255, 0.98), rgba(255, 255, 255, 0.98));
+                box-shadow: 0 20px 42px rgba(16, 16, 16, 0.18);
+            }
+
+            #site-main-nav .main-nav__account-summary {
+                display: grid;
+                grid-template-columns: 2.4rem minmax(0, 1fr);
+                align-items: center;
+                gap: 0.78rem;
+                margin: 0.16rem 0.2rem 0.5rem;
+                padding: 0.78rem 0.8rem;
+                border: 1px solid rgba(56, 180, 231, 0.28);
+                border-radius: 0.78rem;
+                background: linear-gradient(120deg, rgba(56, 180, 231, 0.12), rgba(14, 140, 96, 0.08));
+            }
+
+            #site-main-nav .main-nav__account-avatar {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 2.3rem;
+                height: 2.3rem;
+                margin: 0;
+                border: 1px solid rgba(255, 255, 255, 0.72);
+                border-radius: 999px;
+                color: #fff;
+                background: linear-gradient(135deg, var(--rdg-brand-secondary), var(--rdg-brand-accent-3));
+                box-shadow: 0 6px 16px rgba(16, 16, 16, 0.18);
+                font-size: 0.8rem;
+                font-weight: 800;
+                letter-spacing: 0.05em;
+                line-height: 1;
+                text-transform: uppercase;
+            }
+
+            #site-main-nav .main-nav__account-kicker {
+                margin: 0 0 0.12rem;
+                color: var(--color-text-muted);
+                font-size: 0.72rem;
+                font-weight: 700;
+                letter-spacing: 0.03em;
+                text-transform: uppercase;
+            }
+
+            #site-main-nav .main-nav__account-name {
+                margin: 0;
+                color: var(--color-text-heading);
+                font-size: 0.98rem;
+                font-weight: 700;
+                line-height: 1.25;
+                word-break: break-word;
+            }
+
+            #site-main-nav .main-nav__account-type {
+                display: inline-flex;
+                width: fit-content;
+                margin: 0.45rem 0 0;
+                padding: 0.2rem 0.55rem;
+                border-radius: var(--radius-pill);
+                border: 1px solid rgba(56, 180, 231, 0.28);
+                color: #0d5f78;
+                background: rgba(255, 255, 255, 0.92);
+                font-size: 0.72rem;
+                font-weight: 700;
+                letter-spacing: 0.02em;
+                line-height: 1.25;
+                text-transform: uppercase;
+            }
+
+            #site-main-nav .main-nav__account-divider {
+                display: block;
+                height: 1px;
+                margin: 0.12rem 0.2rem 0.4rem;
+                background: linear-gradient(90deg, rgba(56, 180, 231, 0.45), rgba(16, 16, 16, 0.12) 42%, rgba(16, 16, 16, 0.06));
+            }
+
+            #site-main-nav .main-nav__account-actions {
+                display: grid;
+                gap: 0.18rem;
+            }
+        </style>
     </head>
     {% set currentRoute = app.request.attributes.get('_route')|default('') %}
     {% set isCatalogRoute = currentRoute == 'app_data_catalog' or currentRoute starts with 'app_static_map_' or currentRoute starts with 'app_interactive_map_' %}
@@ -35,25 +123,64 @@
                 </button>
 
                 <nav id="site-main-nav" class="main-nav" aria-label="Navigation principale" hidden>
+                    <a class="main-nav__link {{ currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' ? 'is-active' : '' }}" href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}" {{ currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' ? 'aria-current="page"' : '' }}>Présentation</a>
                     <a class="main-nav__link {{ isCatalogRoute ? 'is-active' : '' }}" href="{{ path('app_data_catalog') }}" {{ isCatalogRoute ? 'aria-current="page"' : '' }}>Données et cartes</a>
-                    <a class="main-nav__link {{ currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' ? 'is-active' : '' }}" href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}" {{ currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' ? 'aria-current="page"' : '' }}>La démarche</a>
                     <a class="main-nav__link {{ currentRoute starts with 'app_content_news_' ? 'is-active' : '' }}" href="{{ path('app_content_news_index') }}" {{ currentRoute starts with 'app_content_news_' ? 'aria-current="page"' : '' }}>Actualités</a>
-                    <a
-                        class="main-nav__icon-link {{ currentRoute starts with 'agent_' or currentRoute == 'app_login' ? 'is-active' : '' }}"
-                        href="{{ is_granted('ROLE_AGENT') ? path('agent_dashboard') : path('app_login') }}"
-                        aria-label="{{ is_granted('ROLE_AGENT') ? 'Espace agents' : 'Connexion agents' }}"
-                        title="{{ is_granted('ROLE_AGENT') ? 'Espace agents' : 'Connexion agents' }}"
-                    >
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span class="main-nav__icon-label">{{ is_granted('ROLE_AGENT') ? 'Espace agents' : 'Connexion agents' }}</span>
-                    </a>
+                    <span class="main-nav__separator" aria-hidden="true"></span>
+
                     {% if app.user %}
-                        <form method="post" action="{{ path('app_logout') }}" class="main-nav__logout-form">
-                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                            <button type="submit" class="main-nav__link main-nav__logout-button">Déconnexion</button>
-                        </form>
+                        {% set accountDisplayName = app.user.displayName ?: app.user.email %}
+                        <div class="main-nav__account {{ currentRoute starts with 'agent_' or currentRoute starts with 'extranet_' ? 'is-active' : '' }}">
+                            <button
+                                type="button"
+                                class="main-nav__account-toggle"
+                                aria-label="Ouvrir le menu utilisateur"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                title="{{ accountDisplayName }}"
+                            >
+                                <span class="main-nav__account-trigger-name">{{ accountDisplayName }}</span>
+                                <span class="main-nav__account-trigger-caret" aria-hidden="true">▾</span>
+                            </button>
+
+                            <div class="main-nav__account-menu" role="menu" aria-label="Menu utilisateur">
+                                {% set accountParts = accountDisplayName|trim|replace({'-': ' '})|split(' ') %}
+                                {% set firstInitial = accountParts|first ? accountParts|first|slice(0, 1)|upper : '' %}
+                                {% set lastInitial = accountParts|length > 1 ? accountParts|last|slice(0, 1)|upper : '' %}
+                                {% set accountInitials = (firstInitial ~ lastInitial)|trim %}
+                                {% if accountInitials == '' %}
+                                    {% set accountInitials = accountDisplayName|slice(0, 2)|upper %}
+                                {% endif %}
+                                <div class="main-nav__account-summary" role="note">
+                                    <span class="main-nav__account-avatar" aria-hidden="true">{{ accountInitials|slice(0, 2) }}</span>
+                                    <div class="main-nav__account-identity">
+                                        <p class="main-nav__account-kicker">Connecté en tant que</p>
+                                        <p class="main-nav__account-name">{{ accountDisplayName }}</p>
+                                        <p class="main-nav__account-type">{{ app.user.typeLabel|default('Utilisateur') }}</p>
+                                    </div>
+                                </div>
+                                <div class="main-nav__account-divider" role="separator" aria-hidden="true"></div>
+                                <div class="main-nav__account-actions">
+                                    <a class="main-nav__account-link" href="{{ path('app_private_home') }}" role="menuitem">Espace personnel</a>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        <a class="main-nav__account-link" href="{{ path('admin_dashboard') }}" role="menuitem">Espace administration</a>
+                                    {% endif %}
+                                    <form method="post" action="{{ path('app_logout') }}" class="main-nav__logout-form">
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                                        <button type="submit" class="main-nav__account-link main-nav__account-link--button" role="menuitem">Déconnexion</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a
+                            class="main-nav__link main-nav__auth-link {{ currentRoute == 'app_login' ? 'is-active' : '' }}"
+                            href="{{ path('app_login') }}"
+                            aria-label="Connexion"
+                            title="Connexion"
+                        >
+                            Connexion
+                        </a>
                     {% endif %}
                 </nav>
             </div>
@@ -87,10 +214,9 @@
                     <section class="footer-col">
                         <h2 class="footer-col__title">Portail</h2>
                         <ul class="footer-links">
-                            <li><a href="{{ path('app_home') }}">Accueil</a></li>
                             <li><a href="{{ path('app_data_catalog') }}">Données et cartes</a></li>
-                            <li><a href="{{ path('app_data_catalog', { type: ['static'] }) }}">Cartothèque statique</a></li>
-                            <li><a href="{{ path('app_data_catalog', { type: ['interactive'] }) }}">Cartes interactives</a></li>
+                            <li><a href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}">La démarche</a></li>
+                            <li><a href="{{ path('app_content_news_index') }}">Actualités</a></li>
                             <li><a href="{{ path('app_content_partners') }}">Partenaires et financeurs</a></li>
                         </ul>
                     </section>
@@ -109,8 +235,8 @@
                         <h2 class="footer-col__title">Support</h2>
                         <ul class="footer-links">
                             <li><a href="{{ path('app_contact') }}">Formulaire de contact</a></li>
-                            {% if is_granted('ROLE_AGENT') %}
-                                <li><a href="{{ path('agent_dashboard') }}">Tableau de bord agents</a></li>
+                            {% if app.user %}
+                                <li><a href="{{ path('app_private_home') }}">Mon espace privé</a></li>
                                 <li>
                                     <form method="post" action="{{ path('app_logout') }}" class="footer-logout-form">
                                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
@@ -118,7 +244,8 @@
                                     </form>
                                 </li>
                             {% else %}
-                                <li><a href="{{ path('app_login') }}">Accès espace agents</a></li>
+                                <li><a href="{{ path('app_login') }}">Accès espace privé</a></li>
+                                <li><a href="{{ path('app_register_external') }}">Inscription externe</a></li>
                             {% endif %}
                         </ul>
                     </section>
@@ -211,8 +338,11 @@
                 const hideToggleDistance = 64;
                 const pinnedClass = 'is-nav-pinned';
                 const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+                const accountMenu = header.querySelector('.main-nav__account');
+                const accountToggle = header.querySelector('.main-nav__account-toggle');
 
                 let isMobileMenuOpen = false;
+                let isAccountMenuOpen = false;
                 let isHeaderCollapsed = header.classList.contains('is-nav-collapsed');
                 let lastY = Math.max(window.scrollY, 0);
                 let lastToggleY = lastY;
@@ -257,6 +387,16 @@
                     }
 
                     setHeaderHeightVar();
+                };
+
+                const setAccountMenuState = (isOpen) => {
+                    if (!(accountMenu instanceof HTMLElement) || !(accountToggle instanceof HTMLButtonElement)) {
+                        return;
+                    }
+
+                    isAccountMenuOpen = isOpen;
+                    accountMenu.classList.toggle('is-open', isOpen);
+                    accountToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
                 };
 
                 const showDesktopHeader = ({ pinned = false } = {}) => {
@@ -342,6 +482,14 @@
                     setMobileMenuState(!isMobileMenuOpen);
                 });
 
+                if (accountToggle instanceof HTMLButtonElement && accountMenu instanceof HTMLElement) {
+                    accountToggle.addEventListener('click', (event) => {
+                        event.preventDefault();
+
+                        setAccountMenuState(!isAccountMenuOpen);
+                    });
+                }
+
                 menu.addEventListener('click', (event) => {
                     if (mediaQuery.matches || !isMobileMenuOpen) {
                         return;
@@ -354,6 +502,10 @@
                 });
 
                 document.addEventListener('pointerdown', (event) => {
+                    if (isAccountMenuOpen && accountMenu instanceof HTMLElement && !accountMenu.contains(event.target)) {
+                        setAccountMenuState(false);
+                    }
+
                     if (mediaQuery.matches || !isMobileMenuOpen) {
                         return;
                     }
@@ -367,6 +519,15 @@
                     if (event.key === 'Escape' && isMobileMenuOpen && !mediaQuery.matches) {
                         event.preventDefault();
                         setMobileMenuState(false, { restoreFocus: true });
+                        return;
+                    }
+
+                    if (event.key === 'Escape' && isAccountMenuOpen) {
+                        event.preventDefault();
+                        setAccountMenuState(false);
+                        if (accountToggle instanceof HTMLButtonElement) {
+                            accountToggle.focus();
+                        }
                         return;
                     }
 

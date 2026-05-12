@@ -3,7 +3,6 @@
 {% block title %}Espace agents{% endblock %}
 
 {% block body %}
-    {% set latestRequest = requests|first %}
     <section class="page-shell page-shell--agent">
         <div class="container">
             <nav class="breadcrumb" aria-label="Fil d'Ariane">
@@ -36,8 +35,8 @@
                     <span class="kpi-card__icon section-icon section-icon--blue" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none"><path d="M6 3v4M18 3v4M4 9h16M5 6h14v15H5z" stroke="currentColor" stroke-width="1.8"/></svg>
                     </span>
-                    <p class="kpi-card__label">Dernière mise à jour</p>
-                    <p class="kpi-card__value">{{ latestRequest ? latestRequest.submittedAt|date('d/m/Y') : 'N/A' }}</p>
+                    <p class="kpi-card__label">Favoris</p>
+                    <p class="kpi-card__value">{{ favorites|length }}</p>
                 </article>
                 <article class="kpi-card">
                     <span class="kpi-card__icon section-icon section-icon--green" aria-hidden="true">
@@ -45,10 +44,36 @@
                     </span>
                     <p class="kpi-card__label">Action rapide</p>
                     <p><a class="btn btn-primary" href="{{ path('agent_request_new') }}">Nouvelle demande</a></p>
+                    <p class="mt-2"><a class="btn btn-outline" href="{{ path('app_account_change_password') }}">Changer mon mot de passe</a></p>
                     {% if is_granted('ROLE_ADMIN') %}
                         <p class="mt-2"><a class="btn btn-outline" href="{{ path('admin_dashboard') }}">Accéder au backoffice admin</a></p>
                     {% endif %}
                 </article>
+            </section>
+
+            <section class="card mt-4">
+                <h2 class="h4">Mes favoris</h2>
+                {% if favorites is empty %}
+                    <p>Aucun favori pour le moment.</p>
+                {% else %}
+                    <ul class="download-list">
+                        {% for favorite in favorites %}
+                            <li>
+                                <span>
+                                    <strong>{{ favorite.resourceTitle }}</strong><br>
+                                    <small>{{ favorite.kindLabel }}</small>
+                                </span>
+                                <span>
+                                    <a class="btn btn-outline" href="{{ favorite.resourceUrl }}">Ouvrir</a>
+                                    <form method="post" action="{{ path('extranet_favorite_remove', { id: favorite.id }) }}">
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('favorite_remove_' ~ favorite.id) }}">
+                                        <button type="submit" class="btn btn-outline">Retirer</button>
+                                    </form>
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </section>
 
             <section class="card mt-4">

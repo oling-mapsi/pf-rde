@@ -42,8 +42,28 @@ export default class extends Controller {
         }, DEBOUNCE_MS);
     }
 
-    async changeFilter() {
+    async changeFilter(event) {
+        if (event?.target instanceof HTMLInputElement && event.target.name === 'q') {
+            return;
+        }
+
         await this.refresh(true);
+
+        if (
+            event?.target instanceof HTMLInputElement
+            && ['type[]', 'theme[]', 'category[]'].includes(event.target.name)
+        ) {
+            this.fetchSuggestions();
+        }
+    }
+
+    async resetFilters(event) {
+        event.preventDefault();
+        this.formTarget.reset();
+        if (this.hasSuggestionsTarget) {
+            this.suggestionsTarget.innerHTML = '';
+        }
+        await this.refreshFromUrl(new URL(this.formTarget.action, window.location.origin), true);
     }
 
     async retry(event) {
@@ -185,6 +205,9 @@ export default class extends Controller {
         this.formTarget.querySelectorAll('input[name="theme[]"]:checked').forEach((input) => {
             url.searchParams.append('theme[]', input.value);
         });
+        this.formTarget.querySelectorAll('input[name="category[]"]:checked').forEach((input) => {
+            url.searchParams.append('category[]', input.value);
+        });
 
         const currentSuggestionRequestId = ++this.suggestionRequestId;
 
@@ -249,15 +272,34 @@ export default class extends Controller {
         const types = Array.from(this.formTarget.querySelectorAll('input[name="type[]"]:checked'))
             .map((input) => input.value?.trim() ?? '')
             .filter((value) => value !== '');
+        const categories = Array.from(this.formTarget.querySelectorAll('input[name="category[]"]:checked'))
+            .map((input) => ({
+                value: input.value?.trim() ?? '',
+                label: input.closest('label')?.querySelector('span')?.textContent?.trim() ?? '',
+            }))
+            .filter((category) => category.value !== '');
         const perPage = this.formTarget.querySelector('[name="per_page"]')?.value?.trim() ?? '';
 
         const chips = [];
         if (query !== '') {
             chips.push(`<span class="filter-chip"><span class="filter-chip__key">Recherche:</span> ${this.escapeHtml(query)}</span>`);
         }
+        const typeLabels = {
+            cartography_link: 'Lien vers cartographie',
+            interactive: 'Lien vers cartographie',
+            wms: 'WMS',
+            wfs: 'WFS',
+            data_file: 'Fichier de données',
+            static_map: 'Carte statique',
+            static: 'Carte statique',
+        };
         types.forEach((type) => {
-            const typeLabel = type === 'interactive' ? 'Carte interactive' : 'Donnée cartothèque';
+            const typeLabel = typeLabels[type] || type;
             chips.push(`<span class="filter-chip"><span class="filter-chip__key">Type:</span> ${this.escapeHtml(typeLabel)}</span>`);
+        });
+        categories.forEach((category) => {
+            const label = category.label.replace(/\s+\(\d+\)$/, '');
+            chips.push(`<span class="filter-chip"><span class="filter-chip__key">Catégorie:</span> ${this.escapeHtml(label)}</span>`);
         });
         themes.forEach((theme) => {
             chips.push(`<span class="filter-chip"><span class="filter-chip__key">Thème:</span> ${this.escapeHtml(theme)}</span>`);

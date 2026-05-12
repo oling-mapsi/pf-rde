@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Cartography\Entity;
 
+use App\Domain\Access\VisibilityScope;
 use App\Domain\Common\Entity\Traits\BlameableTrait;
 use App\Domain\Common\Entity\Traits\IdentifierTrait;
 use App\Domain\Common\Entity\Traits\MetadataTrait;
@@ -47,6 +48,9 @@ class InteractiveMap
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $degradedModeMessage = null;
+
+    #[ORM\Column(type: Types::STRING, length: 16, options: ['default' => VisibilityScope::PUBLIC])]
+    private string $visibilityScope = VisibilityScope::PUBLIC;
 
     /** @var Collection<int, MapLayer> */
     #[ORM\OneToMany(mappedBy: 'interactiveMap', targetEntity: MapLayer::class, cascade: ['persist', 'remove'])]
@@ -137,6 +141,18 @@ class InteractiveMap
     public function setDegradedModeMessage(?string $degradedModeMessage): static
     {
         $this->degradedModeMessage = $degradedModeMessage;
+
+        return $this;
+    }
+
+    public function getVisibilityScope(): string
+    {
+        return $this->visibilityScope;
+    }
+
+    public function setVisibilityScope(string $visibilityScope): static
+    {
+        $this->visibilityScope = strtolower(trim($visibilityScope));
 
         return $this;
     }
