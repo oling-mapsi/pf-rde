@@ -64,7 +64,11 @@ final class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
-            return new RedirectResponse($targetPath);
+            if ($this->isAllowedTargetPath($targetPath, $token)) {
+                return new RedirectResponse($targetPath);
+            }
+
+            $this->removeTargetPath($request->getSession(), $firewallName);
         }
 
         if (in_array('ROLE_AGENT', $token->getRoleNames(), true) || in_array('ROLE_MANAGER', $token->getRoleNames(), true)) {
@@ -81,6 +85,35 @@ final class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     protected function getLoginUrl(Request $request): string
     {
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
+    }
+
+    private function isAllowedTargetPath(string $targetPath, TokenInterface $token): bool
+    {
+        $path = parse_url($targetPath, PHP_URL_PATH);
+        if (!is_string($path) || $path === '') {
+            return false;
+        }
+
+        $loginPath = $this->urlGenerator->generate(self::LOGIN_ROUTE);
+        if ($path === $loginPath) {
+            return false;
+        }
+
+        if (!str_starts_with($path, '/admin')) {
+            return true;
+        }
+
+        $roles = $token->getRoleNames();
+        if (in_array('ROLE_ADMIN', $roles, true)) {
+            return true;
+        }
+
+        if (!in_array('ROLE_MANAGER', $roles, true)) {
+            return false;
+        }
+
+        return str_starts_with($path, '/admin/agent-request')
+            || str_starts_with($path, '/admin/demandes-cartes/pieces-jointes');
     }
 
 }

@@ -29,10 +29,13 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 #[WithMonologChannel('audit')]
 final class SecurityController extends AbstractController
 {
+    use TargetPathTrait;
+
     public function __construct(
         private readonly Office365OidcClient $office365OidcClient,
         private readonly SsoRoleMapper $ssoRoleMapper,
@@ -56,6 +59,10 @@ final class SecurityController extends AbstractController
     {
         $user = $this->getUser();
         if ($user instanceof User && $this->isGranted('ROLE_USER')) {
+            $session = $this->requestStack->getSession();
+            if ($session !== null) {
+                $this->removeTargetPath($session, 'main');
+            }
             return $this->redirectToRoute('app_private_home');
         }
         if ($user instanceof User) {
@@ -341,6 +348,7 @@ final class SecurityController extends AbstractController
         $this->tokenStorage->setToken(null);
         $session = $this->requestStack->getSession();
         if ($session !== null) {
+            $this->removeTargetPath($session, 'main');
             $session->invalidate();
         }
     }
