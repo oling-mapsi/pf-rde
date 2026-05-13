@@ -22,9 +22,11 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -44,14 +46,20 @@ final class SecurityController extends AbstractController
         #[Autowire('%app.security.password_min_length%')]
         private readonly int $passwordMinLength,
         private readonly GodModeService $godModeService,
+        private readonly TokenStorageInterface $tokenStorage,
+        private readonly RequestStack $requestStack,
     ) {
     }
 
     #[Route('/connexion', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        if ($this->getUser() !== null) {
+        $user = $this->getUser();
+        if ($user instanceof User && $this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('app_private_home');
+        }
+        if ($user instanceof User) {
+            $this->resetInconsistentAuthenticationState();
         }
 
         return $this->render('security/login.html.twig', [
@@ -76,6 +84,9 @@ final class SecurityController extends AbstractController
 
         if ($authorizationChecker->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('extranet_dashboard');
+        }
+        if ($user instanceof User) {
+            $this->resetInconsistentAuthenticationState();
         }
 
         return $this->redirectToRoute('app_login');
@@ -323,5 +334,14 @@ final class SecurityController extends AbstractController
         }
 
         return $this->redirectToRoute('app_login');
+    }
+
+    private function resetInconsistentAuthenticationState(): void
+    {
+        $this->tokenStorage->setToken(null);
+        $session = $this->requestStack->getSession();
+        if ($session !== null) {
+            $session->invalidate();
+        }
     }
 }

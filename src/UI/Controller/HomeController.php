@@ -20,7 +20,7 @@ final class HomeController extends AbstractController
     ): Response
     {
         $user = $this->getUser();
-        if ($user instanceof User && !$godModeService->isPublicSimulation($user)) {
+        if ($user instanceof User && !$godModeService->isPublicSimulation($user) && $this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('app_private_home');
         }
 
