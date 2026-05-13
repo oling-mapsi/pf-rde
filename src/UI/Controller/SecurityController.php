@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\UI\Controller;
 
 use App\Application\Access\Service\SsoUserProvisioner;
+use App\Application\Access\Service\GodModeService;
 use App\Application\Access\Sso\SsoAuthenticationException;
 use App\Application\Access\Sso\Office365OidcClient;
 use App\Application\Access\Sso\SsoRoleMapper;
@@ -42,6 +43,7 @@ final class SecurityController extends AbstractController
         private readonly bool $verboseUserErrors,
         #[Autowire('%app.security.password_min_length%')]
         private readonly int $passwordMinLength,
+        private readonly GodModeService $godModeService,
     ) {
     }
 
@@ -67,15 +69,54 @@ final class SecurityController extends AbstractController
     #[Route('/espace-prive', name: 'app_private_home', methods: ['GET'])]
     public function privateHome(AuthorizationCheckerInterface $authorizationChecker): Response
     {
-        if ($authorizationChecker->isGranted('ROLE_AGENT')) {
-            return $this->redirectToRoute('agent_dashboard');
+        $user = $this->getUser();
+        if ($user instanceof User && $this->godModeService->isPublicSimulation($user)) {
+            return $this->redirectToRoute('app_home');
         }
 
-        if ($authorizationChecker->isGranted('ROLE_EXTERNAL')) {
+        if ($authorizationChecker->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('extranet_dashboard');
         }
 
         return $this->redirectToRoute('app_login');
+    }
+
+    #[Route('/espace-prive/mode-dieu/profil', name: 'app_god_mode_profile_switch', methods: ['POST'])]
+    public function switchGodModeProfile(Request $request): Response
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User || !$this->godModeService->isEligible($user)) {
+            throw $this->createAccessDeniedException('Mode Dieu non autorisé.');
+        }
+
+        if (!$this->isCsrfTokenValid('god_mode_profile_switch', (string) $request->request->get('_csrf_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+
+            return $this->redirectToRoute('app_private_home');
+        }
+
+        $requestedProfile = trim((string) $request->request->get('profile'));
+        if ($requestedProfile === '') {
+            $this->godModeService->clearCurrentProfile($user);
+            $this->addFlash('info', 'Simulation de profil désactivée.');
+
+            return $this->redirectToRoute('app_private_home');
+        }
+
+        if (!$this->godModeService->setCurrentProfile($user, $requestedProfile)) {
+            $this->addFlash('error', 'Profil de simulation invalide.');
+
+            return $this->redirectToRoute('app_private_home');
+        }
+
+        $profileLabel = $this->godModeService->getCurrentProfileLabel($user);
+        $this->addFlash('success', sprintf('Profil simulé actif: %s', $profileLabel ?? $requestedProfile));
+
+        if ($this->godModeService->isPublicSimulation($user)) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        return $this->redirectToRoute('app_private_home');
     }
 
     #[Route('/espace-prive/mot-de-passe', name: 'app_account_change_password', methods: ['GET', 'POST'])]

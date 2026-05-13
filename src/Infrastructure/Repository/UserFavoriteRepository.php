@@ -46,5 +46,24 @@ class UserFavoriteRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
-}
 
+    /**
+     * @return list<string>
+     */
+    public function findResourceSlugsForUserAndKind(User $user, string $resourceKind): array
+    {
+        $rows = $this->createQueryBuilder('f')
+            ->select('f.resourceSlug AS slug')
+            ->andWhere('f.user = :user')
+            ->andWhere('f.resourceKind = :kind')
+            ->setParameter('user', $user)
+            ->setParameter('kind', strtolower(trim($resourceKind)))
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_values(array_filter(array_map(
+            static fn (array $row): string => trim((string) ($row['slug'] ?? '')),
+            $rows,
+        )));
+    }
+}

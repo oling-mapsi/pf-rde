@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\UI\Controller;
 
 use App\Application\Access\Service\CatalogResourceLocator;
+use App\Application\Access\Service\GodModeService;
 use App\Application\Access\Service\VisibilityScopeResolver;
 use App\Domain\Access\Entity\ExternalResourceRequest;
 use App\Domain\Access\Entity\User;
@@ -14,6 +15,7 @@ use App\Infrastructure\Repository\UserFavoriteRepository;
 use App\UI\Form\ExternalResourceRequestType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +23,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/extranet', name: 'extranet_')]
-#[IsGranted('ROLE_EXTERNAL')]
+#[IsGranted('ROLE_USER')]
 final class ExtranetController extends AbstractController
 {
     #[Route('', name: 'dashboard', methods: ['GET', 'POST'])]
@@ -30,9 +32,15 @@ final class ExtranetController extends AbstractController
         EntityManagerInterface $entityManager,
         UserFavoriteRepository $favoriteRepository,
         ExternalResourceRequestRepository $externalResourceRequestRepository,
+        CatalogResourceLocator $catalogResourceLocator,
+        VisibilityScopeResolver $visibilityScopeResolver,
+        GodModeService $godModeService,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
+        if ($godModeService->isPublicSimulation($user)) {
+            return $this->redirectToRoute('app_home');
+        }
 
         $resourceRequest = (new ExternalResourceRequest())
             ->setRequester($user);
@@ -50,8 +58,18 @@ final class ExtranetController extends AbstractController
             return $this->redirectToRoute('extranet_dashboard');
         }
 
+        $effectiveUserType = $godModeService->getEffectiveUserType($user) ?? $user->getUserType();
+        $isAgentExtranet = \in_array($effectiveUserType, User::ssoAccountTypes(), true);
+        $allowedScopes = $visibilityScopeResolver->resolveForUser($user);
+        $favoriteCards = array_map(
+            fn (UserFavorite $favorite): array => $this->buildFavoriteCard($favorite, $catalogResourceLocator, $allowedScopes),
+            $favoriteRepository->findLatestForUser($user),
+        );
+
         return $this->render('extranet/dashboard.html.twig', [
-            'favorites' => $favoriteRepository->findLatestForUser($user),
+            'isAgentExtranet' => $isAgentExtranet,
+            'extranetTitle' => $isAgentExtranet ? 'Espace extranet agent' : 'Espace extranet professionnel',
+            'favorites' => $favoriteCards,
             'resourceRequests' => $externalResourceRequestRepository->findLatestForUser($user),
             'requestForm' => $form,
         ]);
@@ -131,5 +149,130 @@ final class ExtranetController extends AbstractController
 
         return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('extranet_dashboard'));
     }
-}
 
+    #[Route('/favoris/bascule/{kind}/{slug}', name: 'favorite_toggle', methods: ['POST'])]
+    public function toggleFavorite(
+        string $kind,
+        string $slug,
+        Request $request,
+        CatalogResourceLocator $catalogResourceLocator,
+        VisibilityScopeResolver $visibilityScopeResolver,
+        UserFavoriteRepository $favoriteRepository,
+        EntityManagerInterface $entityManager,
+    ): JsonResponse {
+        $tokenId = sprintf('favorite_toggle_%s_%s', $kind, $slug);
+        if (!$this->isCsrfTokenValid($tokenId, (string) $request->request->get('_csrf_token'))) {
+            return new JsonResponse([
+                'ok' => false,
+                'message' => 'Jeton de sécurité invalide.',
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $target = $catalogResourceLocator->findFavoriteTarget(
+            $kind,
+            $slug,
+            $visibilityScopeResolver->resolveForUser($user),
+        );
+        if ($target === null) {
+            return new JsonResponse([
+                'ok' => false,
+                'message' => 'Ressource introuvable ou non accessible.',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $existing = $favoriteRepository->findOneForUserAndResource($user, $target['kind'], $target['slug']);
+
+        if ($existing instanceof UserFavorite) {
+            $entityManager->remove($existing);
+            $entityManager->flush();
+
+            return new JsonResponse([
+                'ok' => true,
+                'isFavorite' => false,
+                'message' => 'Favori retiré.',
+            ]);
+        }
+
+        $favorite = (new UserFavorite())
+            ->setUser($user)
+            ->setResourceKind($target['kind'])
+            ->setResourceSlug($target['slug'])
+            ->setResourceTitle($target['title'])
+            ->setResourceUrl($target['url']);
+        $entityManager->persist($favorite);
+        $entityManager->flush();
+
+        return new JsonResponse([
+            'ok' => true,
+            'isFavorite' => true,
+            'message' => 'Favori ajouté.',
+        ]);
+    }
+
+    /**
+     * @param list<string> $allowedScopes
+     *
+     * @return array{id: int, resourceTitle: string, resourceUrl: string, kindLabel: string, thumbnailUrl: ?string}
+     */
+    private function buildFavoriteCard(
+        UserFavorite $favorite,
+        CatalogResourceLocator $catalogResourceLocator,
+        array $allowedScopes,
+    ): array {
+        $resolvedTarget = $catalogResourceLocator->findFavoriteTarget(
+            $favorite->getResourceKind(),
+            $favorite->getResourceSlug(),
+            $allowedScopes,
+        );
+
+        $resourceTitle = $favorite->getResourceTitle();
+        $resourceUrl = $favorite->getResourceUrl();
+        $thumbnailUrl = null;
+
+        if (\is_array($resolvedTarget)) {
+            $resourceTitle = trim((string) ($resolvedTarget['title'] ?? '')) ?: $resourceTitle;
+            $resourceUrl = trim((string) ($resolvedTarget['url'] ?? '')) ?: $resourceUrl;
+            $thumbnailUrl = $this->normalizeFavoriteThumbnailPath(
+                $favorite->getResourceKind(),
+                isset($resolvedTarget['thumbnailPath']) ? (string) $resolvedTarget['thumbnailPath'] : null,
+            );
+        }
+
+        return [
+            'id' => (int) ($favorite->getId() ?? 0),
+            'resourceTitle' => $resourceTitle,
+            'resourceUrl' => $resourceUrl,
+            'kindLabel' => $favorite->getKindLabel(),
+            'thumbnailUrl' => $thumbnailUrl,
+        ];
+    }
+
+    private function normalizeFavoriteThumbnailPath(string $resourceKind, ?string $thumbnailPath): ?string
+    {
+        $candidate = trim((string) $thumbnailPath);
+        if ($candidate === '') {
+            return null;
+        }
+
+        if (
+            str_starts_with($candidate, 'http://')
+            || str_starts_with($candidate, 'https://')
+            || str_starts_with($candidate, '/')
+        ) {
+            return $candidate;
+        }
+
+        if (str_starts_with($candidate, 'uploads/')) {
+            return '/'.ltrim($candidate, '/');
+        }
+
+        if (\in_array($resourceKind, [UserFavorite::KIND_DATA_SOURCE, UserFavorite::KIND_STATIC_MAP], true)) {
+            return '/uploads/data-sources/'.ltrim($candidate, '/');
+        }
+
+        return null;
+    }
+}

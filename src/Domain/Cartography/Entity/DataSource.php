@@ -399,6 +399,12 @@ class DataSource
                 ->addViolation();
         }
 
+        if ($this->sourceType === self::TYPE_CARTOGRAPHY_LINK && $sourceUrl === '' && $this->linkedInteractiveMap === null) {
+            $context->buildViolation('Pour une source de type cartographie, renseignez une URL ou liez une carte interactive.')
+                ->atPath('sourceUrl')
+                ->addViolation();
+        }
+
         if ($this->sourceType === self::TYPE_DATA_FILE && $filePath === '') {
             $context->buildViolation('Le chemin de fichier est obligatoire pour une source de type fichier de données.')
                 ->atPath('filePath')

@@ -1,104 +1,177 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon extranet{% endblock %}
+{% block title %}{{ extranetTitle }}{% endblock %}
 
 {% block body %}
     <section class="page-shell page-shell--agent">
         <div class="container">
-            <nav class="breadcrumb" aria-label="Fil d'Ariane">
-                <ol>
-                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
-                    <li aria-current="page">Mon extranet</li>
-                </ol>
-            </nav>
+            {% include 'extranet/_mini_hero.html.twig' with {
+                kicker: '',
+                title: extranetTitle,
+                lead: isAgentExtranet
+                    ? 'Bienvenue dans l’espace extranet agent. Accédez rapidement à vos ressources, favoris et demandes.'
+                    : 'Bienvenue dans l’espace extranet professionnel. Accédez rapidement à vos ressources, favoris et demandes.',
+                searchInputId: 'extranet-search-input',
+                placeholder: 'Rechercher une carte, un fichier, un service WMS/WFS...'
+            } only %}
 
-            <header class="page-header">
-                <p class="page-header__eyebrow">
-                    <span class="section-icon section-icon--blue" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </span>
-                    <span>Espace privé</span>
-                </p>
-                <h1 class="page-header__title">Mon extranet</h1>
-                <p class="page-header__lead">Gérez vos favoris et envoyez vos demandes de ressources complémentaires.</p>
-            </header>
+            <div class="extranet-layout">
+                <aside class="extranet-layout__sidebar">
+                    <section class="extranet-sidebar-actions" aria-label="Actions extranet">
+                        <button type="button" class="btn btn-primary js-open-request-modal">Demander une ressource</button>
+                        {% if isAgentExtranet %}
+                            <a class="btn btn-outline" href="{{ path('agent_request_new') }}">Demande interne SIG</a>
+                        {% endif %}
+                        {% if not isAgentExtranet %}
+                            <a class="btn btn-outline" href="{{ path('app_account_change_password') }}">Changer mon mot de passe</a>
+                        {% endif %}
+                    </section>
+                </aside>
 
-            <section class="dashboard-kpi">
-                <article class="kpi-card">
-                    <p class="kpi-card__label">Favoris</p>
-                    <p class="kpi-card__value">{{ favorites|length }}</p>
-                </article>
-                <article class="kpi-card">
-                    <p class="kpi-card__label">Demandes envoyées</p>
-                    <p class="kpi-card__value">{{ resourceRequests|length }}</p>
-                </article>
-                <article class="kpi-card">
-                    <p class="kpi-card__label">Mon compte</p>
-                    <p><a class="btn btn-outline" href="{{ path('app_account_change_password') }}">Changer mon mot de passe</a></p>
-                </article>
-            </section>
-
-            <section class="card mt-4">
-                <h2 class="h4">Mes favoris</h2>
-                {% if favorites is empty %}
-                    <p>Aucun favori pour le moment.</p>
-                {% else %}
-                    <ul class="download-list">
-                        {% for favorite in favorites %}
-                            <li>
-                                <span>
-                                    <strong>{{ favorite.resourceTitle }}</strong><br>
-                                    <small>{{ favorite.kindLabel }}</small>
-                                </span>
-                                <span>
-                                    <a class="btn btn-outline" href="{{ favorite.resourceUrl }}">Ouvrir</a>
-                                    <form method="post" action="{{ path('extranet_favorite_remove', { id: favorite.id }) }}">
-                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('favorite_remove_' ~ favorite.id) }}">
-                                        <button type="submit" class="btn btn-outline">Retirer</button>
-                                    </form>
-                                </span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </section>
-
-            <section class="card mt-4 form-panel">
-                <h2 class="h4">Demander une ressource supplémentaire</h2>
-                {{ form_start(requestForm) }}
-                    {{ form_row(requestForm.subject) }}
-                    {{ form_row(requestForm.message) }}
-                    <button type="submit" class="btn btn-primary">Envoyer la demande</button>
-                {{ form_end(requestForm) }}
-            </section>
-
-            <section class="card mt-4">
-                <h2 class="h4">Historique de mes demandes</h2>
-                {% if resourceRequests is empty %}
-                    <p>Aucune demande envoyée.</p>
-                {% else %}
-                    <div class="table-wrap">
-                        <table class="table table--data">
-                            <thead>
-                                <tr>
-                                    <th>Objet</th>
-                                    <th>Statut</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in resourceRequests %}
-                                    <tr>
-                                        <td data-label="Objet">{{ item.subject }}</td>
-                                        <td data-label="Statut">{{ item.status|replace({'_': ' '})|title }}</td>
-                                        <td data-label="Date">{{ item.submittedAt|date('d/m/Y H:i') }}</td>
-                                    </tr>
+                <div class="extranet-layout__main">
+                    <section class="card mt-4">
+                        <div class="extranet-section-header">
+                            <h2 class="h4 extranet-section-heading">
+                                <span>Mes favoris</span>
+                                <span class="extranet-count-badge">{{ favorites|length }}</span>
+                            </h2>
+                            <a class="extranet-section-link" href="{{ path('app_data_catalog') }}">Consulter toutes les données cartes</a>
+                        </div>
+                        {% if favorites is empty %}
+                            <p>Aucun favori pour le moment.</p>
+                        {% else %}
+                            <div class="favorite-catalog-list" role="list">
+                                {% for favorite in favorites %}
+                                    <article class="card card--catalog-reference favorite-catalog-card" role="listitem">
+                                        <div class="favorite-catalog-card__mini" aria-hidden="true">
+                                            {% if favorite.thumbnailUrl %}
+                                                <img class="favorite-catalog-card__thumb" src="{{ favorite.thumbnailUrl }}" alt="">
+                                            {% else %}
+                                                <span class="favorite-catalog-card__thumb-fallback"></span>
+                                            {% endif %}
+                                            <span class="catalog-card__category-badge">{{ favorite.kindLabel }}</span>
+                                        </div>
+                                        <div class="catalog-card__body">
+                                            <h3 class="card__title">
+                                                <a href="{{ favorite.resourceUrl }}">{{ favorite.resourceTitle }}</a>
+                                            </h3>
+                                            <div class="favorite-catalog-card__actions">
+                                                <a class="favorite-catalog-card__link" href="{{ favorite.resourceUrl }}">Consulter</a>
+                                                <form method="post" action="{{ path('extranet_favorite_remove', { id: favorite.id }) }}">
+                                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('favorite_remove_' ~ favorite.id) }}">
+                                                    <button type="submit" class="favorite-action-btn" aria-label="Retirer {{ favorite.resourceTitle }} des favoris" title="Retirer">
+                                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                            <path d="M3 6h18M8 6V4h8v2M10 11v6M14 11v6M6 6l1 14a1 1 0 0 0 1 .9h8a1 1 0 0 0 1-.9L18 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                        <span class="visually-hidden">Retirer</span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </article>
                                 {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% endif %}
-            </section>
+                            </div>
+                        {% endif %}
+                    </section>
+
+                    <section class="card mt-4">
+                        <h2 class="h4 extranet-section-heading">
+                            <span>Historique de mes demandes</span>
+                            <span class="extranet-count-badge">{{ resourceRequests|length }}</span>
+                        </h2>
+                        {% if resourceRequests is empty %}
+                            <p>Aucune demande envoyée.</p>
+                        {% else %}
+                            <div class="table-wrap">
+                                <table class="table table--data">
+                                    <thead>
+                                        <tr>
+                                            <th>Objet</th>
+                                            <th>Statut</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in resourceRequests %}
+                                            <tr>
+                                                <td data-label="Objet">{{ item.subject }}</td>
+                                                <td data-label="Statut">{{ item.status|replace({'_': ' '})|title }}</td>
+                                                <td data-label="Date">{{ item.submittedAt|date('d/m/Y H:i') }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </section>
+                </div>
+            </div>
+
+            <dialog class="extranet-modal" id="resource-request-modal" aria-labelledby="resource-request-modal-title">
+                <div class="extranet-modal__head">
+                    <h2 class="h4" id="resource-request-modal-title">Demander une ressource supplémentaire</h2>
+                    <button type="button" class="extranet-modal__close js-close-request-modal" aria-label="Fermer">×</button>
+                </div>
+                <div class="extranet-modal__body form-panel">
+                    {{ form_start(requestForm) }}
+                        {{ form_row(requestForm.subject) }}
+                        {{ form_row(requestForm.message) }}
+                        <div class="extranet-modal__actions">
+                            <button type="button" class="btn btn-outline js-close-request-modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Envoyer la demande</button>
+                        </div>
+                    {{ form_end(requestForm) }}
+                </div>
+            </dialog>
         </div>
     </section>
+
+    <script>
+        (() => {
+            const dialog = document.getElementById('resource-request-modal');
+            const openButtons = document.querySelectorAll('.js-open-request-modal');
+            const closeButtons = document.querySelectorAll('.js-close-request-modal');
+
+            if (!(dialog instanceof HTMLDialogElement)) {
+                return;
+            }
+
+            const openDialog = () => {
+                if (!dialog.open) {
+                    dialog.showModal();
+                }
+            };
+
+            const closeDialog = () => {
+                if (dialog.open) {
+                    dialog.close();
+                }
+            };
+
+            openButtons.forEach((button) => {
+                button.addEventListener('click', openDialog);
+            });
+
+            closeButtons.forEach((button) => {
+                button.addEventListener('click', closeDialog);
+            });
+
+            dialog.addEventListener('click', (event) => {
+                const bounds = dialog.getBoundingClientRect();
+                const clickedOutside =
+                    event.clientX < bounds.left ||
+                    event.clientX > bounds.right ||
+                    event.clientY < bounds.top ||
+                    event.clientY > bounds.bottom;
+
+                if (clickedOutside) {
+                    closeDialog();
+                }
+            });
+
+            {% if requestForm.vars.submitted and not requestForm.vars.valid %}
+            openDialog();
+            {% endif %}
+        })();
+    </script>
 {% endblock %}

@@ -40,8 +40,10 @@ final class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $roleAdmin = (new Role('Administrateur', 'ROLE_ADMIN'))->setDescription('Accès complet au back-office');
+        $roleManager = (new Role('Gestionnaire', 'ROLE_MANAGER'))->setDescription('Gestion des demandes cartographiques internes');
         $roleAgent = (new Role('Agent', 'ROLE_AGENT'))->setDescription('Accès aux demandes internes');
         $roleExternal = (new Role('Externe enregistré', 'ROLE_EXTERNAL'))->setDescription('Accès à l’espace privé externe');
+        $roleGod = (new Role('God mode', 'ROLE_GOD'))->setDescription('Accès super-administrateur avec simulation de profils');
 
         $admin = (new User())
             ->setEmail('admin@routesguadeloupe.local')
@@ -50,6 +52,7 @@ final class AppFixtures extends Fixture
             ->setAuthProvider(User::AUTH_PROVIDER_LOCAL)
             ->setIsActive(true)
             ->addRole($roleAdmin)
+            ->addRole($roleManager)
             ->addRole($roleAgent);
         $adminPassword = $_ENV['APP_FIXTURE_ADMIN_PASSWORD'] ?? 'Admin12345!';
         $admin->setPassword($this->passwordHasher->hashPassword($admin, $adminPassword));
@@ -63,6 +66,19 @@ final class AppFixtures extends Fixture
             ->addRole($roleAgent);
         $agentPassword = $_ENV['APP_FIXTURE_AGENT_PASSWORD'] ?? 'Agent12345!';
         $agent->setPassword($this->passwordHasher->hashPassword($agent, $agentPassword));
+
+        $godEmail = $_ENV['APP_GOD_MODE_EMAIL'] ?? 'florestan.rouet@oling.fr';
+        $god = (new User())
+            ->setEmail($godEmail)
+            ->setDisplayName('Flo')
+            ->setFirstName('Flo')
+            ->setLastName('God')
+            ->setUserType(User::TYPE_ADMIN_EXTERNAL)
+            ->setAuthProvider(User::AUTH_PROVIDER_LOCAL)
+            ->setIsActive(true)
+            ->addRole($roleGod);
+        $godPassword = $_ENV['APP_FIXTURE_GOD_PASSWORD'] ?? 'Flo';
+        $god->setPassword($this->passwordHasher->hashPassword($god, $godPassword));
 
         $external = (new User())
             ->setEmail('partenaire@routesguadeloupe.local')
@@ -79,11 +95,14 @@ final class AppFixtures extends Fixture
         $external->setPassword($this->passwordHasher->hashPassword($external, $externalPassword));
 
         $manager->persist($roleAdmin);
+        $manager->persist($roleManager);
         $manager->persist($roleAgent);
         $manager->persist($roleExternal);
+        $manager->persist($roleGod);
         $manager->persist($admin);
         $manager->persist($agent);
         $manager->persist($external);
+        $manager->persist($god);
 
         $presentation = (new Page())
             ->setSlug('presentation-portail')

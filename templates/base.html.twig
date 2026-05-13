@@ -7,94 +7,9 @@
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
-        <style>
-            #site-main-nav .main-nav__account-menu {
-                min-width: 20rem;
-                max-width: min(24rem, calc(100vw - 2rem));
-                padding: 0.82rem 0.65rem 0.65rem;
-                border: 1px solid rgba(16, 16, 16, 0.14);
-                border-radius: 0.9rem;
-                background: linear-gradient(180deg, rgba(250, 253, 255, 0.98), rgba(255, 255, 255, 0.98));
-                box-shadow: 0 20px 42px rgba(16, 16, 16, 0.18);
-            }
-
-            #site-main-nav .main-nav__account-summary {
-                display: grid;
-                grid-template-columns: 2.4rem minmax(0, 1fr);
-                align-items: center;
-                gap: 0.78rem;
-                margin: 0.16rem 0.2rem 0.5rem;
-                padding: 0.78rem 0.8rem;
-                border: 1px solid rgba(56, 180, 231, 0.28);
-                border-radius: 0.78rem;
-                background: linear-gradient(120deg, rgba(56, 180, 231, 0.12), rgba(14, 140, 96, 0.08));
-            }
-
-            #site-main-nav .main-nav__account-avatar {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 2.3rem;
-                height: 2.3rem;
-                margin: 0;
-                border: 1px solid rgba(255, 255, 255, 0.72);
-                border-radius: 999px;
-                color: #fff;
-                background: linear-gradient(135deg, var(--rdg-brand-secondary), var(--rdg-brand-accent-3));
-                box-shadow: 0 6px 16px rgba(16, 16, 16, 0.18);
-                font-size: 0.8rem;
-                font-weight: 800;
-                letter-spacing: 0.05em;
-                line-height: 1;
-                text-transform: uppercase;
-            }
-
-            #site-main-nav .main-nav__account-kicker {
-                margin: 0 0 0.12rem;
-                color: var(--color-text-muted);
-                font-size: 0.72rem;
-                font-weight: 700;
-                letter-spacing: 0.03em;
-                text-transform: uppercase;
-            }
-
-            #site-main-nav .main-nav__account-name {
-                margin: 0;
-                color: var(--color-text-heading);
-                font-size: 0.98rem;
-                font-weight: 700;
-                line-height: 1.25;
-                word-break: break-word;
-            }
-
-            #site-main-nav .main-nav__account-type {
-                display: inline-flex;
-                width: fit-content;
-                margin: 0.45rem 0 0;
-                padding: 0.2rem 0.55rem;
-                border-radius: var(--radius-pill);
-                border: 1px solid rgba(56, 180, 231, 0.28);
-                color: #0d5f78;
-                background: rgba(255, 255, 255, 0.92);
-                font-size: 0.72rem;
-                font-weight: 700;
-                letter-spacing: 0.02em;
-                line-height: 1.25;
-                text-transform: uppercase;
-            }
-
-            #site-main-nav .main-nav__account-divider {
-                display: block;
-                height: 1px;
-                margin: 0.12rem 0.2rem 0.4rem;
-                background: linear-gradient(90deg, rgba(56, 180, 231, 0.45), rgba(16, 16, 16, 0.12) 42%, rgba(16, 16, 16, 0.06));
-            }
-
-            #site-main-nav .main-nav__account-actions {
-                display: grid;
-                gap: 0.18rem;
-            }
-        </style>
+        {% if app.debug %}
+            <link rel="stylesheet" href="{{ path('app_dev_asset_style', { file: 'app.css' }) }}?v={{ 'now'|date('U') }}">
+        {% endif %}
     </head>
     {% set currentRoute = app.request.attributes.get('_route')|default('') %}
     {% set isCatalogRoute = currentRoute == 'app_data_catalog' or currentRoute starts with 'app_static_map_' or currentRoute starts with 'app_interactive_map_' %}
@@ -130,6 +45,12 @@
 
                     {% if app.user %}
                         {% set accountDisplayName = app.user.displayName ?: app.user.email %}
+                        {% set hasEffectiveAdmin = app_god_mode.hasEffectiveRole(app.user, 'ROLE_ADMIN') %}
+                        {% set hasEffectiveManager = app_god_mode.hasEffectiveRole(app.user, 'ROLE_MANAGER') %}
+                        {% set hasEffectiveAgent = app_god_mode.hasEffectiveRole(app.user, 'ROLE_AGENT') or app_god_mode.hasEffectiveRole(app.user, 'ROLE_MANAGER') %}
+                        {% set hasEffectiveExternal = app_god_mode.hasEffectiveRole(app.user, 'ROLE_EXTERNAL') %}
+                        {% set isGodModeEligible = app_god_mode.isEligible(app.user) %}
+                        {% set currentGodProfileKey = app_god_mode.getCurrentProfileKey(app.user) %}
                         <div class="main-nav__account {{ currentRoute starts with 'agent_' or currentRoute starts with 'extranet_' ? 'is-active' : '' }}">
                             <button
                                 type="button"
@@ -156,19 +77,44 @@
                                     <div class="main-nav__account-identity">
                                         <p class="main-nav__account-kicker">Connecté en tant que</p>
                                         <p class="main-nav__account-name">{{ accountDisplayName }}</p>
-                                        <p class="main-nav__account-type">{{ app.user.typeLabel|default('Utilisateur') }}</p>
+                                        <p class="main-nav__account-type">{{ app_god_mode.getEffectiveTypeLabel(app.user)|default('Utilisateur') }}</p>
                                     </div>
                                 </div>
                                 <div class="main-nav__account-divider" role="separator" aria-hidden="true"></div>
                                 <div class="main-nav__account-actions">
-                                    <a class="main-nav__account-link" href="{{ path('app_private_home') }}" role="menuitem">Espace personnel</a>
-                                    {% if is_granted('ROLE_ADMIN') %}
-                                        <a class="main-nav__account-link" href="{{ path('admin_dashboard') }}" role="menuitem">Espace administration</a>
-                                    {% endif %}
-                                    <form method="post" action="{{ path('app_logout') }}" class="main-nav__logout-form">
-                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                                        <button type="submit" class="main-nav__account-link main-nav__account-link--button" role="menuitem">Déconnexion</button>
-                                    </form>
+                                    <div class="main-nav__account-group" role="none">
+                                        {% if hasEffectiveAdmin %}
+                                            <a class="main-nav__account-link {{ currentRoute starts with 'agent_' ? 'is-current' : '' }}" href="{{ path('agent_dashboard') }}" role="menuitem">Espace agent</a>
+                                            <a class="main-nav__account-link {{ currentRoute starts with 'admin_' ? 'is-current' : '' }}" href="{{ path('admin_dashboard') }}" role="menuitem">Espace administrateur</a>
+                                        {% elseif hasEffectiveManager %}
+                                            <a class="main-nav__account-link {{ currentRoute starts with 'admin_dashboard_agent_request_' ? 'is-current' : '' }}" href="{{ path('admin_dashboard_agent_request_index') }}" role="menuitem">Espace gestionnaire</a>
+                                        {% elseif hasEffectiveAgent %}
+                                            <a class="main-nav__account-link {{ currentRoute starts with 'agent_' ? 'is-current' : '' }}" href="{{ path('agent_dashboard') }}" role="menuitem">Espace agent</a>
+                                        {% elseif hasEffectiveExternal %}
+                                            <a class="main-nav__account-link {{ currentRoute starts with 'extranet_' ? 'is-current' : '' }}" href="{{ path('app_private_home') }}" role="menuitem">Mon espace</a>
+                                        {% else %}
+                                            <a class="main-nav__account-link {{ currentRoute == 'app_home' ? 'is-current' : '' }}" href="{{ path('app_home') }}" role="menuitem">Accueil public</a>
+                                        {% endif %}
+                                        {% if isGodModeEligible %}
+                                            <div class="main-nav__account-god-switch">
+                                                <p class="main-nav__account-group-title">Mode Dieu</p>
+                                                <form method="post" action="{{ path('app_god_mode_profile_switch') }}" class="main-nav__god-mode-form">
+                                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('god_mode_profile_switch') }}">
+                                                    <select name="profile" class="main-nav__god-mode-select" aria-label="Profil simulé">
+                                                        <option value="" {{ currentGodProfileKey is empty ? 'selected' : '' }}>Profil réel ({{ app.user.typeLabel }})</option>
+                                                        {% for profileKey, profile in app_god_mode.getAvailableProfiles() %}
+                                                            <option value="{{ profileKey }}" {{ currentGodProfileKey == profileKey ? 'selected' : '' }}>{{ profile.label }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <button type="submit" class="btn btn-outline main-nav__god-mode-submit">Appliquer</button>
+                                                </form>
+                                            </div>
+                                        {% endif %}
+                                        <form method="post" action="{{ path('app_logout') }}" class="main-nav__logout-form">
+                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                                            <button type="submit" class="main-nav__account-link main-nav__account-link--button" role="menuitem">Déconnexion</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -215,7 +161,7 @@
                         <h2 class="footer-col__title">Portail</h2>
                         <ul class="footer-links">
                             <li><a href="{{ path('app_data_catalog') }}">Données et cartes</a></li>
-                            <li><a href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}">La démarche</a></li>
+                            <li><a href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}">Présentation</a></li>
                             <li><a href="{{ path('app_content_news_index') }}">Actualités</a></li>
                             <li><a href="{{ path('app_content_partners') }}">Partenaires et financeurs</a></li>
                         </ul>

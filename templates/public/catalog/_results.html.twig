@@ -14,31 +14,58 @@
             {% set entry = item.entity %}
             {% set entryUrl = path('app_data_source_show', { slug: entry.slug }) %}
             {% set entryCtaLabel = 'Consulter la fiche ressource' %}
+            {% set firstCategory = entry.categories|length > 0 ? (entry.categories|first) : null %}
+            {% set categoryBadge = firstCategory ? firstCategory.name : entryTypeLabel %}
+            {% set isFavorite = entry.slug in (favoriteSlugs ?? []) %}
             {% set thumbnailSrc = entry.thumbnailPath %}
             {% if thumbnailSrc and not (thumbnailSrc starts with 'http://' or thumbnailSrc starts with 'https://' or thumbnailSrc starts with '/') %}
                 {% set thumbnailSrc = '/uploads/data-sources/' ~ thumbnailSrc %}
             {% endif %}
-            <article class="card card--dataset card--catalog-item">
-                {% if thumbnailSrc %}
-                    <img class="card__img" src="{{ thumbnailSrc }}" alt="Illustration {{ entry.title }}">
-                {% endif %}
-                <p class="card__meta">
-                    <span class="badge badge--theme">{{ entryTypeLabel }}</span>
-                    {% if entry.iconKey %}
-                        {% include 'public/catalog/_source_icon.html.twig' with { iconKey: entry.iconKey, label: entryTypeLabel } only %}
+            <article class="card card--dataset card--catalog-item card--catalog-reference">
+                <div class="catalog-card__media">
+                    {% if thumbnailSrc %}
+                        <img class="card__img" src="{{ thumbnailSrc }}" alt="Illustration {{ entry.title }}">
+                    {% else %}
+                        <div class="catalog-card__placeholder" aria-hidden="true"></div>
                     {% endif %}
-                    {% for category in entry.categories|slice(0, 2) %}
-                        <span class="badge badge--neutral">{{ category.name }}</span>
-                    {% endfor %}
-                    {% if entry.theme %}<span class="badge badge--neutral">{{ entry.theme }}</span>{% endif %}
-                </p>
-                <h3 class="card__title"><a href="{{ entryUrl }}">{{ entry.title }}</a></h3>
-                <p class="card__lead">{{ entry.summary ?: (entry.description and entry.description|length > 130 ? entry.description|slice(0, 130) ~ '...' : (entry.description ?: 'Description non renseignée.')) }}</p>
-                <div class="dataset-meta">
-                    <span class="dataset-meta__item">{{ entry.format ?: entryTypeLabel }}</span>
-                    {% if entry.license %}<span class="dataset-meta__item">{{ entry.license }}</span>{% endif %}
+                    {% if is_granted('ROLE_USER') %}
+                        <button
+                            type="button"
+                            class="catalog-card__favorite{{ isFavorite ? ' is-active' : '' }}"
+                            data-favorite-toggle
+                            data-url="{{ path('extranet_favorite_toggle', { kind: 'data_source', slug: entry.slug }) }}"
+                            data-csrf="{{ csrf_token('favorite_toggle_data_source_' ~ entry.slug) }}"
+                            aria-pressed="{{ isFavorite ? 'true' : 'false' }}"
+                            aria-label="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}"
+                            title="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}"
+                        >
+                            <span aria-hidden="true">{{ isFavorite ? '★' : '☆' }}</span>
+                        </button>
+                    {% endif %}
+                    <span class="catalog-card__category-badge">{{ categoryBadge }}</span>
                 </div>
-                <p class="card__link"><a href="{{ entryUrl }}"><span>{{ entryCtaLabel }}</span></a></p>
+
+                <div class="catalog-card__body">
+                    <h3 class="card__title"><a href="{{ entryUrl }}">{{ entry.title }}</a></h3>
+                    <p class="card__lead">{{ entry.summary ?: (entry.description and entry.description|length > 180 ? entry.description|slice(0, 180) ~ '...' : (entry.description ?: 'Description non renseignée.')) }}</p>
+
+                    <ul class="catalog-card__meta-list" aria-label="Métadonnées de la ressource">
+                        <li>
+                            <span class="catalog-card__meta-icon" aria-hidden="true">▦</span>
+                            <span>{{ entryTypeLabel }}</span>
+                        </li>
+                        <li>
+                            <span class="catalog-card__meta-icon" aria-hidden="true">◷</span>
+                            <span>{{ entry.publishedAt ? 'Publié en ' ~ entry.publishedAt|date('Y') : 'Publication non renseignée' }}</span>
+                        </li>
+                        <li>
+                            <span class="catalog-card__meta-icon" aria-hidden="true">⟳</span>
+                            <span>{{ entry.license ?: 'Mises à jour selon publication' }}</span>
+                        </li>
+                    </ul>
+
+                    <p class="card__link"><a href="{{ entryUrl }}"><span>{{ entryCtaLabel }}</span></a></p>
+                </div>
             </article>
         {% endfor %}
     </div>

@@ -13,13 +13,14 @@ parameters:
     env(APP_SSO_O365_CLIENT_SECRET): ''
     env(APP_SSO_O365_SCOPE): 'openid profile email'
     env(APP_SSO_O365_ROLE_CLAIM): 'roles'
-    env(APP_SSO_O365_ROLE_MAP): '{"SIG_ADMIN":"ROLE_ADMIN","SIG_AGENT":"ROLE_AGENT"}'
+    env(APP_SSO_O365_ROLE_MAP): '{"SIG_ADMIN":"ROLE_ADMIN","SIG_MANAGER":"ROLE_MANAGER","SIG_AGENT":"ROLE_AGENT"}'
     env(APP_SSO_O365_DEFAULT_INTERNAL_ROLE): 'ROLE_AGENT'
     env(APP_SSO_O365_ALLOWED_TENANT_IDS): '[]'
     env(APP_SSO_O365_REQUIRE_ROLE_CLAIM): 'true'
     env(APP_SSO_O365_ALLOW_DEFAULT_ROLE_FALLBACK): 'false'
     env(APP_SSO_O365_DENY_IF_UNMAPPED_ROLES): 'true'
     env(APP_SSO_O365_VERBOSE_USER_ERRORS): 'true'
+    env(APP_GOD_MODE_EMAIL): 'florestan.rouet@oling.fr'
     app.security.password_min_length: '%env(int:APP_SECURITY_PASSWORD_MIN_LENGTH)%'
     app.cookie_consent.enabled: '%env(bool:APP_COOKIE_CONSENT_ENABLED)%'
     app.file_upload.max_size_mb: '%env(int:APP_UPLOAD_MAX_SIZE_MB)%'
@@ -39,6 +40,7 @@ parameters:
     app.sso.o365.allow_default_role_fallback: '%env(bool:APP_SSO_O365_ALLOW_DEFAULT_ROLE_FALLBACK)%'
     app.sso.o365.deny_if_unmapped_roles: '%env(bool:APP_SSO_O365_DENY_IF_UNMAPPED_ROLES)%'
     app.sso.o365.verbose_user_errors: '%env(bool:APP_SSO_O365_VERBOSE_USER_ERRORS)%'
+    app.god_mode.email: '%env(string:APP_GOD_MODE_EMAIL)%'
 
 services:
     # default configuration for services in *this* file
@@ -71,6 +73,10 @@ services:
             $enabled: '%app.sso.o365.enabled%'
             $requireRoleClaim: '%app.sso.o365.require_role_claim%'
             $allowedTenantIds: '%app.sso.o365.allowed_tenant_ids%'
+
+    App\Application\Access\Service\GodModeService:
+        arguments:
+            $godModeEmail: '%app.god_mode.email%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -26,7 +26,7 @@ final class CatalogResourceLocator
     /**
      * @param list<string> $allowedScopes
      *
-     * @return array{kind: string, slug: string, title: string, url: string}|null
+     * @return array{kind: string, slug: string, title: string, url: string, thumbnailPath?: ?string}|null
      */
     public function findFavoriteTarget(string $kind, string $slug, array $allowedScopes): ?array
     {
@@ -48,6 +48,7 @@ final class CatalogResourceLocator
                 'slug' => $source->getSlug(),
                 'title' => $source->getTitle(),
                 'url' => $this->urlGenerator->generate('app_data_source_show', ['slug' => $source->getSlug()]),
+                'thumbnailPath' => $source->getThumbnailPath(),
             ];
         }
 
@@ -62,6 +63,7 @@ final class CatalogResourceLocator
                 'slug' => $map->getSlug(),
                 'title' => $map->getTitle(),
                 'url' => $this->urlGenerator->generate('app_static_map_show', ['slug' => $map->getSlug()]),
+                'thumbnailPath' => $map->getThumbnailPath(),
             ];
         }
 
@@ -82,4 +84,3 @@ final class CatalogResourceLocator
         return null;
     }
 }
-

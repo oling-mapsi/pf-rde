@@ -36,6 +36,7 @@ final class UserCrudController extends AbstractCrudController
                 ],
                 'Comptes SSO' => [
                     User::TYPE_LABELS[User::TYPE_ADMIN_SSO] => User::TYPE_ADMIN_SSO,
+                    User::TYPE_LABELS[User::TYPE_MANAGER_SSO] => User::TYPE_MANAGER_SSO,
                     User::TYPE_LABELS[User::TYPE_AGENT_SSO] => User::TYPE_AGENT_SSO,
                 ],
             ]);
@@ -55,7 +56,8 @@ final class UserCrudController extends AbstractCrudController
             ->setRequired(false)
             ->setHelp('Comptes locaux: mot de passe local. Comptes SSO: laisser vide.');
         yield BooleanField::new('isActive');
-        yield AssociationField::new('roleEntities', 'Rôles')
+        yield AssociationField::new('roles', 'Rôles')
+            ->setFormTypeOption('property_path', 'roleEntities')
             ->setFormTypeOption('by_reference', false)
             ->autocomplete()
             ->hideOnIndex();

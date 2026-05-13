@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_MANAGER')]
 final class AgentRequestAttachmentDownloadController extends AbstractController
 {
     #[Route('/admin/demandes-cartes/pieces-jointes/{id}/telecharger', name: 'admin_agent_request_attachment_download', methods: ['GET'])]

@@ -64,7 +64,7 @@ final class SsoUserProvisioner
             $user->addRole($this->resolveRole($roleCode));
         }
 
-        $managedRoleCodes = ['ROLE_AGENT', 'ROLE_ADMIN'];
+        $managedRoleCodes = ['ROLE_AGENT', 'ROLE_MANAGER', 'ROLE_ADMIN'];
         foreach ($user->getRoleEntities()->toArray() as $existingRole) {
             if (!$existingRole instanceof Role) {
                 continue;
@@ -84,7 +84,7 @@ final class SsoUserProvisioner
             ->setFirstName($firstName)
             ->setLastName($lastName)
             ->setDisplayName($computedDisplayName)
-            ->setUserType(\in_array('ROLE_ADMIN', $normalizedRoleCodes, true) ? User::TYPE_ADMIN_SSO : User::TYPE_AGENT_SSO);
+            ->setUserType($this->resolveUserTypeFromRoles($normalizedRoleCodes));
 
         $this->entityManager->flush();
 
@@ -101,12 +101,14 @@ final class SsoUserProvisioner
 
         $label = match ($normalizedCode) {
             'ROLE_ADMIN' => 'Administrateur',
+            'ROLE_MANAGER' => 'Gestionnaire',
             'ROLE_AGENT' => 'Agent',
             default => $normalizedCode,
         };
 
         $description = match ($normalizedCode) {
             'ROLE_ADMIN' => 'Accès complet au back-office',
+            'ROLE_MANAGER' => 'Gestion des demandes cartographiques internes',
             'ROLE_AGENT' => 'Accès aux interfaces internes agents',
             default => 'Rôle synchronisé depuis le SSO Microsoft Entra ID',
         };
@@ -115,5 +117,21 @@ final class SsoUserProvisioner
         $this->entityManager->persist($role);
 
         return $role;
+    }
+
+    /**
+     * @param list<string> $normalizedRoleCodes
+     */
+    private function resolveUserTypeFromRoles(array $normalizedRoleCodes): string
+    {
+        if (\in_array('ROLE_ADMIN', $normalizedRoleCodes, true)) {
+            return User::TYPE_ADMIN_SSO;
+        }
+
+        if (\in_array('ROLE_MANAGER', $normalizedRoleCodes, true)) {
+            return User::TYPE_MANAGER_SSO;
+        }
+
+        return User::TYPE_AGENT_SSO;
     }
 }

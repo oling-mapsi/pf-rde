@@ -1,4 +1,6 @@
 {% extends 'base.html.twig' %}
+{% set breadcrumbHomePath = app.user ? path('app_private_home') : path('app_home') %}
+{% set breadcrumbHomeLabel = app.user ? 'Extranet' : 'Accueil' %}
 
 {% block title %}{{ article.title }}{% endblock %}
 
@@ -7,7 +9,7 @@
         <div class="container container--content">
             <nav class="breadcrumb" aria-label="Fil d'Ariane">
                 <ol>
-                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li><a href="{{ breadcrumbHomePath }}">{{ breadcrumbHomeLabel }}</a></li>
                     <li><a href="{{ path('app_content_news_index') }}">Actualités</a></li>
                     <li aria-current="page">{{ article.title }}</li>
                 </ol>

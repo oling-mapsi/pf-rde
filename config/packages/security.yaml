@@ -14,7 +14,9 @@ security:
     role_hierarchy:
         ROLE_EXTERNAL: ROLE_USER
         ROLE_AGENT: ROLE_EXTERNAL
-        ROLE_ADMIN: [ROLE_AGENT, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_MANAGER: ROLE_AGENT
+        ROLE_ADMIN: [ROLE_MANAGER, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_GOD: ROLE_ADMIN
 
     firewalls:
         dev:
@@ -43,6 +45,8 @@ security:
         - { path: ^/sso/connexion, roles: PUBLIC_ACCESS }
         - { path: ^/sso/callback, roles: PUBLIC_ACCESS }
         - { path: ^/inscription, roles: PUBLIC_ACCESS }
+        - { path: ^/admin/agent-request, roles: ROLE_MANAGER }
+        - { path: ^/admin/demandes-cartes/pieces-jointes, roles: ROLE_MANAGER }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/agents, roles: ROLE_AGENT }
         - { path: ^/espace-prive, roles: ROLE_EXTERNAL }

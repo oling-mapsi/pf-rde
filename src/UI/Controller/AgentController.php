@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\UI\Controller;
 
+use App\Application\Access\Service\GodModeService;
 use App\Domain\Access\Entity\User;
 use App\Domain\Agent\Entity\AgentRequest;
 use App\Domain\Agent\Entity\AgentRequestAttachment;
 use App\Infrastructure\Logging\AuditLogger;
-use App\Infrastructure\Repository\AgentRequestRepository;
-use App\Infrastructure\Repository\UserFavoriteRepository;
 use App\UI\Form\AgentRequestSubmissionType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,22 +25,16 @@ use Symfony\Component\Uid\Uuid;
 #[IsGranted('ROLE_AGENT')]
 final class AgentController extends AbstractController
 {
-    #[Route('', name: 'dashboard', methods: ['GET'])]
-    public function dashboard(
-        AgentRequestRepository $agentRequestRepository,
-        UserFavoriteRepository $favoriteRepository,
-    ): Response
+    public function __construct(private readonly GodModeService $godModeService)
     {
-        /** @var User $user */
-        $user = $this->getUser();
+    }
 
-        $requests = $agentRequestRepository->findBy(['requester' => $user], ['submittedAt' => 'DESC'], 20);
-        $favorites = $favoriteRepository->findLatestForUser($user);
+    #[Route('', name: 'dashboard', methods: ['GET'])]
+    public function dashboard(): RedirectResponse
+    {
+        $this->guardEffectiveAgentAccess();
 
-        return $this->render('agent/dashboard.html.twig', [
-            'requests' => $requests,
-            'favorites' => $favorites,
-        ]);
+        return $this->redirectToRoute('extranet_dashboard');
     }
 
     #[Route('/demandes/nouvelle', name: 'request_new', methods: ['GET', 'POST'])]
@@ -53,6 +47,7 @@ final class AgentController extends AbstractController
 
         /** @var User $user */
         $user = $this->getUser();
+        $this->guardEffectiveAgentAccess($user);
 
         $agentRequest = (new AgentRequest())
             ->setRequester($user)
@@ -105,5 +100,13 @@ final class AgentController extends AbstractController
         return $this->render('agent/request_new.html.twig', [
             'form' => $form,
         ]);
+    }
+
+    private function guardEffectiveAgentAccess(?User $user = null): void
+    {
+        $actor = $user ?? ($this->getUser() instanceof User ? $this->getUser() : null);
+        if (!$this->godModeService->hasEffectiveRole($actor, 'ROLE_AGENT')) {
+            throw $this->createAccessDeniedException('Accès agent indisponible pour le profil simulé courant.');
+        }
     }
 }

@@ -29,6 +29,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public const TYPE_ADMIN_EXTERNAL = 'admin_external';
     public const TYPE_ADMIN_SSO = 'admin_sso';
+    public const TYPE_MANAGER_SSO = 'manager_sso';
     public const TYPE_AGENT_SSO = 'agent_sso';
     public const TYPE_EXTERNAL = 'external';
     public const TYPE_EXTERNAL_PROFESSIONAL = self::TYPE_EXTERNAL;
@@ -39,6 +40,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public const TYPE_LABELS = [
         self::TYPE_ADMIN_EXTERNAL => 'Administrateur (ext)',
         self::TYPE_ADMIN_SSO => 'Administrateur SSO',
+        self::TYPE_MANAGER_SSO => 'Gestionnaire SSO',
         self::TYPE_AGENT_SSO => 'Agent SSO',
         self::TYPE_EXTERNAL => 'Externe',
     ];
@@ -342,6 +344,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return [
             self::TYPE_ADMIN_SSO,
+            self::TYPE_MANAGER_SSO,
             self::TYPE_AGENT_SSO,
         ];
     }
@@ -381,6 +384,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return match ($normalized) {
             self::TYPE_ADMIN_EXTERNAL,
             self::TYPE_ADMIN_SSO,
+            self::TYPE_MANAGER_SSO,
             self::TYPE_AGENT_SSO,
             self::TYPE_EXTERNAL => $normalized,
             default => self::TYPE_EXTERNAL,

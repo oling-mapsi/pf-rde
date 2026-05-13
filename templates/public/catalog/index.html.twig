@@ -7,7 +7,7 @@
         <div class="container">
             <nav class="breadcrumb" aria-label="Fil d'Ariane">
                 <ol>
-                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li><a href="{{ app.user ? path('app_private_home') : path('app_home') }}">{{ app.user ? 'Extranet' : 'Accueil' }}</a></li>
                     <li aria-current="page">Données et cartes</li>
                 </ol>
             </nav>
@@ -21,8 +21,11 @@
                 </p>
                 <h1 class="page-header__title">Données et cartes</h1>
                 <p class="page-header__lead">
-                    Interface unique pour rechercher et trier les sources de données,
-                    les services cartographiques et les cartes publiées.
+                    Moteur unique partagé entre le portail public et l’extranet pour rechercher,
+                    filtrer et consulter les sources de données, services cartographiques et cartes publiées.
+                </p>
+                <p class="page-header__lead page-header__lead--secondary">
+                    Les résultats et contenus accessibles s’adaptent automatiquement aux droits de l’utilisateur connecté.
                 </p>
             </header>
 
@@ -329,6 +332,21 @@
                 results.removeAttribute('aria-busy');
             };
 
+            const setFavoriteButtonState = (button, isFavorite) => {
+                if (!(button instanceof HTMLButtonElement)) {
+                    return;
+                }
+
+                button.classList.toggle('is-active', Boolean(isFavorite));
+                button.setAttribute('aria-pressed', isFavorite ? 'true' : 'false');
+                button.setAttribute('aria-label', isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris');
+                button.setAttribute('title', isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris');
+                const icon = button.querySelector('span');
+                if (icon) {
+                    icon.textContent = isFavorite ? '★' : '☆';
+                }
+            };
+
             const refreshFromUrl = async (url, pushState = true) => {
                 const fetchUrl = new URL(url.toString());
                 fetchUrl.searchParams.set('partial', '1');
@@ -421,6 +439,47 @@
 
             results.addEventListener('click', (event) => {
                 if (!(event.target instanceof Element)) {
+                    return;
+                }
+
+                const favoriteToggle = event.target.closest('[data-favorite-toggle]');
+                if (favoriteToggle instanceof HTMLButtonElement) {
+                    event.preventDefault();
+
+                    if (favoriteToggle.classList.contains('is-loading')) {
+                        return;
+                    }
+
+                    const url = favoriteToggle.getAttribute('data-url') || '';
+                    const csrf = favoriteToggle.getAttribute('data-csrf') || '';
+                    if (url === '' || csrf === '') {
+                        return;
+                    }
+
+                    favoriteToggle.classList.add('is-loading');
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        },
+                        body: new URLSearchParams({ _csrf_token: csrf }).toString(),
+                    })
+                        .then((response) => response.ok ? response.json() : Promise.reject(new Error('toggle_failed')))
+                        .then((payload) => {
+                            setFavoriteButtonState(favoriteToggle, Boolean(payload?.isFavorite));
+                            if (typeof payload?.message === 'string' && payload.message.trim() !== '') {
+                                status.textContent = payload.message;
+                            }
+                        })
+                        .catch(() => {
+                            status.textContent = 'Impossible de mettre à jour le favori.';
+                        })
+                        .finally(() => {
+                            favoriteToggle.classList.remove('is-loading');
+                        });
+
                     return;
                 }
 

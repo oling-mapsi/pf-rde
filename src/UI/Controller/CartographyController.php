@@ -39,6 +39,14 @@ final class CartographyController extends AbstractController
             $criteria,
             $this->visibilityScopeResolver->resolveForUser($this->getUser()),
         );
+        $favoriteSlugs = [];
+        $currentUser = $this->getUser();
+        if ($currentUser instanceof User && $this->isGranted('ROLE_USER')) {
+            $favoriteSlugs = $this->favoriteRepository->findResourceSlugsForUserAndKind(
+                $currentUser,
+                UserFavorite::KIND_DATA_SOURCE,
+            );
+        }
 
         if ($request->isXmlHttpRequest() || $request->query->getBoolean('partial')) {
             if ($request->query->getBoolean('ajax')) {
@@ -46,6 +54,7 @@ final class CartographyController extends AbstractController
                     'html' => $this->renderView('public/catalog/_results.html.twig', [
                         'catalog' => $catalog,
                         'criteria' => $criteria,
+                        'favoriteSlugs' => $favoriteSlugs,
                     ]),
                     'typeCounters' => $catalog['typeCounters'] ?? [],
                     'categoryCounters' => $catalog['categoryCounters'] ?? [],
@@ -59,12 +68,14 @@ final class CartographyController extends AbstractController
             return $this->render('public/catalog/_results.html.twig', [
                 'catalog' => $catalog,
                 'criteria' => $criteria,
+                'favoriteSlugs' => $favoriteSlugs,
             ]);
         }
 
         return $this->render('public/catalog/index.html.twig', [
             'catalog' => $catalog,
             'criteria' => $criteria,
+            'favoriteSlugs' => $favoriteSlugs,
         ]);
     }
 
@@ -173,8 +184,18 @@ final class CartographyController extends AbstractController
     ): array {
         $sourceType = $source->getSourceType();
         $sourceUrl = $this->normalizePublicResourceLink($source->getSourceUrl());
-        $filePath = $this->normalizePublicResourceLink($source->getFilePath(), preferFilesRoute: true);
+        $filePath = $this->normalizePublicResourceLink($source->getFilePath(), preferFilesRoute: true, coerceToUploads: true);
         $endpointUrl = $this->normalizePublicResourceLink($source->getServiceEndpoint()?->getBaseUrl());
+
+        if ($sourceType === DataSource::TYPE_CARTOGRAPHY_LINK && $sourceUrl !== null) {
+            $legacyPrefix = '/uploads/data-sources/cartes-interactives/';
+            if (str_starts_with($sourceUrl, $legacyPrefix)) {
+                $slug = trim(substr($sourceUrl, strlen($legacyPrefix)), '/');
+                if ($slug !== '') {
+                    $sourceUrl = '/cartes-interactives/'.$slug;
+                }
+            }
+        }
 
         $publicSourceUrl = null;
         if (
@@ -264,7 +285,7 @@ final class CartographyController extends AbstractController
         ];
     }
 
-    private function normalizePublicResourceLink(?string $value, bool $preferFilesRoute = false): ?string
+    private function normalizePublicResourceLink(?string $value, bool $preferFilesRoute = false, bool $coerceToUploads = false): ?string
     {
         $candidate = trim((string) $value);
         if ($candidate === '') {
@@ -287,7 +308,11 @@ final class CartographyController extends AbstractController
             return $candidate;
         }
 
-        return '/uploads/data-sources/'.ltrim($candidate, '/');
+        if ($coerceToUploads) {
+            return '/uploads/data-sources/'.ltrim($candidate, '/');
+        }
+
+        return $candidate;
     }
 
     private function isPublicWebUrl(string $url): bool

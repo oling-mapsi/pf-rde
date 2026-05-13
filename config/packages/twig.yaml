@@ -5,6 +5,7 @@ twig:
         app_matomo_enabled: '%app.matomo.enabled%'
         app_matomo_site_id: '%app.matomo.site_id%'
         app_matomo_base_url: '%app.matomo.base_url%'
+        app_god_mode: '@App\Application\Access\Service\GodModeService'
 
 when@test:
     twig:

@@ -67,7 +67,7 @@ final class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        if (in_array('ROLE_AGENT', $token->getRoleNames(), true)) {
+        if (in_array('ROLE_AGENT', $token->getRoleNames(), true) || in_array('ROLE_MANAGER', $token->getRoleNames(), true)) {
             return new RedirectResponse($this->urlGenerator->generate('agent_dashboard'));
         }
 
