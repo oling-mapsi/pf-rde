@@ -13,16 +13,18 @@
             </nav>
 
             <section class="card form-panel auth-panel">
-                <h1>Créer un compte externe</h1>
-                <p class="text-muted">Les comptes externes peuvent demander un accès aux ressources privées.</p>
+                <h1>Créer un compte externe professionnel</h1>
+                <p class="text-muted">Tous les champs sont obligatoires, sauf le site web.</p>
 
                 {{ form_start(form) }}
-                    {{ form_row(form.userType) }}
                     {{ form_row(form.firstName) }}
                     {{ form_row(form.lastName) }}
                     {{ form_row(form.organizationName) }}
+                    {{ form_row(form.companySiret) }}
                     {{ form_row(form.websiteUrl) }}
                     {{ form_row(form.email) }}
+                    {{ form_row(form.postalAddress) }}
+                    {{ form_row(form.accountRequestReason) }}
                     {{ form_row(form.password.first) }}
                     {{ form_row(form.password.second) }}
                     <button type="submit" class="btn btn-primary">Créer mon compte</button>

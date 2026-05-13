@@ -79,13 +79,30 @@ final class GodModeAccessSubscriber implements EventSubscriberInterface
                 return;
             }
 
-            $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_private_home')));
+            $event->setResponse(new RedirectResponse($this->resolveFallbackRouteForGodProfile($user)));
 
             return;
         }
 
         if (str_starts_with($path, '/agents') && !$this->godModeService->hasEffectiveRole($user, 'ROLE_AGENT')) {
-            $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_private_home')));
+            $event->setResponse(new RedirectResponse($this->resolveFallbackRouteForGodProfile($user)));
         }
+    }
+
+    private function resolveFallbackRouteForGodProfile(User $user): string
+    {
+        if ($this->godModeService->isPublicSimulation($user)) {
+            return $this->urlGenerator->generate('app_home');
+        }
+
+        if ($this->godModeService->hasEffectiveRole($user, 'ROLE_AGENT')) {
+            return $this->urlGenerator->generate('agent_dashboard');
+        }
+
+        if ($this->godModeService->hasEffectiveRole($user, 'ROLE_USER')) {
+            return $this->urlGenerator->generate('extranet_dashboard');
+        }
+
+        return $this->urlGenerator->generate('app_home');
     }
 }

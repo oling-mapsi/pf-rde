@@ -74,14 +74,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::STRING, length: 180, nullable: true)]
     private ?string $organizationName = null;
 
+    #[ORM\Column(type: Types::STRING, length: 14, nullable: true)]
+    private ?string $companySiret = null;
+
     #[ORM\Column(type: Types::STRING, length: 512, nullable: true)]
     private ?string $websiteUrl = null;
+
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $postalAddress = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $accountRequestReason = null;
 
     #[ORM\Column(type: Types::STRING, length: 16, options: ['default' => self::AUTH_PROVIDER_LOCAL])]
     private string $authProvider = self::AUTH_PROVIDER_LOCAL;
 
     #[ORM\Column(type: Types::STRING, length: 190, nullable: true)]
     private ?string $ssoSubject = null;
+
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: true)]
+    private ?string $emailVerificationTokenHash = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $emailVerifiedAt = null;
 
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
     private bool $isActive = true;
@@ -171,6 +186,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getCompanySiret(): ?string
+    {
+        return $this->companySiret;
+    }
+
+    public function setCompanySiret(?string $companySiret): static
+    {
+        $normalized = $companySiret !== null ? preg_replace('/\D+/', '', $companySiret) : null;
+        $this->companySiret = $normalized !== null && $normalized !== '' ? $normalized : null;
+
+        return $this;
+    }
+
     public function getWebsiteUrl(): ?string
     {
         return $this->websiteUrl;
@@ -179,6 +207,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setWebsiteUrl(?string $websiteUrl): static
     {
         $this->websiteUrl = $websiteUrl !== null ? trim($websiteUrl) : null;
+
+        return $this;
+    }
+
+    public function getPostalAddress(): ?string
+    {
+        return $this->postalAddress;
+    }
+
+    public function setPostalAddress(?string $postalAddress): static
+    {
+        $value = $postalAddress !== null ? trim($postalAddress) : null;
+        $this->postalAddress = $value !== '' ? $value : null;
+
+        return $this;
+    }
+
+    public function getAccountRequestReason(): ?string
+    {
+        return $this->accountRequestReason;
+    }
+
+    public function setAccountRequestReason(?string $accountRequestReason): static
+    {
+        $value = $accountRequestReason !== null ? trim($accountRequestReason) : null;
+        $this->accountRequestReason = $value !== '' ? $value : null;
 
         return $this;
     }
@@ -205,6 +259,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->ssoSubject = $ssoSubject !== null ? trim($ssoSubject) : null;
 
         return $this;
+    }
+
+    public function getEmailVerificationTokenHash(): ?string
+    {
+        return $this->emailVerificationTokenHash;
+    }
+
+    public function setEmailVerificationTokenHash(?string $emailVerificationTokenHash): static
+    {
+        $value = $emailVerificationTokenHash !== null ? trim($emailVerificationTokenHash) : null;
+        $this->emailVerificationTokenHash = $value !== '' ? $value : null;
+
+        return $this;
+    }
+
+    public function getEmailVerifiedAt(): ?\DateTimeImmutable
+    {
+        return $this->emailVerifiedAt;
+    }
+
+    public function setEmailVerifiedAt(?\DateTimeImmutable $emailVerifiedAt): static
+    {
+        $this->emailVerifiedAt = $emailVerifiedAt;
+
+        return $this;
+    }
+
+    public function isEmailVerified(): bool
+    {
+        return $this->emailVerifiedAt !== null;
     }
 
     public function isActive(): bool

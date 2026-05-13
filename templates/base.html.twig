@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Routes de Guadeloupe - Portail SIG{% endblock %}</title>
+        <link rel="icon" type="image/jpeg" href="{{ asset('images/logo-rdg.jpg') }}">
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
@@ -119,6 +120,14 @@
                             </div>
                         </div>
                     {% else %}
+                        <a
+                            class="main-nav__link main-nav__auth-link {{ currentRoute == 'app_register_external' ? 'is-active' : '' }}"
+                            href="{{ path('app_register_external') }}"
+                            aria-label="Créer un compte"
+                            title="Créer un compte"
+                        >
+                            Créer un compte
+                        </a>
                         <a
                             class="main-nav__link main-nav__auth-link {{ currentRoute == 'app_login' ? 'is-active' : '' }}"
                             href="{{ path('app_login') }}"

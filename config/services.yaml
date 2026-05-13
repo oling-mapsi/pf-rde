@@ -21,6 +21,11 @@ parameters:
     env(APP_SSO_O365_DENY_IF_UNMAPPED_ROLES): 'true'
     env(APP_SSO_O365_VERBOSE_USER_ERRORS): 'true'
     env(APP_GOD_MODE_EMAIL): 'florestan.rouet@oling.fr'
+    env(APP_SIRENE_ENABLED): 'true'
+    env(APP_SIRENE_API_TOKEN): ''
+    env(APP_SIRENE_SIRET_ENDPOINT_TEMPLATE): 'https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}'
+    env(APP_SIRENE_TIMEOUT_SECONDS): '8'
+    env(APP_REGISTRATION_FROM_EMAIL): 'no-reply@routes-guadeloupe.local'
     app.security.password_min_length: '%env(int:APP_SECURITY_PASSWORD_MIN_LENGTH)%'
     app.cookie_consent.enabled: '%env(bool:APP_COOKIE_CONSENT_ENABLED)%'
     app.file_upload.max_size_mb: '%env(int:APP_UPLOAD_MAX_SIZE_MB)%'
@@ -41,6 +46,10 @@ parameters:
     app.sso.o365.deny_if_unmapped_roles: '%env(bool:APP_SSO_O365_DENY_IF_UNMAPPED_ROLES)%'
     app.sso.o365.verbose_user_errors: '%env(bool:APP_SSO_O365_VERBOSE_USER_ERRORS)%'
     app.god_mode.email: '%env(string:APP_GOD_MODE_EMAIL)%'
+    app.sirene.enabled: '%env(bool:APP_SIRENE_ENABLED)%'
+    app.sirene.api_token: '%env(string:APP_SIRENE_API_TOKEN)%'
+    app.sirene.siret_endpoint_template: '%env(string:APP_SIRENE_SIRET_ENDPOINT_TEMPLATE)%'
+    app.sirene.timeout_seconds: '%env(float:APP_SIRENE_TIMEOUT_SECONDS)%'
 
 services:
     # default configuration for services in *this* file
@@ -77,6 +86,13 @@ services:
     App\Application\Access\Service\GodModeService:
         arguments:
             $godModeEmail: '%app.god_mode.email%'
+
+    App\Application\Access\Service\SireneSiretVerifier:
+        arguments:
+            $enabled: '%app.sirene.enabled%'
+            $endpointTemplate: '%app.sirene.siret_endpoint_template%'
+            $apiToken: '%app.sirene.api_token%'
+            $timeoutSeconds: '%app.sirene.timeout_seconds%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

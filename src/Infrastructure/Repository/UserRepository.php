@@ -28,4 +28,13 @@ class UserRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function findOneByEmailVerificationTokenHash(string $tokenHash): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.emailVerificationTokenHash = :tokenHash')
+            ->setParameter('tokenHash', trim($tokenHash))
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

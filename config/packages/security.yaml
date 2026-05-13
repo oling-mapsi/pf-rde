@@ -49,8 +49,8 @@ security:
         - { path: ^/admin/demandes-cartes/pieces-jointes, roles: ROLE_MANAGER }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/agents, roles: ROLE_AGENT }
-        - { path: ^/espace-prive, roles: ROLE_EXTERNAL }
-        - { path: ^/extranet, roles: ROLE_EXTERNAL }
+        - { path: ^/espace-prive, roles: ROLE_USER }
+        - { path: ^/extranet, roles: ROLE_USER }
         - { path: ^/api/admin, roles: ROLE_ADMIN }
 
 when@test:
