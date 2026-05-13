@@ -30,8 +30,8 @@ final class PageCrudController extends AbstractCrudController
     public function configureAssets(Assets $assets): Assets
     {
         return $assets
-            ->addCssFile(Asset::new('/admin/page-rich-text.css')->onlyOnForms())
-            ->addJsFile(Asset::new('/admin/page-rich-text.js')->onlyOnForms()->defer());
+            ->addCssFile(Asset::new('/admin-assets/page-rich-text.css')->onlyOnForms())
+            ->addJsFile(Asset::new('/admin-assets/page-rich-text.js')->onlyOnForms()->defer());
     }
 
     public function configureFields(string $pageName): iterable

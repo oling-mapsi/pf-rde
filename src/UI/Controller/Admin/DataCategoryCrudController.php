@@ -39,9 +39,9 @@ final class DataCategoryCrudController extends AbstractCrudController
     public function configureAssets(Assets $assets): Assets
     {
         return $assets
-            ->addCssFile(Asset::new('/admin/icon-reference.css'))
-            ->addCssFile(Asset::new('/admin/data-source-form.css')->onlyOnForms())
-            ->addJsFile(Asset::new('/admin/data-source-form.js')->onlyOnForms()->defer());
+            ->addCssFile(Asset::new('/admin-assets/icon-reference.css'))
+            ->addCssFile(Asset::new('/admin-assets/data-source-form.css')->onlyOnForms())
+            ->addJsFile(Asset::new('/admin-assets/data-source-form.js')->onlyOnForms()->defer());
     }
 
     public function configureCrud(Crud $crud): Crud
