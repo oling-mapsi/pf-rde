@@ -141,7 +141,12 @@ final class AppFixtures extends Fixture
             ->setTitle('Politique de cookies')
             ->setLegalType('cookies')
             ->setSystemPage(true)
-            ->setContent('Cette page de démonstration précise les cookies strictement nécessaires, analytiques et de personnalisation ainsi que les modalités de consentement.')
+            ->setContent(<<<'HTML'
+<p>Le portail utilise des cookies strictement nécessaires à son fonctionnement : session, sécurité, authentification et conservation technique de vos choix.</p>
+<p>Les cookies optionnels sont désactivés par défaut. Ils peuvent concerner la mesure d’audience Matomo et les services tiers intégrés. Ils ne sont déposés qu’après consentement explicite.</p>
+<p>Vous pouvez accepter, refuser ou personnaliser ces cookies depuis le bandeau affiché lors de votre première visite, puis modifier vos choix à tout moment avec le lien « Gérer les cookies » présent en pied de page.</p>
+<p>La durée de conservation du choix de consentement est limitée à six mois. Au-delà, une nouvelle demande de consentement est affichée.</p>
+HTML)
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-2 days'))
             ->setCreatedBy($admin)

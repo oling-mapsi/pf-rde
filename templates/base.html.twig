@@ -227,25 +227,33 @@
                 aria-label="Gestion du consentement cookies"
             >
                 <button type="button" class="cookie-consent__manage" data-cookie-consent-target="manageButton" data-action="cookie-consent#openPreferences" hidden>
-                    Gérer mes cookies
+                    Modifier mes choix cookies
                 </button>
 
                 <div class="cookie-consent__panel" data-cookie-consent-target="banner" role="dialog" aria-modal="true" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-description" hidden>
                     <div class="cookie-consent__panel-header">
-                        <h2 id="cookie-consent-title">Gestion des cookies</h2>
+                        <div>
+                            <p class="cookie-consent__eyebrow">Confidentialité</p>
+                            <h2 id="cookie-consent-title">Gestion des cookies</h2>
+                        </div>
                         <button type="button" class="cookie-consent__close" data-action="cookie-consent#closePreferences" aria-label="Fermer la fenêtre de gestion des cookies">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <p id="cookie-consent-description">
-                        Nous utilisons uniquement des cookies nécessaires au fonctionnement du portail.
-                        Vous pouvez autoriser ou refuser les cookies de mesure d’audience et de services tiers.
-                    </p>
-                    <p class="mb-3"><a href="{{ path('app_content_legal_cookies') }}">Consulter la politique cookies</a></p>
+                    <div id="cookie-consent-description" class="cookie-consent__intro">
+                        <p>
+                            Les cookies nécessaires au fonctionnement du portail sont toujours actifs.
+                            Les cookies de mesure d’audience et les services tiers ne sont déposés qu’avec votre accord.
+                        </p>
+                        <p>
+                            Vous pouvez accepter, refuser ou personnaliser ces choix maintenant, puis les modifier à tout moment depuis le lien en pied de page.
+                        </p>
+                    </div>
+                    <p class="cookie-consent__policy-link"><a href="{{ path('app_content_legal_cookies') }}">Consulter la politique cookies</a></p>
 
-                    <div class="cookie-consent__actions">
+                    <div class="cookie-consent__actions cookie-consent__main-actions">
                         <button type="button" class="btn btn-primary" data-cookie-consent-target="firstAction" data-action="cookie-consent#acceptAll">Tout accepter</button>
-                        <button type="button" class="btn btn-outline" data-action="cookie-consent#rejectOptional">Tout refuser (hors nécessaires)</button>
+                        <button type="button" class="btn btn-secondary" data-action="cookie-consent#rejectOptional">Tout refuser</button>
                         <button type="button" class="btn btn-link" data-action="cookie-consent#showDetails">Personnaliser</button>
                     </div>
 
@@ -253,21 +261,32 @@
                         <fieldset>
                             <legend>Préférences de consentement</legend>
                             <div class="cookie-consent__choice">
-                                <input id="cookie-necessary" type="checkbox" checked disabled>
-                                <label for="cookie-necessary">Cookies nécessaires (toujours actifs)</label>
+                                <div class="cookie-consent__choice-head">
+                                    <input id="cookie-necessary" type="checkbox" checked disabled>
+                                    <label for="cookie-necessary">Cookies nécessaires</label>
+                                    <span class="cookie-consent__badge">Toujours actifs</span>
+                                </div>
+                                <p>Session, sécurité, authentification et préférences indispensables au fonctionnement du site.</p>
                             </div>
                             <div class="cookie-consent__choice">
-                                <input id="cookie-analytics" type="checkbox" data-cookie-consent-target="analyticsInput">
-                                <label for="cookie-analytics">Mesure d’audience anonyme</label>
+                                <div class="cookie-consent__choice-head">
+                                    <input id="cookie-analytics" type="checkbox" data-cookie-consent-target="analyticsInput">
+                                    <label for="cookie-analytics">Mesure d’audience</label>
+                                </div>
+                                <p>Statistiques anonymisées via Matomo, uniquement si la mesure d’audience est activée dans l’environnement.</p>
                             </div>
                             <div class="cookie-consent__choice">
-                                <input id="cookie-services" type="checkbox" data-cookie-consent-target="servicesInput">
-                                <label for="cookie-services">Services tiers intégrés</label>
+                                <div class="cookie-consent__choice-head">
+                                    <input id="cookie-services" type="checkbox" data-cookie-consent-target="servicesInput">
+                                    <label for="cookie-services">Services tiers intégrés</label>
+                                </div>
+                                <p>Contenus externes optionnels qui peuvent déposer leurs propres cookies lorsqu’ils sont utilisés.</p>
                             </div>
                         </fieldset>
 
                         <div class="cookie-consent__actions mt-3">
                             <button type="button" class="btn btn-primary" data-action="cookie-consent#savePreferences">Enregistrer mes choix</button>
+                            <button type="button" class="btn btn-secondary" data-action="cookie-consent#rejectOptional">Tout refuser</button>
                             <button type="button" class="btn btn-link" data-action="cookie-consent#closePreferences">Fermer</button>
                         </div>
                     </div>

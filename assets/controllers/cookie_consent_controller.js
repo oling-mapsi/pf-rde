@@ -1,7 +1,10 @@
 import { Controller } from '@hotwired/stimulus';
 
 const CONSENT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 180;
-const CONSENT_VERSION = 1;
+const CONSENT_VERSION = 2;
+const DEFAULT_CONSENT_COOKIE_NAME = 'rdg_cookie_consent';
+const OPTIONAL_COOKIE_PREFIXES = ['_pk_id', '_pk_ses', '_pk_ref', '_pk_cvar', '_pk_hsr'];
+const OPTIONAL_COOKIE_NAMES = ['mtm_consent', 'mtm_cookie_consent'];
 
 export default class extends Controller {
     static targets = ['banner', 'manageButton', 'analyticsInput', 'servicesInput', 'details', 'firstAction'];
@@ -110,7 +113,12 @@ export default class extends Controller {
     applyConsent(consent) {
         if (consent.analytics) {
             this.enableMatomoTracking();
+        } else {
+            this.disableMatomoTracking();
         }
+
+        document.documentElement.dataset.cookieAnalytics = consent.analytics ? 'granted' : 'denied';
+        document.documentElement.dataset.cookieServices = consent.services ? 'granted' : 'denied';
 
         document.dispatchEvent(
             new CustomEvent('cookie-consent:updated', {
@@ -176,8 +184,20 @@ export default class extends Controller {
             if (typeof parsed !== 'object' || parsed === null) {
                 return null;
             }
-            return this.normalizeConsent(parsed);
+            if (Number(parsed.version) !== CONSENT_VERSION) {
+                this.deleteCookie(this.resolvedCookieName());
+                return null;
+            }
+
+            const consent = this.normalizeConsent(parsed);
+            if (this.isConsentExpired(consent)) {
+                this.deleteCookie(this.resolvedCookieName());
+                return null;
+            }
+
+            return consent;
         } catch (_error) {
+            this.deleteCookie(this.resolvedCookieName());
             return null;
         }
     }
@@ -202,12 +222,16 @@ export default class extends Controller {
     }
 
     normalizeConsent(source) {
+        const timestamp = typeof source.timestamp === 'string' && !Number.isNaN(Date.parse(source.timestamp))
+            ? source.timestamp
+            : new Date().toISOString();
+
         return {
             version: CONSENT_VERSION,
             necessary: true,
             analytics: Boolean(source.analytics),
             services: Boolean(source.services),
-            timestamp: new Date().toISOString(),
+            timestamp,
         };
     }
 
@@ -222,7 +246,16 @@ export default class extends Controller {
     }
 
     resolvedCookieName() {
-        return this.cookieNameValue || 'rdg_cookie_consent';
+        return this.cookieNameValue || DEFAULT_CONSENT_COOKIE_NAME;
+    }
+
+    isConsentExpired(consent) {
+        const timestamp = Date.parse(consent.timestamp);
+        if (Number.isNaN(timestamp)) {
+            return true;
+        }
+
+        return Date.now() - timestamp > CONSENT_COOKIE_MAX_AGE_SECONDS * 1000;
     }
 
     focusFirstAction() {
@@ -277,6 +310,7 @@ export default class extends Controller {
 
         const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
         window._paq = window._paq || [];
+        window._paq.push(['enableCookies']);
         window._paq.push(['trackPageView']);
         window._paq.push(['enableLinkTracking']);
         window._paq.push(['setTrackerUrl', `${normalizedBaseUrl}matomo.php`]);
@@ -287,5 +321,50 @@ export default class extends Controller {
         script.src = `${normalizedBaseUrl}matomo.js`;
         script.setAttribute('data-cookie-consent-matomo', '1');
         document.head.appendChild(script);
+    }
+
+    disableMatomoTracking() {
+        if (Array.isArray(window._paq)) {
+            window._paq.push(['disableCookies']);
+            window._paq.push(['deleteCookies']);
+        }
+
+        document.querySelectorAll('script[data-cookie-consent-matomo]').forEach((script) => script.remove());
+        this.deleteOptionalCookies();
+    }
+
+    deleteOptionalCookies() {
+        const optionalCookieNames = new Set(OPTIONAL_COOKIE_NAMES);
+        document.cookie.split(';').forEach((cookiePart) => {
+            const name = cookiePart.trim().split('=')[0];
+            if (name === '') {
+                return;
+            }
+            if (OPTIONAL_COOKIE_PREFIXES.some((prefix) => name.startsWith(prefix))) {
+                optionalCookieNames.add(name);
+            }
+        });
+
+        optionalCookieNames.forEach((name) => this.deleteCookie(name));
+    }
+
+    deleteCookie(name) {
+        const secureSuffix = window.location.protocol === 'https:' ? '; Secure' : '';
+        const hostParts = window.location.hostname.split('.').filter(Boolean);
+        const domains = new Set(['']);
+        if (hostParts.length > 1) {
+            hostParts.forEach((_part, index) => {
+                const domain = hostParts.slice(index).join('.');
+                if (domain.includes('.')) {
+                    domains.add(domain);
+                    domains.add(`.${domain}`);
+                }
+            });
+        }
+
+        domains.forEach((domain) => {
+            const domainSuffix = domain === '' ? '' : `; Domain=${domain}`;
+            document.cookie = `${name}=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax${domainSuffix}${secureSuffix}`;
+        });
     }
 }
