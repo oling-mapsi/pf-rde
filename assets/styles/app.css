@@ -4474,16 +4474,25 @@ tbody tr:hover {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex: 0 0 2.8rem;
     width: 2.8rem;
     height: 2.8rem;
+    max-width: 2.8rem;
+    max-height: 2.8rem;
+    overflow: hidden;
     border-radius: 999px;
     color: var(--rdg-blue-deep);
     background: rgba(56, 180, 231, 0.14);
 }
 
-.theme-card__icon svg {
-    width: 1.55rem;
-    height: 1.55rem;
+.theme-card__icon.theme-card__icon--compact svg,
+.theme-card .theme-card__icon svg {
+    display: block;
+    flex: 0 0 1.35rem;
+    width: 1.35rem !important;
+    height: 1.35rem !important;
+    max-width: 1.35rem !important;
+    max-height: 1.35rem !important;
 }
 
 .theme-card h2 {

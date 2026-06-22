@@ -31,7 +31,7 @@
 
                 {% for theme in themes %}
                     <article class="theme-card">
-                        <span class="theme-card__icon" aria-hidden="true">
+                        <span class="theme-card__icon theme-card__icon--compact" aria-hidden="true">
                             {% include 'public/home/_quick_icon.html.twig' with { icon: theme.icon } only %}
                         </span>
                         <h2>{{ theme.title }}</h2>
