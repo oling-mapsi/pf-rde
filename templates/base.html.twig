@@ -14,6 +14,7 @@
     </head>
     {% set currentRoute = app.request.attributes.get('_route')|default('') %}
     {% set isCatalogRoute = currentRoute == 'app_data_catalog' or currentRoute starts with 'app_static_map_' or currentRoute starts with 'app_interactive_map_' %}
+    {% set isPresentationRoute = currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' %}
     <body class="{% block body_class %}public-page{% endblock %}">
         <a href="#main-content" class="skip-link">Aller au contenu principal</a>
 
@@ -39,10 +40,22 @@
                 </button>
 
                 <nav id="site-main-nav" class="main-nav" aria-label="Navigation principale" hidden>
-                    <a class="main-nav__link {{ currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' ? 'is-active' : '' }}" href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}" {{ currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' ? 'aria-current="page"' : '' }}>Présentation</a>
-                    <a class="main-nav__link {{ isCatalogRoute ? 'is-active' : '' }}" href="{{ path('app_data_catalog') }}" {{ isCatalogRoute ? 'aria-current="page"' : '' }}>Données et cartes</a>
+                    <a class="main-nav__link {{ isPresentationRoute ? 'is-active' : '' }}" href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}" {{ isPresentationRoute ? 'aria-current="page"' : '' }}>Nous sommes Routes de Guadeloupe</a>
+                    <a class="main-nav__link {{ currentRoute == 'app_content_themes' ? 'is-active' : '' }}" href="{{ path('app_content_themes') }}" {{ currentRoute == 'app_content_themes' ? 'aria-current="page"' : '' }}>Thématiques</a>
+                    <a class="main-nav__link {{ isCatalogRoute ? 'is-active' : '' }}" href="{{ path('app_data_catalog') }}" {{ isCatalogRoute ? 'aria-current="page"' : '' }}>Catalogue</a>
                     <a class="main-nav__link {{ currentRoute starts with 'app_content_news_' ? 'is-active' : '' }}" href="{{ path('app_content_news_index') }}" {{ currentRoute starts with 'app_content_news_' ? 'aria-current="page"' : '' }}>Actualités</a>
                     <span class="main-nav__separator" aria-hidden="true"></span>
+                    <a
+                        class="main-nav__icon-link {{ isCatalogRoute ? 'is-active' : '' }}"
+                        href="{{ path('app_data_catalog') }}"
+                        aria-label="Rechercher dans le catalogue"
+                        title="Rechercher dans le catalogue"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.9"/>
+                            <path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+                        </svg>
+                    </a>
 
                     {% if app.user %}
                         {% set accountDisplayName = app.user.displayName ?: app.user.email %}
@@ -121,20 +134,15 @@
                         </div>
                     {% else %}
                         <a
-                            class="main-nav__link main-nav__auth-link {{ currentRoute == 'app_register_external' ? 'is-active' : '' }}"
-                            href="{{ path('app_register_external') }}"
-                            aria-label="Créer un compte"
-                            title="Créer un compte"
-                        >
-                            Créer un compte
-                        </a>
-                        <a
-                            class="main-nav__link main-nav__auth-link {{ currentRoute == 'app_login' ? 'is-active' : '' }}"
+                            class="main-nav__icon-link main-nav__login-icon {{ currentRoute == 'app_login' ? 'is-active' : '' }}"
                             href="{{ path('app_login') }}"
                             aria-label="Connexion"
-                            title="Connexion"
+                            title="Connexion agents et comptes privés"
                         >
-                            Connexion
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.9"/>
+                                <path d="M8 10V8a4 4 0 0 1 8 0v2M12 14v2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+                            </svg>
                         </a>
                     {% endif %}
                 </nav>
@@ -169,8 +177,9 @@
                     <section class="footer-col">
                         <h2 class="footer-col__title">Portail</h2>
                         <ul class="footer-links">
-                            <li><a href="{{ path('app_data_catalog') }}">Données et cartes</a></li>
-                            <li><a href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}">Présentation</a></li>
+                            <li><a href="{{ path('app_data_catalog') }}">Catalogue</a></li>
+                            <li><a href="{{ path('app_content_themes') }}">Thématiques</a></li>
+                            <li><a href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}">Nous sommes Routes de Guadeloupe</a></li>
                             <li><a href="{{ path('app_content_news_index') }}">Actualités</a></li>
                             <li><a href="{{ path('app_content_partners') }}">Partenaires et financeurs</a></li>
                         </ul>
@@ -207,7 +216,10 @@
                 </div>
 
                 <div class="footer-meta">
-                    <p class="footer-note">Portail SIG Routes de Guadeloupe - Service public territorial</p>
+                    <div class="footer-feder">
+                        <img src="{{ asset('images/bloc-marque-feder.png') }}" alt="L'Europe s'engage en Guadeloupe - cofinancé par l'Union européenne">
+                        <p class="footer-note">Opération de transformation numérique du Système d’Information Géographique Routier cofinancée par l’Union européenne via le FEDER.</p>
+                    </div>
                     {% if app_cookie_consent_enabled is defined and app_cookie_consent_enabled %}
                         <button id="footer-cookie-open" type="button" class="footer-cookie-link">Gérer les cookies</button>
                     {% endif %}

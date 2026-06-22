@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Thématiques{% endblock %}
+
+{% block body %}
+    <section class="page-shell page-shell--presentation">
+        <div class="container container--content">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li aria-current="page">Thématiques</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <h1 class="page-header__title">Thématiques</h1>
+                <p class="page-header__lead">Accès aux données et cartes classées selon les familles métiers du système d’information géographique routier.</p>
+            </header>
+
+            <div class="theme-grid" aria-label="Liste des thématiques SIGR">
+                {% set themes = [
+                    { title: 'Chaussées et accotements', text: 'Données relatives au réseau, à l’état des chaussées et aux dépendances immédiates.', icon: 'route', query: 'Chaussées et accotements' },
+                    { title: 'Mobilité', text: 'Aménagements cyclables, arrêts de transports en commun et services liés aux déplacements.', icon: 'transport', query: 'Mobilité' },
+                    { title: 'Ouvrages d’art', text: 'Ponts, ouvrages, équipements associés et informations de suivi patrimonial.', icon: 'bridge', query: 'Ouvrages d’art' },
+                    { title: 'Équipements de sécurité', text: 'Signalisation, dispositifs de sécurité et éléments utiles à la prévention routière.', icon: 'shield', query: 'Équipements de sécurité' },
+                    { title: 'Dépendances vertes et bleues', text: 'Espaces végétalisés, hydraulique, continuités écologiques et abords du domaine routier.', icon: 'globe', query: 'Dépendances vertes et bleues' },
+                    { title: 'Circulation routière', text: 'Vitesses, limites d’agglomération, trafic et informations de circulation.', icon: 'traffic', query: 'Circulation routière' },
+                    { title: 'Milieu environnant', text: 'Contexte territorial, risques, environnement et contraintes externes au réseau.', icon: 'map-pin', query: 'Milieu environnant' },
+                    { title: 'Référentiels croisés', text: 'Référentiels de localisation et jeux de données transverses pour croiser les analyses.', icon: 'layers', query: 'Référentiels croisés' },
+                ] %}
+
+                {% for theme in themes %}
+                    <article class="theme-card">
+                        <span class="theme-card__icon" aria-hidden="true">
+                            {% include 'public/home/_quick_icon.html.twig' with { icon: theme.icon } only %}
+                        </span>
+                        <h2>{{ theme.title }}</h2>
+                        <p>{{ theme.text }}</p>
+                        <a href="{{ path('app_data_catalog', { theme: [theme.query] }) }}">Voir les ressources</a>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

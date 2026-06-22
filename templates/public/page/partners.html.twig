@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Financeurs et partenaires{% endblock %}
+{% block title %}Partenaires et financeurs{% endblock %}
 
 {% block body %}
     <section class="page-shell page-shell--presentation">
@@ -18,11 +18,31 @@
             </header>
 
             <section class="presentation-content presentation-content--standalone" aria-label="Partenaires du portail SIG">
+                <article class="presentation-section feder-compliance-block">
+                    <p class="presentation-section__label">Financements européens</p>
+                    <div class="feder-compliance-block__header">
+                        <img src="{{ asset('images/bloc-marque-feder.png') }}" alt="L'Europe s'engage en Guadeloupe - cofinancé par l'Union européenne">
+                        <div>
+                            <h2>Opération de transformation numérique du SIGR</h2>
+                            <p>
+                                Cet outil s’inscrit dans une opération de transformation numérique du Système d’Information Géographique Routier, cofinancée par l’Union européenne via le FEDER.
+                            </p>
+                        </div>
+                    </div>
+                    <dl class="feder-facts">
+                        <div><dt>Nom du projet</dt><dd>Transformation numérique du Système d’Information Géographique Routier</dd></div>
+                        <div><dt>Objectif principal</dt><dd>Moderniser l’accès, la diffusion et la réutilisation des données géographiques routières de Guadeloupe.</dd></div>
+                        <div><dt>Résultats attendus</dt><dd>Catalogue centralisé, cartes consultables, parcours de demande clarifiés et accès adaptés aux publics.</dd></div>
+                        <div><dt>Coût total</dt><dd>À compléter par Routes de Guadeloupe</dd></div>
+                        <div><dt>Aide européenne FEDER</dt><dd>À compléter par Routes de Guadeloupe</dd></div>
+                    </dl>
+                </article>
+
                 <article class="presentation-section">
-                    <p class="presentation-section__label">Financeurs</p>
-                    <h2>FEDER, Région et Département</h2>
+                    <p class="presentation-section__label">Financeurs et institutions</p>
+                    <h2>Région, Département et partenaires publics</h2>
                     <p>
-                        Le portail SIG doit afficher les mentions FEDER obligatoires dès le haut de page lorsque les exigences officielles auront été transmises. La Région Guadeloupe et le Département sont également associés à la démarche de diffusion des données routières et territoriales.
+                        La Région Guadeloupe et le Département sont associés à la démarche de diffusion des données routières et territoriales.
                     </p>
                     <p>
                         Ces partenaires contribuent à inscrire le portail dans un cadre public lisible : données visualisables par le grand public, accès dédiés aux professionnels, ressources autorisées aux agents et conventions de partage avec les acteurs publics ou privés.

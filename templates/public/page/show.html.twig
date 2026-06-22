@@ -20,12 +20,12 @@
 
             {% if isPresentationPage %}
                 <div class="presentation-layout">
-                    <aside class="presentation-sidebar" aria-label="Navigation de la page Présentation">
+                    <aside class="presentation-sidebar" aria-label="Navigation de la page Nous sommes Routes de Guadeloupe">
                         <p class="presentation-sidebar__title">Navigation rapide</p>
                         <nav class="presentation-sidebar__nav">
-                            <a class="presentation-sidebar__link" href="#presentation-overview">Présentation</a>
+                            <a class="presentation-sidebar__link" href="#presentation-overview">Routes de Guadeloupe</a>
                             <a class="presentation-sidebar__link" href="#demarche-open-data">La démarche open data</a>
-                            <a class="presentation-sidebar__link" href="#publics-open-data">À qui s’adresse l’open data ?</a>
+                            <a class="presentation-sidebar__link" href="#services-sigr">Nos services</a>
                             <a class="presentation-sidebar__link" href="#partenaires-financeurs">Les partenaires</a>
                         </nav>
                     </aside>
@@ -35,11 +35,20 @@
                             <p class="presentation-welcome__eyebrow">Portail SIG public</p>
                             <h1>{{ resolvedTitle }}</h1>
                             <p class="presentation-welcome__lead">
-                                Bienvenue sur l’espace de présentation du portail SIG de Routes de Guadeloupe. Cette page explique l’esprit du service : rendre les données routières plus faciles à trouver, comprendre et réutiliser, avec une approche sobre, accessible et distincte du site institutionnel.
+                                Routes de Guadeloupe administre, gère, exploite et diffuse les données géographiques routières du domaine public lié aux routes nationales et départementales.
                             </p>
                             <p>
-                                Le portail donne un accès progressif aux données et cartes selon les profils : grand public sans compte, professionnels externes, agents Routes de Guadeloupe connectés automatiquement et administrateurs du catalogue.
+                                Le portail SIGR accompagne cette mission en rendant les données routières plus faciles à trouver, comprendre et réutiliser, avec des accès adaptés au grand public, aux professionnels, aux partenaires et aux agents.
                             </p>
+                            <div class="sigr-org-card" aria-label="Organisation du service SIGR">
+                                <p class="sigr-org-card__title">Service Système d’Information Géographique Routier</p>
+                                <div class="sigr-org-card__grid">
+                                    <span>Cartographies</span>
+                                    <span>Applications web</span>
+                                    <span>Analyses spatiales</span>
+                                    <span>Tableaux de bord</span>
+                                </div>
+                            </div>
                             <p class="presentation-welcome__actions">
                                 <a href="https://www.routesdeguadeloupe.fr/" rel="noopener" target="_blank">Consulter le site institutionnel Routes de Guadeloupe</a>
                             </p>
@@ -69,16 +78,16 @@
                             </ul>
                         </section>
 
-                        <section id="publics-open-data" class="presentation-section" aria-labelledby="publics-open-data-title">
-                            <h2 id="publics-open-data-title">À qui s’adresse l’open data ?</h2>
+                        <section id="services-sigr" class="presentation-section" aria-labelledby="services-sigr-title">
+                            <h2 id="services-sigr-title">Nos services</h2>
                             <p>
-                                L’open data s’adresse à plusieurs publics, avec des usages complémentaires autour de la connaissance du territoire et des politiques routières.
+                                Le service SIGR met à disposition des productions et outils utiles au pilotage du domaine public routier et à la diffusion des données auprès des publics autorisés.
                             </p>
                             <ul class="presentation-list">
-                                <li><strong>Citoyens :</strong> comprendre les politiques publiques, participer au débat public et renforcer la confiance envers l’action administrative.</li>
-                                <li><strong>Développeurs et entreprises :</strong> créer des services web ou mobiles, enrichir des produits existants et développer de nouveaux usages.</li>
-                                <li><strong>Analystes, journalistes, observateurs :</strong> expliquer les politiques publiques, produire des analyses et créer de nouvelles formes de représentation des données.</li>
-                                <li><strong>Administrations et collectivités :</strong> améliorer la circulation de l’information, croiser les données utiles au pilotage et mieux évaluer les actions publiques.</li>
+                                <li><strong>Cartographies :</strong> production et publication de cartes statiques ou dynamiques.</li>
+                                <li><strong>Applications web :</strong> accès aux cartes interactives, services métiers et espaces sécurisés.</li>
+                                <li><strong>Analyses spatiales :</strong> croisement des données et appui aux études territoriales.</li>
+                                <li><strong>Tableaux de bord :</strong> visualisation d’indicateurs pour le suivi et l’aide à la décision.</li>
                             </ul>
                         </section>
 

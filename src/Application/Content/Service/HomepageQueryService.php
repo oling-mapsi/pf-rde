@@ -154,7 +154,7 @@ final class HomepageQueryService
             ];
         }
 
-        if ($section->getBackgroundStyle() === 'kpi' && $featuredHeroItems !== []) {
+        if ($section->getBackgroundStyle() === 'kpi' && $items === [] && $featuredHeroItems !== []) {
             $items = $featuredHeroItems;
         }
 

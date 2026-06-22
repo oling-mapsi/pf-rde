@@ -49,6 +49,12 @@ final class ContentController extends AbstractController
         ]);
     }
 
+    #[Route('/thematiques', name: 'themes', methods: ['GET'])]
+    public function themes(): Response
+    {
+        return $this->render('public/page/themes.html.twig');
+    }
+
     #[Route('/mentions-legales', name: 'legal_mentions', methods: ['GET'])]
     public function legalMentions(PageRepository $pageRepository): Response
     {
