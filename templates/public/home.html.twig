@@ -8,6 +8,10 @@
     <div class="home-hero-kpis-shell">
         <section class="home-banner hero hero--standard home-banner--institutional" aria-labelledby="home-title">
             <div class="container container--content hero__content">
+                <div class="home-feder-badge" aria-label="Opération cofinancée par l'Union européenne via le FEDER">
+                    <img src="{{ asset('images/bloc-marque-feder.png') }}" alt="L'Europe s'engage en Guadeloupe - cofinancé par l'Union européenne">
+                    <p class="visually-hidden">Cet outil s’inscrit dans une opération de transformation numérique du Système d’Information Géographique Routier cofinancée par l’Union européenne via le FEDER.</p>
+                </div>
                 <div class="hero__intro">
                     <h1 id="home-title" style="color: #FC5000 !important;">
                         {% for line in homepageHero.titleLines %}
@@ -19,10 +23,6 @@
                             <span class="hero-baseline-line">{{ line }}</span>
                         {% endfor %}
                     </p>
-                    <div class="home-feder-badge" aria-label="Information de cofinancement européen">
-                        <img src="{{ asset('images/bloc-marque-feder.png') }}" alt="L'Europe s'engage en Guadeloupe - cofinancé par l'Union européenne">
-                        <p>Cet outil s’inscrit dans une opération de transformation numérique du Système d’Information Géographique Routier cofinancée par l’Union européenne via le FEDER.</p>
-                    </div>
                 </div>
                 <section class="home-hero-search" aria-label="Recherche principale">
                     <p class="home-kpis__search-subtitle">
