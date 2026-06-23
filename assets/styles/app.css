@@ -4429,25 +4429,24 @@ tbody tr:hover {
 
 .home-feder-badge {
     position: absolute;
-    top: clamp(0.4rem, 1.8vw, 1.4rem);
-    left: max(-8.5rem, calc((100vw - var(--layout-max-width-content)) / -2 + 1.5rem));
+    top: clamp(0.75rem, 2vw, 1.75rem);
+    left: max(-10rem, calc((100vw - var(--layout-max-width-content)) / -2 + 1.25rem));
     z-index: 3;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: clamp(5.25rem, 8vw, 7rem);
+    display: block;
+    width: clamp(7.5rem, 11vw, 10.5rem);
     margin: 0;
-    padding: 0.45rem;
-    border: 1px solid rgba(21, 54, 111, 0.14);
-    border-radius: 0.55rem;
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 0.75rem 2rem rgba(21, 54, 111, 0.12);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
 }
 
 .home-feder-badge img {
     display: block;
     width: 100%;
     height: auto;
+    filter: drop-shadow(0 0.35rem 0.9rem rgba(21, 54, 111, 0.18));
 }
 
 .home-feder-badge p {
@@ -4460,17 +4459,22 @@ tbody tr:hover {
 
 @media (max-width: 1040px) {
     .home-feder-badge {
-        left: 0;
-        width: 5.25rem;
+        left: 1rem;
+        width: clamp(6.75rem, 18vw, 8.25rem);
     }
 }
 
 @media (max-width: 720px) {
     .home-feder-badge {
-        position: static;
-        justify-self: start;
-        width: 4.75rem;
-        margin-bottom: 0.35rem;
+        position: absolute;
+        top: 0.8rem;
+        left: 1rem;
+        width: 5.75rem;
+        margin-bottom: 0;
+    }
+
+    .hero__content {
+        padding-top: 8rem;
     }
 }
 
