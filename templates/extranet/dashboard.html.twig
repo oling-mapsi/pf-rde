@@ -1,102 +1,191 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ extranetTitle }}{% endblock %}
+{% block body_class %}private-page extranet-page{% endblock %}
 
 {% block body %}
-    <section class="page-shell page-shell--agent">
+    <style>
+        body.extranet-page main.main {
+            padding-top: 2.25rem !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home {
+            padding-top: 2.5rem !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .private-mini-hero--extranet {
+            margin-top: 0 !important;
+            padding: 2.25rem 2rem 1.75rem !important;
+            border: 1px solid rgba(15, 23, 42, 0.08) !important;
+            border-radius: 0.35rem !important;
+            background: #ffffff !important;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04) !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .private-mini-hero__content {
+            gap: 1.25rem !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .private-mini-hero__intro {
+            display: grid !important;
+            gap: 0.85rem !important;
+            max-width: 58rem !important;
+            margin-inline: auto !important;
+            text-align: center !important;
+            justify-items: center !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .private-mini-hero__title,
+        body.extranet-page .page-shell--extranet-home .private-mini-hero__title .hero-title-line {
+            display: block !important;
+            margin: 0 !important;
+            padding-top: 1rem !important;
+            color: #d97b2b !important;
+            font-size: clamp(2.3rem, 4vw, 3.4rem) !important;
+            line-height: 1.04 !important;
+            text-align: center !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .private-mini-hero__lead {
+            margin: 0 !important;
+            font-size: 1.15rem !important;
+            line-height: 1.55 !important;
+            color: #334155 !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .private-mini-hero__meta {
+            margin: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1.55 !important;
+            color: #52606d !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .favorite-catalog-list--extranet {
+            gap: 1rem !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .favorite-catalog-card {
+            border-radius: 0.35rem !important;
+            overflow: hidden !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .favorite-catalog-card__main {
+            padding: 1.2rem 1.2rem 1rem !important;
+            gap: 0.95rem !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .favorite-catalog-card__kind {
+            margin: 0 0 0.35rem 0 !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .favorite-catalog-card .card__title {
+            margin: 0 !important;
+            line-height: 1.4 !important;
+        }
+
+        body.extranet-page .page-shell--extranet-home .favorite-catalog-card__actions {
+            padding: 1rem 1.2rem 1.1rem !important;
+            border-top: 1px solid rgba(15, 23, 42, 0.08) !important;
+        }
+    </style>
+    <section class="page-shell page-shell--agent page-shell--extranet-home">
         <div class="container">
             {% include 'extranet/_mini_hero.html.twig' with {
                 kicker: '',
                 title: extranetTitle,
-                lead: isAgentExtranet
-                    ? 'Bienvenue dans l’espace extranet agent. Accédez rapidement à vos ressources, favoris et demandes.'
-                    : 'Bienvenue dans l’espace extranet professionnel. Accédez rapidement à vos ressources, favoris et demandes.',
+                lead: 'Point d’accès unique pour consulter vos ressources, retrouver vos favoris et suivre vos demandes sans friction.',
                 searchInputId: 'extranet-search-input',
                 placeholder: 'Rechercher une carte, un fichier, un service WMS/WFS...'
             } only %}
 
+            <div class="extranet-leader extranet-leader--home">
+                <div class="extranet-leader__intro">
+                    <p class="extranet-leader__eyebrow">Vue d’ensemble</p>
+                    <h2 class="extranet-leader__title">Accès direct à l’essentiel</h2>
+                    <p class="extranet-leader__text">Les actions prioritaires, les favoris récents et le suivi de vos demandes sont regroupés sur un seul écran.</p>
+                </div>
+
+                <section class="dashboard-kpi extranet-leader__stats" aria-label="Indicateurs extranet">
+                    <article class="kpi-card">
+                        <p class="kpi-card__label">Demandes externes</p>
+                        <p class="kpi-card__value">{{ requestSummary.external }}</p>
+                        <p class="kpi-card__meta">Cartes et données</p>
+                    </article>
+                    {% if isAgentExtranet %}
+                        <article class="kpi-card">
+                            <p class="kpi-card__label">Demandes internes SIG</p>
+                            <p class="kpi-card__value">{{ requestSummary.agent }}</p>
+                            <p class="kpi-card__meta">Besoins internes</p>
+                        </article>
+                    {% endif %}
+                    <article class="kpi-card">
+                        <p class="kpi-card__label">Favoris</p>
+                        <p class="kpi-card__value">{{ requestSummary.favorites }}</p>
+                        <p class="kpi-card__meta">Ressources enregistrées</p>
+                    </article>
+                </section>
+            </div>
+
             <div class="extranet-layout">
                 <aside class="extranet-layout__sidebar">
-                    <section class="extranet-sidebar-actions" aria-label="Actions extranet">
-                        {% if isAgentExtranet %}
-                            <a class="btn btn-primary" href="{{ path('agent_request_new') }}">Nouvelle demande agent</a>
-                        {% else %}
-                            <a class="btn btn-primary" href="{{ path('extranet_request_new') }}">Nouvelle demande</a>
-                        {% endif %}
-                        {% if isAgentExtranet %}
-                            <a class="btn btn-outline" href="{{ path('extranet_request_new') }}">Demande externe</a>
-                        {% endif %}
-                        {% if not isAgentExtranet %}
-                            <a class="btn btn-outline" href="{{ path('app_account_change_password') }}">Changer mon mot de passe</a>
-                        {% endif %}
+                    <section class="card extranet-rail-card" aria-label="Actions extranet">
+                        <div class="extranet-rail-card__header">
+                            <h2 class="h4 extranet-section-heading">Accès rapides</h2>
+                        </div>
+                        <div class="extranet-sidebar-actions">
+                            {% if isAgentExtranet %}
+                                <a class="btn btn-primary" href="{{ path('agent_request_new') }}">Nouvelle demande agent</a>
+                                <a class="btn btn-outline" href="{{ path('extranet_request_new') }}">Demande externe</a>
+                            {% else %}
+                                <a class="btn btn-primary" href="{{ path('extranet_request_new') }}">Nouvelle demande</a>
+                                <a class="btn btn-outline" href="{{ path('app_account_change_password') }}">Changer mon mot de passe</a>
+                            {% endif %}
+                            <a class="btn btn-outline" href="{{ path('app_data_catalog') }}">Ouvrir le catalogue</a>
+                        </div>
                     </section>
                 </aside>
 
                 <div class="extranet-layout__main">
-                    <section class="dashboard-kpi">
-                        <article class="kpi-card">
-                            <span class="kpi-card__icon section-icon section-icon--orange" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8"/></svg>
-                            </span>
-                            <p class="kpi-card__label">Demandes externes</p>
-                            <p class="kpi-card__value">{{ requestSummary.external }}</p>
-                        </article>
-                        {% if isAgentExtranet %}
-                            <article class="kpi-card">
-                                <span class="kpi-card__icon section-icon section-icon--green" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M5 12h14M5 17h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                                </span>
-                                <p class="kpi-card__label">Demandes internes SIG</p>
-                                <p class="kpi-card__value">{{ requestSummary.agent }}</p>
-                            </article>
-                        {% endif %}
-                        <article class="kpi-card">
-                            <span class="kpi-card__icon section-icon section-icon--blue" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="none"><path d="m12 17.3-5.2 3 1.4-5.9L3.5 10l6.1-.5L12 4l2.4 5.5 6.1.5-4.7 4.4 1.4 5.9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-                            </span>
-                            <p class="kpi-card__label">Favoris</p>
-                            <p class="kpi-card__value">{{ requestSummary.favorites }}</p>
-                        </article>
-                    </section>
-
                     <section class="card mt-4">
                         <div class="extranet-section-header">
                             <h2 class="h4 extranet-section-heading">
                                 <span>Mes favoris</span>
                                 <span class="extranet-count-badge">{{ requestSummary.favorites }}</span>
                             </h2>
-                            <a class="extranet-section-link" href="{{ path('app_data_catalog') }}">Consulter toutes les données cartes</a>
+                            <a class="extranet-section-link" href="{{ path('app_data_catalog') }}">Voir tout le catalogue</a>
                         </div>
                         {% if favorites is empty %}
-                            <p>Aucun favori pour le moment.</p>
+                            <p class="extranet-empty-copy">Aucun favori pour le moment.</p>
                         {% else %}
-                            <div class="favorite-catalog-list" role="list">
+                            <div class="favorite-catalog-list favorite-catalog-list--extranet" role="list">
                                 {% for favorite in favorites %}
                                     <article class="card card--catalog-reference favorite-catalog-card" role="listitem">
-                                        <div class="favorite-catalog-card__mini" aria-hidden="true">
-                                            {% if favorite.thumbnailUrl %}
-                                                <img class="favorite-catalog-card__thumb" src="{{ favorite.thumbnailUrl }}" alt="">
-                                            {% else %}
-                                                <span class="favorite-catalog-card__thumb-fallback"></span>
-                                            {% endif %}
-                                            <span class="catalog-card__category-badge">{{ favorite.kindLabel }}</span>
-                                        </div>
-                                        <div class="catalog-card__body">
-                                            <h3 class="card__title">
-                                                <a href="{{ favorite.resourceUrl }}">{{ favorite.resourceTitle }}</a>
-                                            </h3>
-                                            <div class="favorite-catalog-card__actions">
-                                                <a class="favorite-catalog-card__link" href="{{ favorite.resourceUrl }}">Consulter</a>
-                                                <form method="post" action="{{ path('extranet_favorite_remove', { id: favorite.id }) }}">
-                                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('favorite_remove_' ~ favorite.id) }}">
-                                                    <button type="submit" class="favorite-action-btn" aria-label="Retirer {{ favorite.resourceTitle }} des favoris" title="Retirer">
-                                                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                                                            <path d="M3 6h18M8 6V4h8v2M10 11v6M14 11v6M6 6l1 14a1 1 0 0 0 1 .9h8a1 1 0 0 0 1-.9L18 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        </svg>
-                                                        <span class="visually-hidden">Retirer</span>
-                                                    </button>
-                                                </form>
+                                        <div class="favorite-catalog-card__main">
+                                            <div class="favorite-catalog-card__media" aria-hidden="true">
+                                                {% if favorite.thumbnailUrl %}
+                                                    <img class="favorite-catalog-card__thumb" src="{{ favorite.thumbnailUrl }}" alt="">
+                                                {% else %}
+                                                    <span class="favorite-catalog-card__thumb-fallback"></span>
+                                                {% endif %}
                                             </div>
+                                            <div class="catalog-card__body">
+                                                <p class="favorite-catalog-card__kind">{{ favorite.kindLabel }}</p>
+                                                <h3 class="card__title">
+                                                    <a href="{{ favorite.resourceUrl }}">{{ favorite.resourceTitle }}</a>
+                                                </h3>
+                                            </div>
+                                        </div>
+                                        <div class="favorite-catalog-card__actions">
+                                            <a class="favorite-catalog-card__link" href="{{ favorite.resourceUrl }}">Consulter</a>
+                                            <form method="post" action="{{ path('extranet_favorite_remove', { id: favorite.id }) }}">
+                                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('favorite_remove_' ~ favorite.id) }}">
+                                                <button type="submit" class="favorite-action-btn" aria-label="Retirer {{ favorite.resourceTitle }} des favoris" title="Retirer">
+                                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                        <path d="M3 6h18M8 6V4h8v2M10 11v6M14 11v6M6 6l1 14a1 1 0 0 0 1 .9h8a1 1 0 0 0 1-.9L18 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                    <span class="visually-hidden">Retirer</span>
+                                                </button>
+                                            </form>
                                         </div>
                                     </article>
                                 {% endfor %}
@@ -105,12 +194,14 @@
                     </section>
 
                     <section class="card mt-4">
-                        <h2 class="h4 extranet-section-heading">
-                            <span>Mes demandes externes cartes et données</span>
-                            <span class="extranet-count-badge">{{ requestSummary.external }}</span>
-                        </h2>
+                        <div class="extranet-section-header">
+                            <h2 class="h4 extranet-section-heading">
+                                <span>Mes demandes externes cartes et données</span>
+                                <span class="extranet-count-badge">{{ requestSummary.external }}</span>
+                            </h2>
+                        </div>
                         {% if resourceRequests is empty %}
-                            <p>Aucune demande externe envoyée.</p>
+                            <p class="extranet-empty-copy">Aucune demande externe envoyée.</p>
                         {% else %}
                             <div class="table-wrap">
                                 <table class="table table--data">
@@ -143,12 +234,14 @@
 
                     {% if isAgentExtranet %}
                         <section class="card mt-4">
-                            <h2 class="h4 extranet-section-heading">
-                                <span>Mes demandes internes SIG</span>
-                                <span class="extranet-count-badge">{{ requestSummary.agent }}</span>
-                            </h2>
+                            <div class="extranet-section-header">
+                                <h2 class="h4 extranet-section-heading">
+                                    <span>Mes demandes internes SIG</span>
+                                    <span class="extranet-count-badge">{{ requestSummary.agent }}</span>
+                                </h2>
+                            </div>
                             {% if agentRequests is empty %}
-                                <p>Aucune demande interne SIG envoyée.</p>
+                                <p class="extranet-empty-copy">Aucune demande interne SIG envoyée.</p>
                             {% else %}
                                 <div class="table-wrap">
                                     <table class="table table--data">

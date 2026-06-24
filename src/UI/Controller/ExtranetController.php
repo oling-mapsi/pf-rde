@@ -13,6 +13,7 @@ use App\Domain\Agent\Entity\AgentRequest;
 use App\Infrastructure\Repository\AgentRequestRepository;
 use App\Infrastructure\Repository\ExternalResourceRequestRepository;
 use App\Infrastructure\Repository\UserFavoriteRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;

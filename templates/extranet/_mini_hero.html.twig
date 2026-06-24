@@ -1,22 +1,22 @@
-<section class="private-mini-hero hero hero--compact home-banner--institutional" aria-label="Recherche extranet">
-    <div class="hero__content private-mini-hero__content">
-        <div class="hero__intro">
+<section class="private-mini-hero private-mini-hero--extranet" aria-label="Recherche extranet">
+    <div class="private-mini-hero__content">
+        <div class="private-mini-hero__intro">
             {% if kicker is not empty %}
-                <p class="private-mini-hero__kicker rdg-eyebrow">{{ kicker }}</p>
+                <p class="private-mini-hero__kicker">{{ kicker }}</p>
             {% endif %}
             <h1 class="private-mini-hero__title">
                 <span class="hero-title-line">{{ title|default('Espace extranet') }}</span>
             </h1>
-            <p class="private-mini-hero__lead hero_baseline">
+            <p class="private-mini-hero__lead">
                 {{ lead|default('Point d’accès commun pour les agents et les utilisateurs professionnels externes.') }}
             </p>
-            <p class="private-mini-hero__meta home-kpis__search-subtitle">
+            <p class="private-mini-hero__meta">
                 Moteur unique “Données et cartes” partagé avec le portail public. Les résultats affichés s’adaptent à vos droits d’accès.
             </p>
         </div>
 
-        <section class="home-hero-search private-mini-hero__search-wrap" aria-label="Recherche extranet rapide">
-            <form class="search-bar search-bar--hero-floating private-mini-hero__search" role="search" action="{{ path('app_data_catalog') }}" method="get" aria-label="Recherche dans les données et cartes">
+        <section class="private-mini-hero__search-wrap" aria-label="Recherche extranet rapide">
+            <form class="search-bar search-bar--extranet private-mini-hero__search" role="search" action="{{ path('app_data_catalog') }}" method="get" aria-label="Recherche dans les données et cartes">
                 <label class="visually-hidden" for="{{ searchInputId|default('private-search-input') }}">Rechercher une ressource</label>
                 <input
                     id="{{ searchInputId|default('private-search-input') }}"
@@ -26,12 +26,7 @@
                     placeholder="{{ placeholder|default('Rechercher une donnée, une carte, un service SIG...') }}"
                     aria-label="Rechercher une donnée, une carte, un service SIG"
                 >
-                <button class="search-bar__icon-submit" type="submit" aria-label="Lancer la recherche">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <circle cx="11" cy="11" r="6.5" stroke="#4f5460" stroke-width="2"/>
-                        <path d="M16 16l4.5 4.5" stroke="#4f5460" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </button>
+                <button class="btn btn-primary private-mini-hero__submit" type="submit">Rechercher</button>
             </form>
         </section>
     </div>
