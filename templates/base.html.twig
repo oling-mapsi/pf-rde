@@ -8,9 +8,6 @@
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
-        {% if app.debug %}
-            <link rel="stylesheet" href="{{ path('app_dev_asset_style', { file: 'app.css' }) }}?v={{ 'now'|date('U') }}">
-        {% endif %}
     </head>
     {% set currentRoute = app.request.attributes.get('_route')|default('') %}
     {% set isCatalogRoute = currentRoute == 'app_data_catalog' or currentRoute starts with 'app_static_map_' or currentRoute starts with 'app_interactive_map_' %}
