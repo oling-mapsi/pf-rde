@@ -20,6 +20,7 @@ parameters:
     env(APP_SSO_O365_ALLOW_DEFAULT_ROLE_FALLBACK): 'false'
     env(APP_SSO_O365_DENY_IF_UNMAPPED_ROLES): 'true'
     env(APP_SSO_O365_VERBOSE_USER_ERRORS): 'true'
+    env(APP_SECURITY_PASSWORD_MIN_LENGTH): '12'
     env(APP_GOD_MODE_EMAIL): 'florestan.rouet@oling.fr'
     env(APP_SIRENE_ENABLED): 'true'
     env(APP_SIRENE_API_TOKEN): ''

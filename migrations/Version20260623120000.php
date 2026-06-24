@@ -17,7 +17,25 @@ final class Version20260623120000 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE external_resource_request ALTER requester_id DROP NOT NULL');
-        $this->addSql('ALTER TABLE external_resource_request DROP CONSTRAINT FK_6E7D5E81C78AC0C3');
+        $this->addSql(<<<'SQL'
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'fk_6e7d5e81c78ac0c3'
+    ) THEN
+        ALTER TABLE external_resource_request DROP CONSTRAINT "FK_6E7D5E81C78AC0C3";
+    ELSIF EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'fk_external_request_user'
+    ) THEN
+        ALTER TABLE external_resource_request DROP CONSTRAINT fk_external_request_user;
+    END IF;
+END
+$$;
+SQL);
         $this->addSql('ALTER TABLE external_resource_request ADD CONSTRAINT FK_6E7D5E81C78AC0C3 FOREIGN KEY (requester_id) REFERENCES app_user (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE external_resource_request ADD request_number VARCHAR(40) DEFAULT NULL');
         $this->addSql('ALTER TABLE external_resource_request ADD requester_type VARCHAR(32) DEFAULT \'professional\' NOT NULL');
@@ -77,7 +95,7 @@ final class Version20260623120000 extends AbstractMigration
         $this->addSql('ALTER TABLE external_resource_request DROP acknowledged_at');
         $this->addSql('ALTER TABLE external_resource_request DROP processed_at');
         $this->addSql('ALTER TABLE external_resource_request ALTER requester_id SET NOT NULL');
-        $this->addSql('ALTER TABLE external_resource_request DROP CONSTRAINT FK_6E7D5E81C78AC0C3');
-        $this->addSql('ALTER TABLE external_resource_request ADD CONSTRAINT FK_6E7D5E81C78AC0C3 FOREIGN KEY (requester_id) REFERENCES app_user (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE external_resource_request DROP CONSTRAINT IF EXISTS "FK_6E7D5E81C78AC0C3"');
+        $this->addSql('ALTER TABLE external_resource_request ADD CONSTRAINT fk_external_request_user FOREIGN KEY (requester_id) REFERENCES app_user (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
 }
