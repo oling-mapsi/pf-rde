@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UI\Controller\Admin;
 
+use App\Application\Notification\RequestNotificationService;
 use App\Domain\Agent\Entity\AgentRequest;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -11,17 +12,23 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
 
 final class AgentRequestCrudController extends AbstractCrudController
 {
+    public function __construct(private readonly RequestNotificationService $requestNotificationService)
+    {
+    }
+
     private const STATUS_CHOICES = [
         'Soumise' => 'submitted',
         'En cours' => 'processing',
@@ -46,8 +53,8 @@ final class AgentRequestCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Demande de carte')
-            ->setEntityLabelInPlural('Demandes de cartes')
+            ->setEntityLabelInSingular('Demande interne SIG')
+            ->setEntityLabelInPlural('Demandes internes SIG')
             ->setDefaultSort(['submittedAt' => 'DESC'])
             ->setSearchFields(['requestNumber', 'title', 'description', 'requester.email', 'requester.displayName'])
             ->setPaginatorPageSize(30);
@@ -68,13 +75,16 @@ final class AgentRequestCrudController extends AbstractCrudController
         return $filters
             ->add(ChoiceFilter::new('status', 'Statut')->setChoices(self::STATUS_CHOICES))
             ->add('requestType')
-            ->add('requester')
-            ->add('assignedTo');
+            ->add(EntityFilter::new('requester', 'Demandeur'))
+            ->add(EntityFilter::new('assignedTo', 'Assignée à'))
+            ->add(TextFilter::new('requestNumber', 'Numéro'))
+            ->add(TextFilter::new('title', 'Objet'));
     }
 
     public function configureFields(string $pageName): iterable
     {
         if (Crud::PAGE_EDIT === $pageName) {
+            yield FormField::addPanel('Traitement');
             yield ChoiceField::new('status', 'Statut')
                 ->setChoices(self::STATUS_CHOICES)
                 ->renderAsBadges(self::STATUS_BADGES)
@@ -84,13 +94,21 @@ final class AgentRequestCrudController extends AbstractCrudController
                 ->setColumns(4);
             yield DateTimeField::new('processedAt', 'Traitée le')
                 ->setColumns(4);
+            yield FormField::addPanel('Contexte');
+            yield TextField::new('requestType', 'Type de ticket')->hideOnForm();
+            yield TextField::new('requestKindLabel', 'Nature')->hideOnForm();
+            yield TextField::new('urgencyLabel', 'Urgence')->hideOnForm();
+            yield TextField::new('deliveryDestinationLabel', 'Destination')->hideOnForm();
+            yield TextareaField::new('description', 'Description');
 
             return;
         }
 
         yield TextField::new('requestNumber', 'N°');
         yield TextField::new('title', 'Titre');
-        yield AssociationField::new('requestType', 'Type');
+        yield AssociationField::new('requestType', 'Type de ticket');
+        yield TextField::new('requestKindLabel', 'Nature');
+        yield TextField::new('urgencyLabel', 'Urgence');
         yield AssociationField::new('requester', 'Demandeur');
         yield ChoiceField::new('status', 'Statut')
             ->setChoices(self::STATUS_CHOICES)
@@ -101,9 +119,30 @@ final class AgentRequestCrudController extends AbstractCrudController
             ->setTemplatePath('admin/field/agent_request_attachments.html.twig');
 
         if (Crud::PAGE_DETAIL === $pageName) {
+            yield FormField::addPanel('Instruction');
             yield DateTimeField::new('processedAt', 'Traitée le');
+            yield AssociationField::new('assignedTo', 'Assignée à');
+            yield FormField::addPanel('Demande');
             yield TextareaField::new('description', 'Description');
-            yield ArrayField::new('payload', 'Données complémentaires');
+            yield TextField::new('urgencyLabel', 'Urgence');
+            yield TextField::new('requestKindLabel', 'Nature');
+            yield TextField::new('networkTypesLabel', 'Réseaux');
+            yield TextField::new('geographicAreaLabel', 'Emprise');
+            yield TextField::new('directionServiceLabel', 'Direction / service');
+            yield TextField::new('centerLabel', 'Centre');
+            yield TextField::new('orderReferenceLabel', 'Référence dossier');
+            yield TextField::new('routeDetailsLabel', 'Type de route');
+            yield TextField::new('deliveryDestinationLabel', 'Destination');
+            yield TextField::new('hasProvidedDataLabel', 'Données fournies');
+            yield TextField::new('projectionSystemLabel', 'Projection');
+            yield TextField::new('dataFormatsLabel', 'Formats données');
+            yield TextField::new('mapFormatsLabel', 'Formats carte');
+            yield TextField::new('mapScaleLabel', 'Échelle');
+            yield TextField::new('attachmentDescriptionLabel', 'Description PJ');
+            yield TextField::new('urgencyJustificationLabel', 'Justification urgence');
+            yield Field::new('attachments', 'Pièces jointes')
+                ->setTemplatePath('admin/field/agent_request_attachments.html.twig');
+            yield FormField::addPanel('Traçabilité');
             yield DateTimeField::new('createdAt', 'Créée le');
             yield DateTimeField::new('updatedAt', 'Mise à jour le');
         }
@@ -111,8 +150,21 @@ final class AgentRequestCrudController extends AbstractCrudController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        if ($entityInstance instanceof AgentRequest && $entityInstance->getProcessedAt() === null && \in_array($entityInstance->getStatus(), ['processed', 'rejected'], true)) {
-            $entityInstance->setProcessedAt(new \DateTimeImmutable());
+        if ($entityInstance instanceof AgentRequest) {
+            $originalData = $entityManager->getUnitOfWork()->getOriginalEntityData($entityInstance);
+            $previousStatus = (string) ($originalData['status'] ?? '');
+
+            if ($entityInstance->getProcessedAt() === null && \in_array($entityInstance->getStatus(), ['processed', 'rejected'], true)) {
+                $entityInstance->setProcessedAt(new \DateTimeImmutable());
+            }
+
+            parent::updateEntity($entityManager, $entityInstance);
+
+            if ($previousStatus !== '' && $previousStatus !== $entityInstance->getStatus()) {
+                $this->requestNotificationService->sendAgentRequestStatusUpdated($entityInstance);
+            }
+
+            return;
         }
 
         parent::updateEntity($entityManager, $entityInstance);

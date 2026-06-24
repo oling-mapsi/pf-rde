@@ -1,0 +1,13 @@
+<h1>Suivi de votre demande</h1>
+
+<p>Bonjour {{ request.requesterDisplayName }},</p>
+
+<p>Le statut de votre demande a été mis à jour.</p>
+
+<ul>
+    <li>Numéro : <strong>{{ request.requestNumber }}</strong></li>
+    <li>Objet : <strong>{{ request.subject }}</strong></li>
+    <li>Nouveau statut : <strong>{{ request.statusLabel }}</strong></li>
+</ul>
+
+<p>Cette notification correspond à une première version locale du suivi e-mail.</p>

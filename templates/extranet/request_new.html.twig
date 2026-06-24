@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle demande professionnelle{% endblock %}
+
+{% block body %}
+    <section class="page-shell page-shell--agent">
+        <div class="container container--content">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li><a href="{{ path('extranet_dashboard') }}">Mon espace</a></li>
+                    <li aria-current="page">Nouvelle demande</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <p class="page-header__eyebrow">Espace professionnel</p>
+                <h1 class="page-header__title">Nouvelle demande de carte ou de données</h1>
+                <p class="page-header__lead">Les informations de votre compte sont préremplies. Vous pouvez les ajuster pour cette demande si nécessaire.</p>
+            </header>
+
+            <section class="card form-panel request-form-shell" data-controller="request-submission">
+                <div class="request-form-shell__legal">
+                    <p><strong>Traitement :</strong> votre demande sera instruite par l’équipe habilitée de la plateforme.</p>
+                    <p><strong>Suivi :</strong> le numéro de demande sera disponible dans votre tableau de bord après soumission.</p>
+                </div>
+
+                {{ form_start(form) }}
+                    {{ form_row(form.lastName) }}
+                    {{ form_row(form.firstName) }}
+                    {{ form_row(form.email) }}
+                    {{ form_row(form.phoneNumber) }}
+                    {{ form_row(form.organizationName) }}
+                    {{ form_row(form.companySiret) }}
+                    {{ form_row(form.postalCode) }}
+                    {{ form_row(form.city) }}
+                    {{ form_row(form.subject) }}
+                    {{ form_row(form.requestKinds) }}
+                    {{ form_row(form.networkTypes) }}
+                    {{ form_row(form.message) }}
+                    {{ form_row(form.additionalInformation) }}
+                    {{ form_row(form.dataFormats) }}
+                    {{ form_row(form.projectionSystem) }}
+                    {{ form_row(form.mapFormats) }}
+                    {{ form_row(form.mapScale) }}
+                    {{ form_row(form.privacyConsent) }}
+                    <div class="request-form-shell__actions">
+                        <button type="submit" class="btn btn-primary">Soumettre la demande</button>
+                    </div>
+                {{ form_end(form) }}
+            </section>
+        </div>
+    </section>
+{% endblock %}

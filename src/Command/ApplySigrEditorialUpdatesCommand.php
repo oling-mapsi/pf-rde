@@ -120,7 +120,7 @@ final class ApplySigrEditorialUpdatesCommand extends Command
                 'name' => 'Demande de cartes et de données',
                 'type' => HomepageSection::TYPE_MESSAGE,
                 'position' => 40,
-                'title' => 'Sollicitation du service SIGR',
+                'title' => 'Solliciter le SIG de Routes de Guadeloupe',
                 'body' => '<p>Les parcours de demande de cartographies et de données géographiques seront organisés par profil : agents internes, professionnels disposant d’un compte et utilisateurs grand public.</p><p>Dans l’attente de la refonte complète des formulaires, les demandes peuvent être orientées vers le point de contact du portail.</p>',
                 'imagePath' => '/images/hero-guadeloupe-map-v3.png',
                 'ctaLabel' => 'Contacter le service',

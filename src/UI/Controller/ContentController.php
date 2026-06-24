@@ -55,6 +55,24 @@ final class ContentController extends AbstractController
         return $this->render('public/page/themes.html.twig');
     }
 
+    #[Route('/sig-innova', name: 'sig_innova', methods: ['GET'])]
+    public function sigInnova(PageRepository $pageRepository): Response
+    {
+        return $this->render('public/page/show.html.twig', [
+            'page' => $pageRepository->findOneBy(['slug' => 'sig-innova', 'status' => 'published']),
+            'fallbackTitle' => 'SIG-Innova',
+        ]);
+    }
+
+    #[Route('/partenaires', name: 'partners_hub', methods: ['GET'])]
+    public function partnersHub(PageRepository $pageRepository): Response
+    {
+        return $this->render('public/page/show.html.twig', [
+            'page' => $pageRepository->findOneBy(['slug' => 'partenaires', 'status' => 'published']),
+            'fallbackTitle' => 'Partenaires',
+        ]);
+    }
+
     #[Route('/mentions-legales', name: 'legal_mentions', methods: ['GET'])]
     public function legalMentions(PageRepository $pageRepository): Response
     {

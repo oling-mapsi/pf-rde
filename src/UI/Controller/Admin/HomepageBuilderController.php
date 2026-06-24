@@ -33,7 +33,7 @@ final class HomepageBuilderController extends AbstractController
     ): Response {
         $homepage = $homepageContentRepository->findEditableHomepage();
         $sections = $homepageSectionRepository->findAllOrdered();
-        $featuredThemes = $taxonomyTermRepository->findFeaturedMapThemes(8);
+        $featuredThemes = $taxonomyTermRepository->findFeaturedMapThemes(7);
 
         if ($request->isMethod('POST')) {
             $form = (string) $request->request->get('_form', 'hero');
@@ -165,7 +165,8 @@ final class HomepageBuilderController extends AbstractController
 
     private function isEditableCardsSection(HomepageSection $section): bool
     {
-        return $section->getType() === HomepageSection::TYPE_MANUAL_CARDS && $section->getBackgroundStyle() !== 'kpi';
+        return ($section->getType() === HomepageSection::TYPE_MANUAL_CARDS && $section->getBackgroundStyle() !== 'kpi')
+            || $section->getType() === HomepageSection::TYPE_REQUEST_GATEWAY;
     }
 
     /** @param array<string, mixed> $sectionPayload */

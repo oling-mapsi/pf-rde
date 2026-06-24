@@ -32,5 +32,16 @@ class ExternalResourceRequestRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-}
 
+    /**
+     * @return list<ExternalResourceRequest>
+     */
+    public function findLatestForAdmin(int $limit = 50): array
+    {
+        return $this->createQueryBuilder('r')
+            ->orderBy('r.submittedAt', 'DESC')
+            ->setMaxResults(max(1, $limit))
+            ->getQuery()
+            ->getResult();
+    }
+}

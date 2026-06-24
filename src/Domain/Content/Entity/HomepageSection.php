@@ -25,6 +25,7 @@ class HomepageSection
     public const TYPE_MESSAGE = 'message';
     public const TYPE_SPONSOR = 'sponsor';
     public const TYPE_DATA_HIGHLIGHTS = 'data_highlights';
+    public const TYPE_REQUEST_GATEWAY = 'request_gateway';
 
     public const LAYOUT_GRID = 'grid';
     public const LAYOUT_FEATURE = 'feature';

@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demande de carte ou de données{% endblock %}
+
+{% block body %}
+    <section class="page-shell">
+        <div class="container container--content">
+            <nav class="breadcrumb" aria-label="Fil d'Ariane">
+                <ol>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li aria-current="page">Demande de carte ou de données</li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <p class="page-header__eyebrow">Demandes externes</p>
+                <h1 class="page-header__title">Demander une carte ou des données</h1>
+                <p class="page-header__lead">Ce formulaire permet aux usagers et professionnels de transmettre un besoin précis. Les professionnels disposant déjà d’un compte peuvent aussi déposer leur demande depuis l’espace privé.</p>
+            </header>
+
+            <section class="card request-intro-card">
+                <div>
+                    <h2 class="h4">Professionnels</h2>
+                    <p>Si vous êtes un professionnel régulier, l’usage recommandé est la demande depuis votre espace privé pour suivre plus facilement vos échanges.</p>
+                </div>
+                <div class="request-intro-card__actions">
+                    <a class="btn btn-primary" href="{{ path('app_login') }}">Connexion</a>
+                    <a class="btn btn-outline" href="{{ path('app_register_external') }}">Créer un compte professionnel</a>
+                </div>
+            </section>
+
+            <section class="card form-panel request-form-shell" data-controller="request-submission">
+                <div class="request-form-shell__legal">
+                    <p><strong>Finalité :</strong> les informations collectées servent uniquement à instruire votre demande de carte ou de données.</p>
+                    <p><strong>Accès :</strong> les données sont consultées par les administrateurs habilités de la plateforme pour le traitement de la demande.</p>
+                    <p><strong>Conservation :</strong> la durée de conservation sera précisée après validation finale avec le DPO.</p>
+                    <p><strong>Hébergement :</strong> l’hébergement exact sera documenté dans les mentions définitives avant mise en production.</p>
+                </div>
+
+                {{ form_start(form) }}
+                    {{ form_row(form.requesterType) }}
+                    {{ form_row(form.lastName) }}
+                    {{ form_row(form.firstName) }}
+                    {{ form_row(form.email) }}
+                    {{ form_row(form.emailConfirmation) }}
+                    {{ form_row(form.phoneNumber) }}
+                    {{ form_row(form.organizationName) }}
+                    {{ form_row(form.companySiret) }}
+                    {{ form_row(form.postalCode) }}
+                    {{ form_row(form.city) }}
+                    {{ form_row(form.subject) }}
+                    {{ form_row(form.requestKinds) }}
+                    {{ form_row(form.networkTypes) }}
+                    {{ form_row(form.message) }}
+                    {{ form_row(form.additionalInformation) }}
+                    {{ form_row(form.dataFormats) }}
+                    {{ form_row(form.projectionSystem) }}
+                    {{ form_row(form.mapFormats) }}
+                    {{ form_row(form.mapScale) }}
+                    {{ form_row(form.privacyConsent) }}
+                    <div class="request-form-shell__actions">
+                        <button type="submit" class="btn btn-primary">Envoyer ma demande</button>
+                    </div>
+                {{ form_end(form) }}
+            </section>
+        </div>
+    </section>
+{% endblock %}

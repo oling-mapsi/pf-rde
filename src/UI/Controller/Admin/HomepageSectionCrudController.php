@@ -45,6 +45,7 @@ final class HomepageSectionCrudController extends AbstractCrudController
                 'Message éditorial' => HomepageSection::TYPE_MESSAGE,
                 'Sponsor / partenaire' => HomepageSection::TYPE_SPONSOR,
                 'Chiffres clés data' => HomepageSection::TYPE_DATA_HIGHLIGHTS,
+                'Sollicitation SIGR' => HomepageSection::TYPE_REQUEST_GATEWAY,
             ])
             ->setColumns(6);
         yield IntegerField::new('position', 'Ordre')->setColumns(4);
@@ -80,7 +81,7 @@ final class HomepageSectionCrudController extends AbstractCrudController
             ->setColumns(12);
         yield CodeEditorField::new('itemsConfig', 'Cartes manuelles JSON')->hideOnIndex()
             ->setLanguage('js')
-            ->setHelp('[{"title":"Titre","text":"Texte","imagePath":"/images/...","url":"/page","label":"Lire"}]')
+            ->setHelp('[{"title":"Titre","text":"Texte","imagePath":"/images/...","url":"/page","label":"Lire","icon":"map","accent":"orange"}]')
             ->setColumns(12);
 
         yield FormField::addTab('Publication');

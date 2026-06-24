@@ -38,16 +38,18 @@ final class HomepageQueryService
         $sourceThemeCount = $this->dataSourceRepository->countPublishedThemes();
         $datasetCount = $sourceCount > 0 ? $sourceCount : $legacyDatasetCount;
         $themeCount = $sourceThemeCount > 0 ? $sourceThemeCount : $legacyThemeCount;
-        $featuredHeroItems = $this->buildFeaturedThemeHeroItems();
+        $heroThemeItems = $this->buildFeaturedThemeHeroItems(7);
         $homepage = $this->homepageContentRepository->findPublishedHomepage();
         $sections = $this->homepageSectionRepository->findPublishedOrdered();
+        $homepageSections = $sections === []
+            ? $this->buildDefaultSections($datasetCount, $themeCount, $heroThemeItems)
+            : $this->buildSectionsViewModel($sections, $datasetCount, $themeCount, $heroThemeItems);
 
         return [
             'homepage' => $homepage,
             'homepageHero' => $this->buildHeroViewModel($homepage, $datasetCount, $themeCount),
-            'homepageSections' => $sections === []
-                ? $this->buildDefaultSections($datasetCount, $themeCount, $featuredHeroItems)
-                : $this->buildSectionsViewModel($sections, $datasetCount, $themeCount, $featuredHeroItems),
+            'homeHeroThemes' => $heroThemeItems,
+            'homepageSections' => $homepageSections,
             'latestNews' => $this->newsRepository->findLatestPublished(3),
             'quickLinks' => $this->quickLinkRepository->findBy(['status' => 'published'], ['position' => 'ASC'], 8),
             'datasetCount' => $datasetCount,
@@ -158,8 +160,9 @@ final class HomepageQueryService
             $items = $featuredHeroItems;
         }
 
-        return [
+        $viewModel = [
             'id' => $section->getId(),
+            'name' => $section->getName(),
             'type' => $section->getType(),
             'title' => $section->getTitle(),
             'intro' => $section->getIntro(),
@@ -171,6 +174,8 @@ final class HomepageQueryService
             'backgroundStyle' => $section->getBackgroundStyle(),
             'items' => $items,
         ];
+
+        return $viewModel;
     }
 
     /** @return list<array<string, mixed>> */
@@ -225,11 +230,11 @@ final class HomepageQueryService
     }
 
     /** @return list<array{title: string, url: string, label: string, icon: string, color: string, accent: string}> */
-    private function buildFeaturedThemeHeroItems(): array
+    private function buildFeaturedThemeHeroItems(int $limit = 8): array
     {
-        $themes = $this->taxonomyTermRepository->findFeaturedMapThemes(8);
+        $themes = $this->taxonomyTermRepository->findFeaturedMapThemes($limit);
         if ($themes === []) {
-            $themes = $this->taxonomyTermRepository->findActiveMapThemes(8);
+            $themes = $this->taxonomyTermRepository->findActiveMapThemes($limit);
         }
 
         $fallbackAccents = ['orange', 'blue', 'yellow', 'green'];
@@ -259,7 +264,7 @@ final class HomepageQueryService
         $fallbackColors = ['#FC5000', '#38B4E7', '#FBD002', '#AAAE02'];
         $fallbackIcons = ['map', 'layers', 'route', 'shield'];
 
-        foreach (array_slice(array_values($fallbackThemes), 0, 8) as $index => $themeName) {
+        foreach (array_slice(array_values($fallbackThemes), 0, $limit) as $index => $themeName) {
             $items[] = [
                 'title' => $themeName,
                 'url' => '/donnees-cartes?theme%5B0%5D='.rawurlencode($themeName),

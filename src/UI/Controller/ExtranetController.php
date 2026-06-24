@@ -7,13 +7,12 @@ namespace App\UI\Controller;
 use App\Application\Access\Service\CatalogResourceLocator;
 use App\Application\Access\Service\GodModeService;
 use App\Application\Access\Service\VisibilityScopeResolver;
-use App\Domain\Access\Entity\ExternalResourceRequest;
 use App\Domain\Access\Entity\User;
 use App\Domain\Access\Entity\UserFavorite;
+use App\Domain\Agent\Entity\AgentRequest;
+use App\Infrastructure\Repository\AgentRequestRepository;
 use App\Infrastructure\Repository\ExternalResourceRequestRepository;
 use App\Infrastructure\Repository\UserFavoriteRepository;
-use App\UI\Form\ExternalResourceRequestType;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -29,9 +28,9 @@ final class ExtranetController extends AbstractController
     #[Route('', name: 'dashboard', methods: ['GET', 'POST'])]
     public function dashboard(
         Request $request,
-        EntityManagerInterface $entityManager,
         UserFavoriteRepository $favoriteRepository,
         ExternalResourceRequestRepository $externalResourceRequestRepository,
+        AgentRequestRepository $agentRequestRepository,
         CatalogResourceLocator $catalogResourceLocator,
         VisibilityScopeResolver $visibilityScopeResolver,
         GodModeService $godModeService,
@@ -42,25 +41,11 @@ final class ExtranetController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        $resourceRequest = (new ExternalResourceRequest())
-            ->setRequester($user);
-        $form = $this->createForm(ExternalResourceRequestType::class, $resourceRequest, [
-            'action' => $this->generateUrl('extranet_dashboard'),
-        ]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($resourceRequest);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Votre demande de ressource a été transmise.');
-
-            return $this->redirectToRoute('extranet_dashboard');
-        }
-
         $effectiveUserType = $godModeService->getEffectiveUserType($user) ?? $user->getUserType();
         $isAgentExtranet = \in_array($effectiveUserType, User::ssoAccountTypes(), true);
         $allowedScopes = $visibilityScopeResolver->resolveForUser($user);
+        $externalRequests = $externalResourceRequestRepository->findLatestForUser($user);
+        $agentRequests = $isAgentExtranet ? $agentRequestRepository->findLatestForUser($user) : [];
         $favoriteCards = array_map(
             fn (UserFavorite $favorite): array => $this->buildFavoriteCard($favorite, $catalogResourceLocator, $allowedScopes),
             $favoriteRepository->findLatestForUser($user),
@@ -69,9 +54,17 @@ final class ExtranetController extends AbstractController
         return $this->render('extranet/dashboard.html.twig', [
             'isAgentExtranet' => $isAgentExtranet,
             'extranetTitle' => $isAgentExtranet ? 'Espace extranet agent' : 'Espace extranet professionnel',
+            'requestSummary' => [
+                'favorites' => \count($favoriteCards),
+                'external' => \count($externalRequests),
+                'agent' => \count($agentRequests),
+            ],
             'favorites' => $favoriteCards,
-            'resourceRequests' => $externalResourceRequestRepository->findLatestForUser($user),
-            'requestForm' => $form,
+            'resourceRequests' => $externalRequests,
+            'agentRequests' => array_map(
+                fn (AgentRequest $agentRequest): array => $this->buildAgentRequestCard($agentRequest),
+                $agentRequests,
+            ),
         ]);
     }
 
@@ -247,6 +240,51 @@ final class ExtranetController extends AbstractController
             'resourceUrl' => $resourceUrl,
             'kindLabel' => $favorite->getKindLabel(),
             'thumbnailUrl' => $thumbnailUrl,
+        ];
+    }
+
+    /**
+     * @return array{
+     *     requestNumber: string,
+     *     title: string,
+     *     status: string,
+     *     submittedAt: \DateTimeImmutable,
+     *     urgency: string,
+     *     geographicArea: string,
+     *     requestKindLabel: string,
+     *     destinationLabel: string
+     * }
+     */
+    private function buildAgentRequestCard(AgentRequest $agentRequest): array
+    {
+        $payload = $agentRequest->getPayload() ?? [];
+        $requestKinds = isset($payload['requestKinds']) && \is_array($payload['requestKinds']) ? $payload['requestKinds'] : [];
+        $requestKindLabel = match (true) {
+            \in_array('map', $requestKinds, true) && \in_array('data', $requestKinds, true) => 'Carte + données',
+            \in_array('map', $requestKinds, true) => 'Carte',
+            \in_array('data', $requestKinds, true) => 'Données',
+            default => 'Non précisé',
+        };
+
+        $urgency = trim((string) ($payload['urgencyLevel'] ?? 'normal'));
+        $urgencyLabel = match ($urgency) {
+            'urgent' => 'Urgent',
+            'very_urgent' => 'Très urgent',
+            default => 'Normal',
+        };
+
+        $destination = trim((string) ($payload['deliveryDestination'] ?? 'internal'));
+        $destinationLabel = $destination === 'external' ? 'Diffusion externe' : 'Usage interne';
+
+        return [
+            'requestNumber' => $agentRequest->getRequestNumber(),
+            'title' => $agentRequest->getTitle(),
+            'status' => $agentRequest->getStatus(),
+            'submittedAt' => $agentRequest->getSubmittedAt(),
+            'urgency' => $urgencyLabel,
+            'geographicArea' => trim((string) ($payload['geographicArea'] ?? '')),
+            'requestKindLabel' => $requestKindLabel,
+            'destinationLabel' => $destinationLabel,
         ];
     }
 

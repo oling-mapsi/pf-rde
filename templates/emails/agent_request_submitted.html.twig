@@ -1,0 +1,15 @@
+<h1>Demande interne enregistrée</h1>
+
+<p>Bonjour {{ request.requester.displayName }},</p>
+
+<p>Votre demande interne SIG a bien été enregistrée.</p>
+
+<ul>
+    <li>Numéro : <strong>{{ request.requestNumber }}</strong></li>
+    <li>Objet : <strong>{{ request.title }}</strong></li>
+    <li>Nature : <strong>{{ request.requestKindLabel }}</strong></li>
+    <li>Urgence : <strong>{{ request.urgencyLabel }}</strong></li>
+    <li>Statut initial : <strong>{{ request.statusLabel }}</strong></li>
+</ul>
+
+<p>Cette notification correspond à une première version locale du suivi e-mail.</p>

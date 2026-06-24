@@ -1,0 +1,13 @@
+<h1>Suivi de votre demande interne</h1>
+
+<p>Bonjour {{ request.requester.displayName }},</p>
+
+<p>Le statut de votre demande interne SIG a été mis à jour.</p>
+
+<ul>
+    <li>Numéro : <strong>{{ request.requestNumber }}</strong></li>
+    <li>Objet : <strong>{{ request.title }}</strong></li>
+    <li>Nouveau statut : <strong>{{ request.statusLabel }}</strong></li>
+</ul>
+
+<p>Cette notification correspond à une première version locale du suivi e-mail.</p>

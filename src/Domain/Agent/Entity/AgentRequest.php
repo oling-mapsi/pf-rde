@@ -207,6 +207,145 @@ class AgentRequest
         return $this;
     }
 
+    public function getStatusLabel(): string
+    {
+        return match ($this->status) {
+            'submitted' => 'Soumise',
+            'processing' => 'En cours',
+            'processed' => 'Traitée',
+            'rejected' => 'Rejetée',
+            'archived' => 'Archivée',
+            default => $this->status,
+        };
+    }
+
+    public function getUrgencyLabel(): string
+    {
+        return match ($this->getPayloadString('urgencyLevel', 'normal')) {
+            'urgent' => 'Urgent',
+            'very_urgent' => 'Très urgent',
+            default => 'Normal',
+        };
+    }
+
+    public function getRequestKindLabel(): string
+    {
+        $requestKinds = $this->getPayloadList('requestKinds');
+
+        return match (true) {
+            \in_array('map', $requestKinds, true) && \in_array('data', $requestKinds, true) => 'Carte + données',
+            \in_array('map', $requestKinds, true) => 'Carte',
+            \in_array('data', $requestKinds, true) => 'Données',
+            default => 'Non précisé',
+        };
+    }
+
+    public function getNetworkTypesLabel(): string
+    {
+        $networkTypes = $this->getPayloadList('networkTypes');
+
+        return $networkTypes !== [] ? implode(', ', $networkTypes) : 'Non précisé';
+    }
+
+    public function getGeographicAreaLabel(): string
+    {
+        return $this->getPayloadString('geographicArea', 'Non précisée');
+    }
+
+    public function getDirectionServiceLabel(): string
+    {
+        return $this->getPayloadString('directionService', 'Non précisé');
+    }
+
+    public function getCenterLabel(): string
+    {
+        return $this->getPayloadString('center', 'Non précisé');
+    }
+
+    public function getDeliveryDestinationLabel(): string
+    {
+        return $this->getPayloadString('deliveryDestination', 'internal') === 'external'
+            ? 'Diffusion externe'
+            : 'Usage interne';
+    }
+
+    public function getProjectionSystemLabel(): string
+    {
+        return $this->getPayloadString('projectionSystem', 'Non précisé');
+    }
+
+    public function getDataFormatsLabel(): string
+    {
+        $dataFormats = $this->getPayloadList('dataFormats');
+
+        return $dataFormats !== [] ? implode(', ', $dataFormats) : 'Non précisé';
+    }
+
+    public function getMapFormatsLabel(): string
+    {
+        $mapFormats = $this->getPayloadList('mapFormats');
+
+        return $mapFormats !== [] ? implode(', ', $mapFormats) : 'Non précisé';
+    }
+
+    public function getMapScaleLabel(): string
+    {
+        return $this->getPayloadString('mapScale', 'Non précisée');
+    }
+
+    public function getAttachmentDescriptionLabel(): string
+    {
+        return $this->getPayloadString('attachmentDescription', 'Non précisée');
+    }
+
+    public function getOrderReferenceLabel(): string
+    {
+        return $this->getPayloadString('orderReference', 'Non renseignée');
+    }
+
+    public function getRouteDetailsLabel(): string
+    {
+        return $this->getPayloadString('routeDetails', 'Non précisé');
+    }
+
+    public function getHasProvidedDataLabel(): string
+    {
+        return $this->getPayloadBool('hasProvidedData') ? 'Oui' : 'Non';
+    }
+
+    public function getUrgencyJustificationLabel(): string
+    {
+        return $this->getPayloadString('urgencyJustification', 'Non renseignée');
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function getPayloadList(string $key): array
+    {
+        $value = $this->payload[$key] ?? null;
+        if (!\is_array($value)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(
+            static fn (mixed $item): string => trim((string) $item),
+            $value,
+        ), static fn (string $item): bool => $item !== ''));
+    }
+
+    private function getPayloadString(string $key, string $default = ''): string
+    {
+        $value = trim((string) ($this->payload[$key] ?? ''));
+
+        return $value !== '' ? $value : $default;
+    }
+
+    private function getPayloadBool(string $key): bool
+    {
+        return (bool) ($this->payload[$key] ?? false);
+    }
+
     public function __toString(): string
     {
         return $this->requestNumber;

@@ -1,0 +1,14 @@
+<h1>Demande enregistrée</h1>
+
+<p>Bonjour {{ request.requesterDisplayName }},</p>
+
+<p>Votre demande de carte ou de données a bien été enregistrée.</p>
+
+<ul>
+    <li>Numéro : <strong>{{ request.requestNumber }}</strong></li>
+    <li>Objet : <strong>{{ request.subject }}</strong></li>
+    <li>Type : <strong>{{ request.requestKindLabel }}</strong></li>
+    <li>Statut initial : <strong>{{ request.statusLabel }}</strong></li>
+</ul>
+
+<p>Cette notification correspond à une première version locale du suivi e-mail.</p>

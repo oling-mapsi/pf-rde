@@ -7,18 +7,18 @@
 {% block body %}
     <div class="home-hero-kpis-shell">
         <section class="home-banner hero hero--standard home-banner--institutional" aria-labelledby="home-title">
+            <div class="home-feder-badge" aria-label="Opération cofinancée par l'Union européenne via le FEDER">
+                <img src="{{ asset('images/bloc-marque-feder.png') }}" alt="L'Europe s'engage en Guadeloupe - cofinancé par l'Union européenne">
+                <p class="visually-hidden">Cet outil s’inscrit dans une opération de transformation numérique du Système d’Information Géographique Routier cofinancée par l’Union européenne via le FEDER.</p>
+            </div>
             <div class="container container--content hero__content">
-                <div class="home-feder-badge" aria-label="Opération cofinancée par l'Union européenne via le FEDER">
-                    <img src="{{ asset('images/bloc-marque-feder.png') }}" alt="L'Europe s'engage en Guadeloupe - cofinancé par l'Union européenne">
-                    <p class="visually-hidden">Cet outil s’inscrit dans une opération de transformation numérique du Système d’Information Géographique Routier cofinancée par l’Union européenne via le FEDER.</p>
-                </div>
                 <div class="hero__intro">
-                    <h1 id="home-title" style="color: #FC5000 !important;">
+                    <h1 id="home-title" class="home-hero-title">
                         {% for line in homepageHero.titleLines %}
-                            <span class="hero-title-line" style="color: #FC5000 !important;">{{ line }}</span>
+                            <span class="hero-title-line">{{ line }}</span>
                         {% endfor %}
                     </h1>
-                    <p class="hero_baseline">
+                    <p class="hero_baseline home-hero-baseline">
                         {% for line in homepageHero.baselineLines %}
                             <span class="hero-baseline-line">{{ line }}</span>
                         {% endfor %}
@@ -40,19 +40,31 @@
                         </button>
                     </form>
                 </section>
+
+                {% if homeHeroThemes is not empty %}
+                    <nav class="home-hero-themes" aria-label="Thématiques du catalogue">
+                        {% for theme in homeHeroThemes %}
+                            {% set accent = theme.accent|default(cycle(['orange', 'blue', 'yellow', 'green'], loop.index0)) %}
+                            {% set customColor = theme.color|default(null) %}
+                            <a
+                                class="home-hero-theme home-hero-theme--{{ accent }} {{ customColor ? 'home-hero-theme--custom' : '' }}"
+                                href="{{ theme.url }}"
+                                aria-label="{{ theme.label|default(theme.title) }}"
+                                {% if customColor %}style="--home-hero-theme-color: {{ customColor }};"{% endif %}
+                            >
+                                <span class="home-hero-theme__icon {{ customColor ? 'is-custom' : 'is-' ~ accent }}" aria-hidden="true">
+                                    {% include 'public/home/_quick_icon.html.twig' with { icon: theme.icon|default('map') } only %}
+                                </span>
+                                <span class="home-hero-theme__label">{{ theme.title }}</span>
+                            </a>
+                        {% endfor %}
+                    </nav>
+                {% endif %}
             </div>
         </section>
-
-        {% for section in homepageSections %}
-            {% if section.backgroundStyle == 'kpi' %}
-                {% include 'public/home/_section.html.twig' with { section: section } only %}
-            {% endif %}
-        {% endfor %}
     </div>
 
     {% for section in homepageSections %}
-        {% if section.backgroundStyle != 'kpi' %}
-            {% include 'public/home/_section.html.twig' with { section: section } only %}
-        {% endif %}
+        {% include 'public/home/_section.html.twig' with { section: section } only %}
     {% endfor %}
 {% endblock %}

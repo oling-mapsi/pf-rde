@@ -13,7 +13,7 @@ parameters:
     env(APP_SSO_O365_CLIENT_SECRET): ''
     env(APP_SSO_O365_SCOPE): 'openid profile email'
     env(APP_SSO_O365_ROLE_CLAIM): 'roles'
-    env(APP_SSO_O365_ROLE_MAP): '{"SIG_ADMIN":"ROLE_ADMIN","SIG_MANAGER":"ROLE_MANAGER","SIG_AGENT":"ROLE_AGENT"}'
+    env(APP_SSO_O365_ROLE_MAP): '{"SIGR_ADMIN":"ROLE_ADMIN","SIGR_AGENT":"ROLE_AGENT"}'
     env(APP_SSO_O365_DEFAULT_INTERNAL_ROLE): 'ROLE_AGENT'
     env(APP_SSO_O365_ALLOWED_TENANT_IDS): '[]'
     env(APP_SSO_O365_REQUIRE_ROLE_CLAIM): 'true'
@@ -81,6 +81,16 @@ services:
             $roleClaim: '%app.sso.o365.role_claim%'
             $enabled: '%app.sso.o365.enabled%'
             $requireRoleClaim: '%app.sso.o365.require_role_claim%'
+            $allowedTenantIds: '%app.sso.o365.allowed_tenant_ids%'
+
+    App\Command\Office365SsoSmokeTestCommand:
+        arguments:
+            $tenantId: '%app.sso.o365.tenant_id%'
+            $clientId: '%app.sso.o365.client_id%'
+            $clientSecret: '%app.sso.o365.client_secret%'
+            $scope: '%app.sso.o365.scope%'
+            $roleClaim: '%app.sso.o365.role_claim%'
+            $enabled: '%app.sso.o365.enabled%'
             $allowedTenantIds: '%app.sso.o365.allowed_tenant_ids%'
 
     App\Application\Access\Service\GodModeService:

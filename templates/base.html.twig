@@ -15,6 +15,8 @@
     {% set currentRoute = app.request.attributes.get('_route')|default('') %}
     {% set isCatalogRoute = currentRoute == 'app_data_catalog' or currentRoute starts with 'app_static_map_' or currentRoute starts with 'app_interactive_map_' %}
     {% set isPresentationRoute = currentRoute == 'app_content_page_show' and app.request.attributes.get('slug') == 'presentation-portail' %}
+    {% set isInnovaRoute = currentRoute == 'app_content_sig_innova' %}
+    {% set isPartnersHubRoute = currentRoute == 'app_content_partners_hub' %}
     <body class="{% block body_class %}public-page{% endblock %}">
         <a href="#main-content" class="skip-link">Aller au contenu principal</a>
 
@@ -41,8 +43,8 @@
 
                 <nav id="site-main-nav" class="main-nav" aria-label="Navigation principale" hidden>
                     <a class="main-nav__link {{ isPresentationRoute ? 'is-active' : '' }}" href="{{ path('app_content_page_show', { slug: 'presentation-portail' }) }}" {{ isPresentationRoute ? 'aria-current="page"' : '' }}>Nous sommes Routes de Guadeloupe</a>
-                    <a class="main-nav__link {{ currentRoute == 'app_content_themes' ? 'is-active' : '' }}" href="{{ path('app_content_themes') }}" {{ currentRoute == 'app_content_themes' ? 'aria-current="page"' : '' }}>Thématiques</a>
-                    <a class="main-nav__link {{ isCatalogRoute ? 'is-active' : '' }}" href="{{ path('app_data_catalog') }}" {{ isCatalogRoute ? 'aria-current="page"' : '' }}>Catalogue</a>
+                    <a class="main-nav__link {{ isInnovaRoute ? 'is-active' : '' }}" href="{{ path('app_content_sig_innova') }}" {{ isInnovaRoute ? 'aria-current="page"' : '' }}>SIG-Innova</a>
+                    <a class="main-nav__link {{ isPartnersHubRoute ? 'is-active' : '' }}" href="{{ path('app_content_partners_hub') }}" {{ isPartnersHubRoute ? 'aria-current="page"' : '' }}>Partenaires</a>
                     <a class="main-nav__link {{ currentRoute starts with 'app_content_news_' ? 'is-active' : '' }}" href="{{ path('app_content_news_index') }}" {{ currentRoute starts with 'app_content_news_' ? 'aria-current="page"' : '' }}>Actualités</a>
                     <span class="main-nav__separator" aria-hidden="true"></span>
                     <a
@@ -55,6 +57,7 @@
                             <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.9"/>
                             <path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
                         </svg>
+                        <span class="main-nav__icon-label">Catalogue</span>
                     </a>
 
                     {% if app.user %}
@@ -143,6 +146,7 @@
                                 <rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.9"/>
                                 <path d="M8 10V8a4 4 0 0 1 8 0v2M12 14v2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
                             </svg>
+                            <span class="main-nav__icon-label">Connexion</span>
                         </a>
                     {% endif %}
                 </nav>
@@ -199,6 +203,7 @@
                         <h2 class="footer-col__title">Support</h2>
                         <ul class="footer-links">
                             <li><a href="{{ path('app_contact') }}">Formulaire de contact</a></li>
+                            <li><a href="{{ path('app_resource_request_public') }}">Demander une carte ou des données</a></li>
                             {% if app.user %}
                                 <li><a href="{{ path('app_private_home') }}">Mon espace privé</a></li>
                                 <li>

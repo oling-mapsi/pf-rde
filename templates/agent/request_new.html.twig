@@ -24,12 +24,39 @@
                 <p class="page-header__lead">Saisissez votre besoin, joignez les éléments utiles puis suivez le traitement depuis votre tableau de bord.</p>
             </header>
 
-            <section class="card form-panel">
+            <section class="card form-panel request-form-shell" data-controller="agent-request-submission">
+                <div class="request-form-shell__legal">
+                    <p><strong>Délais indicatifs :</strong> normal 1 à 2 semaines, urgent moins de 5 jours ouvrés, très urgent moins de 48h sous réserve.</p>
+                    <p><strong>Traçabilité :</strong> précisez autant que possible l’emprise, le contexte métier et la destination de la production.</p>
+                </div>
+
                 {{ form_start(form) }}
-                    {{ form_row(form.requestType) }}
-                    {{ form_row(form.title) }}
+                    {{ form_row(form.structureType) }}
+                    {{ form_row(form.directionService) }}
+                    {{ form_row(form.center) }}
+                    {{ form_row(form.lastName) }}
+                    {{ form_row(form.firstName) }}
+                    {{ form_row(form.email) }}
+                    {{ form_row(form.emailConfirmation) }}
+                    {{ form_row(form.phoneNumber) }}
+                    {{ form_row(form.orderReference) }}
+                    {{ form_row(form.urgencyLevel) }}
+                    {{ form_row(form.urgencyJustification) }}
+                    {{ form_row(form.subject) }}
+                    {{ form_row(form.requestKinds) }}
+                    {{ form_row(form.networkTypes) }}
+                    {{ form_row(form.routeDetails) }}
+                    {{ form_row(form.geographicArea) }}
                     {{ form_row(form.description) }}
+                    {{ form_row(form.additionalInformation) }}
+                    {{ form_row(form.hasProvidedData) }}
+                    {{ form_row(form.deliveryDestination) }}
+                    {{ form_row(form.dataFormats) }}
+                    {{ form_row(form.projectionSystem) }}
+                    {{ form_row(form.mapFormats) }}
+                    {{ form_row(form.mapScale) }}
                     {{ form_row(form.attachment) }}
+                    {{ form_row(form.attachmentDescription) }}
                     <button type="submit" class="btn btn-primary">Soumettre la demande</button>
                 {{ form_end(form) }}
             </section>

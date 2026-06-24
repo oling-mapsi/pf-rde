@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\UI\Controller;
 
 use App\Application\Access\Service\GodModeService;
+use App\Application\Notification\RequestNotificationService;
 use App\Domain\Access\Entity\User;
 use App\Domain\Agent\Entity\AgentRequest;
 use App\Domain\Agent\Entity\AgentRequestAttachment;
+use App\Domain\Agent\Entity\AgentRequestType;
 use App\Infrastructure\Logging\AuditLogger;
-use App\UI\Form\AgentRequestSubmissionType;
+use App\Infrastructure\Repository\AgentRequestTypeRepository;
+use App\UI\Form\AgentRequestRichSubmissionType;
+use App\UI\Form\Model\AgentRequestSubmissionData;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
@@ -41,7 +45,9 @@ final class AgentController extends AbstractController
     public function newRequest(
         Request $request,
         EntityManagerInterface $entityManager,
+        AgentRequestTypeRepository $agentRequestTypeRepository,
         AuditLogger $auditLogger,
+        RequestNotificationService $requestNotificationService,
     ): Response {
         $projectDir = (string) $this->getParameter('kernel.project_dir');
 
@@ -49,17 +55,48 @@ final class AgentController extends AbstractController
         $user = $this->getUser();
         $this->guardEffectiveAgentAccess($user);
 
+        $data = $this->createPrefilledSubmissionData($user);
         $agentRequest = (new AgentRequest())
             ->setRequester($user)
             ->setRequestNumber(sprintf('RDG-%s-%s', date('Ymd'), strtoupper(substr(bin2hex(random_bytes(4)), 0, 8))));
 
-        $form = $this->createForm(AgentRequestSubmissionType::class, $agentRequest, [
+        $form = $this->createForm(AgentRequestRichSubmissionType::class, $data, [
             'action' => $this->generateUrl('agent_request_new'),
         ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $requestType = $this->resolveRequestType($data->requestKinds, $agentRequestTypeRepository);
+            $agentRequest
+                ->setRequestType($requestType)
+                ->setTitle($data->subject)
+                ->setDescription($data->description)
+                ->setPayload([
+                    'structureType' => $data->structureType,
+                    'directionService' => $data->directionService,
+                    'center' => $data->center,
+                    'lastName' => $data->lastName,
+                    'firstName' => $data->firstName,
+                    'email' => $data->email,
+                    'phoneNumber' => $data->phoneNumber,
+                    'orderReference' => $data->orderReference,
+                    'urgencyLevel' => $data->urgencyLevel,
+                    'urgencyJustification' => $data->urgencyJustification,
+                    'requestKinds' => $data->requestKinds,
+                    'networkTypes' => $data->networkTypes,
+                    'routeDetails' => $data->routeDetails,
+                    'geographicArea' => $data->geographicArea,
+                    'additionalInformation' => $data->additionalInformation,
+                    'hasProvidedData' => $data->hasProvidedData,
+                    'deliveryDestination' => $data->deliveryDestination,
+                    'dataFormats' => $data->dataFormats,
+                    'projectionSystem' => $data->projectionSystem,
+                    'mapFormats' => $data->mapFormats,
+                    'mapScale' => $data->mapScale,
+                    'attachmentDescription' => $data->attachmentDescription,
+                ]);
+
             /** @var UploadedFile|null $file */
             $file = $form->get('attachment')->getData();
             if ($file instanceof UploadedFile) {
@@ -88,10 +125,15 @@ final class AgentController extends AbstractController
                 actor: $user,
                 ipAddress: $request->getClientIp(),
                 userAgent: $request->headers->get('User-Agent'),
-                context: ['status' => $agentRequest->getStatus()]
+                context: [
+                    'status' => $agentRequest->getStatus(),
+                    'urgency' => $data->urgencyLevel,
+                    'request_kinds' => $data->requestKinds,
+                ]
             );
 
             $entityManager->flush();
+            $requestNotificationService->sendAgentRequestSubmitted($agentRequest);
             $this->addFlash('success', 'Demande enregistree.');
 
             return $this->redirectToRoute('agent_dashboard');
@@ -100,6 +142,43 @@ final class AgentController extends AbstractController
         return $this->render('agent/request_new.html.twig', [
             'form' => $form,
         ]);
+    }
+
+    private function createPrefilledSubmissionData(User $user): AgentRequestSubmissionData
+    {
+        $data = new AgentRequestSubmissionData();
+        $data->lastName = $user->getLastName() ?? '';
+        $data->firstName = $user->getFirstName() ?? '';
+        $data->email = $user->getEmail();
+        $data->emailConfirmation = $user->getEmail();
+
+        return $data;
+    }
+
+    /**
+     * @param list<string> $requestKinds
+     */
+    private function resolveRequestType(array $requestKinds, AgentRequestTypeRepository $repository): AgentRequestType
+    {
+        $code = match (true) {
+            \in_array('map', $requestKinds, true) && \in_array('data', $requestKinds, true) => 'MIXED_REQUEST',
+            \in_array('map', $requestKinds, true) => 'MAP_REQUEST',
+            default => 'DATA_REQUEST',
+        };
+
+        $requestType = $repository->findOneBy(['code' => $code, 'active' => true]);
+        if ($requestType instanceof AgentRequestType) {
+            return $requestType;
+        }
+
+        $fallback = $repository->findOneBy(['code' => 'MAP_REQUEST', 'active' => true])
+            ?? $repository->findOneBy(['code' => 'DATA_REQUEST', 'active' => true]);
+
+        if (!$fallback instanceof AgentRequestType) {
+            throw new \RuntimeException('Aucun type de demande agent actif n’est configuré.');
+        }
+
+        return $fallback;
     }
 
     private function guardEffectiveAgentAccess(?User $user = null): void

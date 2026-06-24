@@ -598,6 +598,13 @@ HTML)
             ->setRequiresAttachment(true)
             ->setActive(true);
 
+        $requestTypeMixed = (new AgentRequestType())
+            ->setCode('MIXED_REQUEST')
+            ->setLabel('Demande mixte carte + données')
+            ->setDescription('Demande combinant une production cartographique et des données SIG')
+            ->setRequiresAttachment(false)
+            ->setActive(true);
+
         $metricVisits = (new DashboardMetricSnapshot())
             ->setMetricKey('portal.visits.daily')
             ->setScope('public')
@@ -617,8 +624,24 @@ HTML)
 
         $externalRequest = (new ExternalResourceRequest())
             ->setRequester($external)
+            ->setRequestNumber('RDG-EXT-20260623-0001')
+            ->setRequesterType(ExternalResourceRequest::REQUESTER_TYPE_PROFESSIONAL)
+            ->setLastName('Partenaire')
+            ->setFirstName('Marie')
+            ->setEmail('partenaire@routesguadeloupe.local')
+            ->setPhoneNumber('0690123456')
+            ->setOrganizationName('Guadeloupe Data Partners')
+            ->setCompanySiret('12345678901234')
+            ->setPostalCode('97100')
+            ->setCity('Basse-Terre')
             ->setSubject('Accès à une couche complémentaire')
             ->setMessage('Je souhaite accéder aux données historiques sur les incidents routiers.')
+            ->setRequestKind(ExternalResourceRequest::REQUEST_KIND_DATA)
+            ->setNetworkTypes(['Route Départementale'])
+            ->setDataFormats(['GeoJSON', 'CSV'])
+            ->setProjectionSystem('RGAF09')
+            ->setPrivacyConsent(true)
+            ->setNoticeVersion('v1')
             ->setStatus('submitted');
 
         foreach ([
@@ -658,6 +681,7 @@ HTML)
             $categoryServices,
             $requestTypeData,
             $requestTypeMap,
+            $requestTypeMixed,
             $metricVisits,
             $metricRequests,
             $favorite,

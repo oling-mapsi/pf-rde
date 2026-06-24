@@ -1,0 +1,11 @@
+Bonjour {{ request.requester.displayName }},
+
+Votre demande interne SIG a bien été enregistrée.
+
+- Numéro : {{ request.requestNumber }}
+- Objet : {{ request.title }}
+- Nature : {{ request.requestKindLabel }}
+- Urgence : {{ request.urgencyLabel }}
+- Statut initial : {{ request.statusLabel }}
+
+Cette notification correspond à une première version locale du suivi e-mail.

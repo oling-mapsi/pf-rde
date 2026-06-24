@@ -18,9 +18,13 @@
             <div class="extranet-layout">
                 <aside class="extranet-layout__sidebar">
                     <section class="extranet-sidebar-actions" aria-label="Actions extranet">
-                        <button type="button" class="btn btn-primary js-open-request-modal">Demander une ressource</button>
                         {% if isAgentExtranet %}
-                            <a class="btn btn-outline" href="{{ path('agent_request_new') }}">Demande interne SIG</a>
+                            <a class="btn btn-primary" href="{{ path('agent_request_new') }}">Nouvelle demande agent</a>
+                        {% else %}
+                            <a class="btn btn-primary" href="{{ path('extranet_request_new') }}">Nouvelle demande</a>
+                        {% endif %}
+                        {% if isAgentExtranet %}
+                            <a class="btn btn-outline" href="{{ path('extranet_request_new') }}">Demande externe</a>
                         {% endif %}
                         {% if not isAgentExtranet %}
                             <a class="btn btn-outline" href="{{ path('app_account_change_password') }}">Changer mon mot de passe</a>
@@ -29,11 +33,37 @@
                 </aside>
 
                 <div class="extranet-layout__main">
+                    <section class="dashboard-kpi">
+                        <article class="kpi-card">
+                            <span class="kpi-card__icon section-icon section-icon--orange" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8"/></svg>
+                            </span>
+                            <p class="kpi-card__label">Demandes externes</p>
+                            <p class="kpi-card__value">{{ requestSummary.external }}</p>
+                        </article>
+                        {% if isAgentExtranet %}
+                            <article class="kpi-card">
+                                <span class="kpi-card__icon section-icon section-icon--green" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M5 12h14M5 17h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                                </span>
+                                <p class="kpi-card__label">Demandes internes SIG</p>
+                                <p class="kpi-card__value">{{ requestSummary.agent }}</p>
+                            </article>
+                        {% endif %}
+                        <article class="kpi-card">
+                            <span class="kpi-card__icon section-icon section-icon--blue" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="m12 17.3-5.2 3 1.4-5.9L3.5 10l6.1-.5L12 4l2.4 5.5 6.1.5-4.7 4.4 1.4 5.9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                            </span>
+                            <p class="kpi-card__label">Favoris</p>
+                            <p class="kpi-card__value">{{ requestSummary.favorites }}</p>
+                        </article>
+                    </section>
+
                     <section class="card mt-4">
                         <div class="extranet-section-header">
                             <h2 class="h4 extranet-section-heading">
                                 <span>Mes favoris</span>
-                                <span class="extranet-count-badge">{{ favorites|length }}</span>
+                                <span class="extranet-count-badge">{{ requestSummary.favorites }}</span>
                             </h2>
                             <a class="extranet-section-link" href="{{ path('app_data_catalog') }}">Consulter toutes les données cartes</a>
                         </div>
@@ -76,17 +106,20 @@
 
                     <section class="card mt-4">
                         <h2 class="h4 extranet-section-heading">
-                            <span>Historique de mes demandes</span>
-                            <span class="extranet-count-badge">{{ resourceRequests|length }}</span>
+                            <span>Mes demandes externes cartes et données</span>
+                            <span class="extranet-count-badge">{{ requestSummary.external }}</span>
                         </h2>
                         {% if resourceRequests is empty %}
-                            <p>Aucune demande envoyée.</p>
+                            <p>Aucune demande externe envoyée.</p>
                         {% else %}
                             <div class="table-wrap">
                                 <table class="table table--data">
                                     <thead>
                                         <tr>
+                                            <th>Numéro</th>
                                             <th>Objet</th>
+                                            <th>Type</th>
+                                            <th>Profil</th>
                                             <th>Statut</th>
                                             <th>Date</th>
                                         </tr>
@@ -94,8 +127,11 @@
                                     <tbody>
                                         {% for item in resourceRequests %}
                                             <tr>
+                                                <td data-label="Numéro"><strong>{{ item.requestNumber }}</strong></td>
                                                 <td data-label="Objet">{{ item.subject }}</td>
-                                                <td data-label="Statut">{{ item.status|replace({'_': ' '})|title }}</td>
+                                                <td data-label="Type">{{ item.requestKindLabel }}</td>
+                                                <td data-label="Profil">{{ item.requesterTypeLabel }}</td>
+                                                <td data-label="Statut">{{ item.statusLabel }}</td>
                                                 <td data-label="Date">{{ item.submittedAt|date('d/m/Y H:i') }}</td>
                                             </tr>
                                         {% endfor %}
@@ -104,74 +140,51 @@
                             </div>
                         {% endif %}
                     </section>
+
+                    {% if isAgentExtranet %}
+                        <section class="card mt-4">
+                            <h2 class="h4 extranet-section-heading">
+                                <span>Mes demandes internes SIG</span>
+                                <span class="extranet-count-badge">{{ requestSummary.agent }}</span>
+                            </h2>
+                            {% if agentRequests is empty %}
+                                <p>Aucune demande interne SIG envoyée.</p>
+                            {% else %}
+                                <div class="table-wrap">
+                                    <table class="table table--data">
+                                        <thead>
+                                            <tr>
+                                                <th>Numéro</th>
+                                                <th>Objet</th>
+                                                <th>Nature</th>
+                                                <th>Urgence</th>
+                                                <th>Destination</th>
+                                                <th>Emprise</th>
+                                                <th>Statut</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in agentRequests %}
+                                                <tr>
+                                                    <td data-label="Numéro"><strong>{{ item.requestNumber }}</strong></td>
+                                                    <td data-label="Objet">{{ item.title }}</td>
+                                                    <td data-label="Nature">{{ item.requestKindLabel }}</td>
+                                                    <td data-label="Urgence">{{ item.urgency }}</td>
+                                                    <td data-label="Destination">{{ item.destinationLabel }}</td>
+                                                    <td data-label="Emprise">{{ item.geographicArea ?: 'Non précisée' }}</td>
+                                                    <td data-label="Statut">{{ item.status|replace({'_': ' '})|title }}</td>
+                                                    <td data-label="Date">{{ item.submittedAt|date('d/m/Y H:i') }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% endif %}
+                        </section>
+                    {% endif %}
                 </div>
             </div>
-
-            <dialog class="extranet-modal" id="resource-request-modal" aria-labelledby="resource-request-modal-title">
-                <div class="extranet-modal__head">
-                    <h2 class="h4" id="resource-request-modal-title">Demander une ressource supplémentaire</h2>
-                    <button type="button" class="extranet-modal__close js-close-request-modal" aria-label="Fermer">×</button>
-                </div>
-                <div class="extranet-modal__body form-panel">
-                    {{ form_start(requestForm) }}
-                        {{ form_row(requestForm.subject) }}
-                        {{ form_row(requestForm.message) }}
-                        <div class="extranet-modal__actions">
-                            <button type="button" class="btn btn-outline js-close-request-modal">Annuler</button>
-                            <button type="submit" class="btn btn-primary">Envoyer la demande</button>
-                        </div>
-                    {{ form_end(requestForm) }}
-                </div>
-            </dialog>
         </div>
     </section>
-
-    <script>
-        (() => {
-            const dialog = document.getElementById('resource-request-modal');
-            const openButtons = document.querySelectorAll('.js-open-request-modal');
-            const closeButtons = document.querySelectorAll('.js-close-request-modal');
-
-            if (!(dialog instanceof HTMLDialogElement)) {
-                return;
-            }
-
-            const openDialog = () => {
-                if (!dialog.open) {
-                    dialog.showModal();
-                }
-            };
-
-            const closeDialog = () => {
-                if (dialog.open) {
-                    dialog.close();
-                }
-            };
-
-            openButtons.forEach((button) => {
-                button.addEventListener('click', openDialog);
-            });
-
-            closeButtons.forEach((button) => {
-                button.addEventListener('click', closeDialog);
-            });
-
-            dialog.addEventListener('click', (event) => {
-                const bounds = dialog.getBoundingClientRect();
-                const clickedOutside =
-                    event.clientX < bounds.left ||
-                    event.clientX > bounds.right ||
-                    event.clientY < bounds.top ||
-                    event.clientY > bounds.bottom;
-
-                if (clickedOutside) {
-                    closeDialog();
-                }
-            });
-
-            {% if requestForm.vars.submitted and not requestForm.vars.valid %}
-            openDialog();
-            {% endif %}
-        })();
-    </script>
 {% endblock %}

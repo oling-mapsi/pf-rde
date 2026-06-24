@@ -1,9 +1,21 @@
 {% set sectionId = 'home-section-' ~ section.id %}
 {% set normalizedSectionTitle = section.title|default('')|trim|lower %}
+{% set normalizedSectionName = section.name|default('')|trim|lower %}
 {% set isVisualHighlightSection = normalizedSectionTitle starts with 'visualisations' and ('une' in normalizedSectionTitle) %}
+{% set isSigSection = 'sig de routes de guadeloupe' in normalizedSectionTitle
+    or 'sollicitation du service sigr' in normalizedSectionTitle
+    or 'système d’information de routes de guadeloupe' in normalizedSectionTitle
+    or 'système d\'information de routes de guadeloupe' in normalizedSectionTitle
+    or 'systeme d\'information de routes de guadeloupe' in normalizedSectionTitle
+    or 'systeme d’information de routes de guadeloupe' in normalizedSectionTitle
+    or 'solliciter le sig de routes de guadeloupe' in normalizedSectionTitle
+    or ('solliciter' in normalizedSectionTitle and 'routes de guadeloupe' in normalizedSectionTitle)
+    or ('demande de cartes et de données' in normalizedSectionName) %}
+{% set isAboutSection = 'qui sommes-nous' in normalizedSectionTitle or 'qui sommes nous' in normalizedSectionTitle %}
+{% set displayTitle = isSigSection ? 'Solliciter le SIG de Routes de Guadeloupe' : section.title %}
 {% set sectionClass = section.backgroundStyle == 'kpi'
     ? 'home-kpis'
-    : 'home-dynamic-section home-dynamic-section--' ~ section.backgroundStyle ~ ' home-dynamic-section--' ~ section.type ~ ' home-dynamic-section--layout-' ~ section.layout ~ (isVisualHighlightSection ? ' home-dynamic-section--visual-highlights' : '') %}
+    : 'home-dynamic-section home-dynamic-section--' ~ section.backgroundStyle ~ ' home-dynamic-section--' ~ section.type ~ ' home-dynamic-section--layout-' ~ section.layout ~ (isVisualHighlightSection ? ' home-dynamic-section--visual-highlights' : '') ~ (isSigSection ? ' home-dynamic-section--sig' : '') ~ (isAboutSection ? ' home-dynamic-section--about' : '') %}
 
 <section
     class="{{ sectionClass }}"
@@ -21,10 +33,13 @@
                 <h2
                     id="{{ sectionId }}-title"
                     class="h2 home-section-title"
-                    style="display:block !important; width:100% !important; max-width:none !important; margin:0 auto !important; text-align:center !important; white-space:nowrap !important;"
+                    style="display:block !important; width:100% !important; max-width:none !important; margin:0 auto !important; text-align:center !important; white-space:normal !important;"
                 >
-                    {{ section.title|replace({"\r": ' ', "\n": ' '}) }}
+                    {{ displayTitle|replace({"\r": ' ', "\n": ' '}) }}
                 </h2>
+                {% if section.intro %}
+                    <p class="section-intro">{{ section.intro }}</p>
+                {% endif %}
             </div>
         {% else %}
             <h2 id="{{ sectionId }}-title" class="visually-hidden">{{ section.title }}</h2>
@@ -45,18 +60,43 @@
                     {% endif %}
                 </div>
             </div>
+        {% elseif section.type == 'request_gateway' %}
+            <div class="home-request-grid">
+                {% for item in section.items %}
+                    {% set accent = item.accent|default(cycle(['orange', 'blue', 'green'], loop.index0)) %}
+                    <article class="home-request-card home-request-card--{{ accent }}">
+                        <span class="home-request-card__icon" aria-hidden="true">
+                            {% include 'public/home/_quick_icon.html.twig' with { icon: item.icon|default('map') } only %}
+                        </span>
+                        <div class="home-request-card__content">
+                            <h3>{{ item.title }}</h3>
+                            <p>{{ item.text }}</p>
+                            <a class="home-request-card__link" href="{{ item.url }}"><span>{{ item.label }}</span></a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
         {% elseif section.type in ['message', 'sponsor'] %}
-            <div class="home-message rich-content">
+            <div class="home-message home-message--editorial {{ isSigSection ? 'home-message--sig' : '' }} {{ isAboutSection ? 'home-message--about' : '' }} rich-content">
                 {% if section.imagePath %}
                     {% set messageImage = section.imagePath starts with 'http' or section.imagePath starts with '/' ? section.imagePath : asset(section.imagePath) %}
-                    <img class="home-message__image" src="{{ messageImage }}" alt="">
+                    <div class="home-message__visual {{ isAboutSection ? 'home-message__visual--logo' : '' }}">
+                        <img class="home-message__image" src="{{ messageImage }}" alt="">
+                    </div>
                 {% endif %}
-                {% if section.body %}
-                    {{ section.body|raw }}
-                {% endif %}
-                {% if section.ctaLabel and section.ctaUrl %}
-                    <p class="home-section-cta"><a class="btn btn-primary" href="{{ section.ctaUrl }}">{{ section.ctaLabel }}</a></p>
-                {% endif %}
+                <div class="home-message__content">
+                    {% if isSigSection %}
+                        <p class="home-message__eyebrow">Service & accompagnement</p>
+                    {% elseif isAboutSection %}
+                        <p class="home-message__eyebrow">Institution & expertise</p>
+                    {% endif %}
+                    {% if section.body %}
+                        {{ section.body|raw }}
+                    {% endif %}
+                    {% if section.ctaLabel and section.ctaUrl %}
+                        <p class="home-section-cta"><a class="btn btn-primary" href="{{ section.ctaUrl }}">{{ section.ctaLabel }}</a></p>
+                    {% endif %}
+                </div>
             </div>
         {% elseif section.backgroundStyle == 'kpi' %}
             <div class="grid grid-4 home-kpis__grid">
@@ -81,19 +121,56 @@
             {% if section.items is empty %}
                 <div class="notice notice-info">Aucun contenu publié pour cette section.</div>
             {% else %}
-                <div class="grid grid-3 home-section-grid">
-                    {% for item in section.items %}
-                        {% if section.type == 'latest_news' %}
-                            <article class="card home-card home-card--news {{ loop.first ? 'home-card--featured' : '' }}">
-                                <p class="card__meta">
-                                    <span class="badge badge--neutral">{{ item.publishedAt ? item.publishedAt|date('d/m/Y') : 'Brouillon' }}</span>
-                                    <span>Communication officielle</span>
-                                </p>
-                                <h3 class="card__title">{{ item.title }}</h3>
-                                <p class="card__lead">{{ item.summary ?: (item.body|length > 180 ? item.body|slice(0, 180) ~ '...' : item.body) }}</p>
-                                <p class="card__link"><a href="{{ path('app_content_news_show', { slug: item.slug }) }}"><span>Lire le communiqué</span></a></p>
+                {% if section.type == 'latest_news' %}
+                    {% set featuredItem = section.items|first %}
+                    {% set secondaryItems = section.items|slice(1) %}
+                    {% set featuredImage = featuredItem and featuredItem.coverImagePath ? (featuredItem.coverImagePath starts with '/' ? featuredItem.coverImagePath : asset(featuredItem.coverImagePath)) : asset('images/rdg-route-aerienne.webp') %}
+                    <div class="home-news-shelf">
+                        {% if featuredItem %}
+                            <article class="home-news-lead">
+                                <a class="home-news-lead__media" href="{{ path('app_content_news_show', { slug: featuredItem.slug }) }}" aria-label="Lire l'actualité {{ featuredItem.title }}">
+                                    <img class="home-news-lead__image" src="{{ featuredImage }}" alt="">
+                                    <span class="home-news-lead__tag">À la une</span>
+                                </a>
+                                <div class="home-news-lead__body">
+                                    <p class="home-news-lead__meta">
+                                        <span class="badge badge--neutral">{{ featuredItem.publishedAt ? featuredItem.publishedAt|date('d/m/Y') : 'Brouillon' }}</span>
+                                        <span>Information officielle</span>
+                                    </p>
+                                    <h3 class="home-news-lead__title">
+                                        <a href="{{ path('app_content_news_show', { slug: featuredItem.slug }) }}">{{ featuredItem.title }}</a>
+                                    </h3>
+                                    <p class="home-news-lead__excerpt">{{ featuredItem.summary ?: (featuredItem.body|length > 260 ? featuredItem.body|slice(0, 260) ~ '...' : featuredItem.body) }}</p>
+                                    <p class="home-news-lead__link"><a href="{{ path('app_content_news_show', { slug: featuredItem.slug }) }}"><span>Lire l'actualité</span></a></p>
+                                </div>
                             </article>
-                        {% elseif section.type == 'featured_resources' %}
+                        {% endif %}
+
+                        {% if secondaryItems is not empty %}
+                            <div class="home-news-rail">
+                                {% for item in secondaryItems %}
+                                    {% set cardImage = item.coverImagePath ? (item.coverImagePath starts with '/' ? item.coverImagePath : asset(item.coverImagePath)) : asset(loop.index is odd ? 'images/rdg-travaux-route.jpg' : 'images/rdg-siege.jpg') %}
+                                    <article class="home-news-mini-card">
+                                        <a class="home-news-mini-card__media" href="{{ path('app_content_news_show', { slug: item.slug }) }}" aria-label="Lire l'actualité {{ item.title }}">
+                                            <img class="home-news-mini-card__image" src="{{ cardImage }}" alt="">
+                                        </a>
+                                        <div class="home-news-mini-card__body">
+                                            <p class="home-news-mini-card__meta">{{ item.publishedAt ? item.publishedAt|date('d/m/Y') : 'Brouillon' }}</p>
+                                            <h3 class="home-news-mini-card__title">
+                                                <a href="{{ path('app_content_news_show', { slug: item.slug }) }}">{{ item.title }}</a>
+                                            </h3>
+                                            <p class="home-news-mini-card__excerpt">{{ item.summary ?: (item.body|length > 120 ? item.body|slice(0, 120) ~ '...' : item.body) }}</p>
+                                            <p class="home-news-mini-card__link"><a href="{{ path('app_content_news_show', { slug: item.slug }) }}"><span>Lire</span></a></p>
+                                        </div>
+                                    </article>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="grid grid-3 home-section-grid">
+                        {% for item in section.items %}
+                            {% if section.type == 'featured_resources' %}
                             {% set resourceImage = item.thumbnailPath ?: 'images/hero-guadeloupe-map-v3.png' %}
                             <article class="card home-card home-card--resource {{ loop.first ? 'home-card--featured' : '' }}">
                                 <p class="card__meta">
@@ -105,14 +182,14 @@
                                 <p class="card__lead">{{ item.summary ?: (item.description and item.description|length > 150 ? item.description|slice(0, 150) ~ '...' : (item.description ?: 'Description non renseignée.')) }}</p>
                                 <p class="card__link"><a href="{{ path('app_static_map_show', { slug: item.slug }) }}"><span>Consulter la fiche</span></a></p>
                             </article>
-                        {% elseif section.type == 'quick_links' %}
+                            {% elseif section.type == 'quick_links' %}
                             <article class="card home-card home-card--link {{ loop.first ? 'home-card--featured' : '' }}">
                                 <h3 class="card__title">{{ item.label }}</h3>
                                 <p class="card__link">
                                     <a href="{{ item.url }}"{% if item.external %} target="_blank" rel="noopener noreferrer"{% endif %}><span>Ouvrir</span></a>
                                 </p>
                             </article>
-                        {% else %}
+                            {% else %}
                             {% set imagePath = item.imagePath|default(null) %}
                             <article class="card home-card home-card--manual {{ loop.first ? 'home-card--featured' : '' }}">
                                 {% if imagePath %}
@@ -127,9 +204,10 @@
                                     <p class="card__link"><a href="{{ item.url }}"><span>{{ item.label|default('En savoir plus') }}</span></a></p>
                                 {% endif %}
                             </article>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 {% if section.ctaLabel and section.ctaUrl %}
                     <p class="home-section-cta home-section-cta--center">
                         <a class="btn btn-secondary" href="{{ section.ctaUrl }}">{{ section.ctaLabel }}</a>
