@@ -33,7 +33,7 @@ final class HomepageBuilderController extends AbstractController
     ): Response {
         $homepage = $homepageContentRepository->findEditableHomepage();
         $sections = $homepageSectionRepository->findAllOrdered();
-        $featuredThemes = $taxonomyTermRepository->findFeaturedMapThemes(7);
+        $featuredThemes = $taxonomyTermRepository->findFeaturedMapThemes();
 
         if ($request->isMethod('POST')) {
             $form = (string) $request->request->get('_form', 'hero');

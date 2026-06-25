@@ -38,7 +38,7 @@ final class HomepageQueryService
         $sourceThemeCount = $this->dataSourceRepository->countPublishedThemes();
         $datasetCount = $sourceCount > 0 ? $sourceCount : $legacyDatasetCount;
         $themeCount = $sourceThemeCount > 0 ? $sourceThemeCount : $legacyThemeCount;
-        $heroThemeItems = $this->buildFeaturedThemeHeroItems(7);
+        $heroThemeItems = $this->buildFeaturedThemeHeroItems();
         $homepage = $this->homepageContentRepository->findPublishedHomepage();
         $sections = $this->homepageSectionRepository->findPublishedOrdered();
         $homepageSections = $sections === []
@@ -230,7 +230,7 @@ final class HomepageQueryService
     }
 
     /** @return list<array{title: string, url: string, label: string, icon: string, color: string, accent: string}> */
-    private function buildFeaturedThemeHeroItems(int $limit = 8): array
+    private function buildFeaturedThemeHeroItems(?int $limit = null): array
     {
         $themes = $this->taxonomyTermRepository->findFeaturedMapThemes($limit);
         if ($themes === []) {

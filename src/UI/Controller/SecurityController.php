@@ -75,7 +75,7 @@ final class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('/deconnexion', name: 'app_logout', methods: ['POST'])]
+    #[Route('/deconnexion', name: 'app_logout', methods: ['GET', 'POST'])]
     public function logout(): void
     {
         throw new \LogicException('Cette methode est interceptee par le firewall.');
