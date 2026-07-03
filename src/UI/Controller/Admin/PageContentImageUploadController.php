@@ -65,6 +65,7 @@ final class PageContentImageUploadController extends AbstractController
         $url = self::UPLOAD_DIRECTORY . '/' . $filename;
 
         return new JsonResponse([
+            'location' => $url,
             'url' => $url,
             'href' => $url,
         ], Response::HTTP_CREATED);

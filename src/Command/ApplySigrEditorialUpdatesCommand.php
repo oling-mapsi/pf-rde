@@ -9,6 +9,7 @@ use App\Domain\Content\Entity\HomepageContent;
 use App\Domain\Content\Entity\HomepageSection;
 use App\Domain\Content\Entity\News;
 use App\Domain\Content\Entity\Page;
+use App\Domain\Taxonomy\MapThemeCatalog;
 use App\Domain\Taxonomy\Entity\TaxonomyTerm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -274,19 +275,16 @@ HTML)
 
     private function upsertMapThemes(): void
     {
-        $themes = [
-            ['chaussees-et-accotements', 'Chaussées et accotements', 'Données relatives au réseau et aux dépendances immédiates.', 'route', '#FC5000', 10],
-            ['mobilite', 'Mobilité', 'Aménagements cyclables, arrêts de transports en commun et déplacements.', 'transport', '#38B4E7', 20],
-            ['ouvrages-art', 'Ouvrages d’art', 'Ponts, ouvrages et informations de suivi patrimonial.', 'bridge', '#15366F', 30],
-            ['equipements-securite', 'Équipements de sécurité', 'Signalisation et dispositifs de sécurité routière.', 'shield', '#AAAE02', 40],
-            ['dependances-vertes-bleues', 'Dépendances vertes et bleues', 'Espaces végétalisés, hydraulique et abords du domaine routier.', 'globe', '#1F8A5B', 50],
-            ['circulation-routiere', 'Circulation routière', 'Vitesses, limites d’agglomération, trafic et informations de circulation.', 'traffic', '#FBD002', 60],
-            ['milieu-environnant', 'Milieu environnant', 'Contexte territorial, risques et contraintes externes au réseau.', 'map-pin', '#725AC1', 70],
-            ['referentiels-croises', 'Référentiels croisés', 'Référentiels transverses pour croiser les analyses.', 'layers', '#2D6CDF', 80],
-        ];
-
         $repository = $this->entityManager->getRepository(TaxonomyTerm::class);
-        foreach ($themes as [$slug, $label, $description, $icon, $color, $position]) {
+        foreach (MapThemeCatalog::definitions() as $theme) {
+            [$slug, $label, $description, $icon, $color, $position] = [
+                $theme['slug'],
+                $theme['label'],
+                $theme['description'],
+                $theme['icon'],
+                $theme['color'],
+                $theme['position'],
+            ];
             $term = $repository->findOneBy(['taxonomy' => TaxonomyTerm::MAP_THEME_TAXONOMY, 'slug' => $slug])
                 ?? $repository->findOneBy(['taxonomy' => TaxonomyTerm::MAP_THEME_TAXONOMY, 'label' => $label])
                 ?? new TaxonomyTerm();

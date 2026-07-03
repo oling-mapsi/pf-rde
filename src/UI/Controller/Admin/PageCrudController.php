@@ -12,7 +12,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
@@ -30,6 +29,7 @@ final class PageCrudController extends AbstractCrudController
     public function configureAssets(Assets $assets): Assets
     {
         return $assets
+            ->addJsFile(Asset::new('/vendor/tinymce/tinymce.min.js')->onlyOnForms())
             ->addCssFile(Asset::new('/admin-assets/page-rich-text.css')->onlyOnForms())
             ->addJsFile(Asset::new('/admin-assets/page-rich-text.js')->onlyOnForms()->defer());
     }
@@ -39,18 +39,13 @@ final class PageCrudController extends AbstractCrudController
         yield TextField::new('title');
         yield SlugField::new('slug')->setTargetFieldName('title');
         yield TextareaField::new('summary')->hideOnIndex();
-        yield TextEditorField::new('content')
+        yield TextareaField::new('content')
             ->hideOnIndex()
-            ->setNumOfRows(18)
-            ->setHelp('Glissez-déposez une image dans l’éditeur ou collez-la directement depuis le presse-papiers.')
-            ->setTrixEditorConfig([
-                'blockAttributes' => [
-                    'heading1' => ['tagName' => 'h2'],
-                ],
-            ])
+            ->setNumOfRows(24)
+            ->setHelp('Éditeur avancé PF : tableaux, images redimensionnables et alignées, blocs éditoriaux, modèles de mise en page.')
             ->setFormTypeOption('attr.data-rich-text-upload-url', $this->generateUrl('admin_page_content_image_upload'))
             ->setFormTypeOption('attr.data-rich-text-upload-token', (string) $this->csrfTokenManager->getToken('page_content_image_upload'))
-            ->setFormTypeOption('attr.data-rich-text-theme', 'site');
+            ->setFormTypeOption('attr.data-admin-rich-text', 'site');
         yield TextField::new('status');
         yield TextField::new('legalType')->hideOnIndex();
         yield BooleanField::new('systemPage');

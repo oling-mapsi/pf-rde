@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Domain\Taxonomy\MapThemeCatalog;
 use App\Domain\Taxonomy\Entity\TaxonomyTerm;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -80,10 +81,14 @@ final class SyncMapThemesCommand extends Command
         foreach ($sourceLabels as $label) {
             $normalized = $this->normalizeKey($label);
             $slugBase = $this->slugify($slugger, $label);
+            $officialDefinition = MapThemeCatalog::definitionForLabel($label);
 
             $term = $existingByLabel[$normalized] ?? null;
             if ($term === null) {
                 $term = $existingBySlug[$slugBase] ?? null;
+            }
+            if ($officialDefinition !== null && isset($existingBySlug[$officialDefinition['slug']])) {
+                $term = $existingBySlug[$officialDefinition['slug']];
             }
 
             $action = 'kept';
@@ -93,18 +98,20 @@ final class SyncMapThemesCommand extends Command
                 $term
                     ->setTaxonomy(TaxonomyTerm::MAP_THEME_TAXONOMY)
                     ->setLabel($label)
-                    ->setSlug($this->nextUniqueSlug($slugBase, $existingBySlug))
-                    ->setDescription('Thème synchronisé automatiquement depuis les ressources cartographiques.')
+                    ->setSlug($officialDefinition['slug'] ?? $this->nextUniqueSlug($slugBase, $existingBySlug))
+                    ->setDescription($officialDefinition['description'] ?? 'Thème synchronisé automatiquement depuis les ressources cartographiques.')
                     ->setActive(true)
-                    ->setFeaturedOnHomepage(false)
-                    ->setPosition($positionMax + 10)
-                    ->setColorHex(self::DEFAULT_COLORS[$currentColorIndex % count(self::DEFAULT_COLORS)])
-                    ->setIconKey(self::DEFAULT_ICONS[$currentIconIndex % count(self::DEFAULT_ICONS)]);
+                    ->setFeaturedOnHomepage($officialDefinition !== null)
+                    ->setPosition($officialDefinition['position'] ?? ($positionMax + 10))
+                    ->setColorHex($officialDefinition['color'] ?? self::DEFAULT_COLORS[$currentColorIndex % count(self::DEFAULT_COLORS)])
+                    ->setIconKey($officialDefinition['icon'] ?? self::DEFAULT_ICONS[$currentIconIndex % count(self::DEFAULT_ICONS)]);
 
                 ++$created;
-                $positionMax += 10;
-                ++$currentColorIndex;
-                ++$currentIconIndex;
+                if ($officialDefinition === null) {
+                    $positionMax += 10;
+                    ++$currentColorIndex;
+                    ++$currentIconIndex;
+                }
                 $action = 'created';
 
                 if (!$dryRun) {
@@ -115,6 +122,20 @@ final class SyncMapThemesCommand extends Command
                 $existingByLabel[$normalized] = $term;
             } else {
                 $changed = false;
+                if ($officialDefinition !== null) {
+                    $term
+                        ->setLabel($officialDefinition['label'])
+                        ->setDescription($officialDefinition['description'])
+                        ->setColorHex($officialDefinition['color'])
+                        ->setIconKey($officialDefinition['icon'])
+                        ->setPosition($officialDefinition['position'])
+                        ->setFeaturedOnHomepage(true);
+                    if (trim($term->getSlug()) === '') {
+                        $term->setSlug($officialDefinition['slug']);
+                    }
+                    $changed = true;
+                }
+
                 if ($activateAll && !$term->isActive()) {
                     $term->setActive(true);
                     ++$activated;
@@ -203,6 +224,7 @@ final class SyncMapThemesCommand extends Command
         $seen = [];
 
         foreach ($labels as $label) {
+            $label = MapThemeCatalog::normalizeLabel($label);
             $normalized = $this->normalizeKey($label);
             if ($normalized === '' || isset($seen[$normalized])) {
                 continue;

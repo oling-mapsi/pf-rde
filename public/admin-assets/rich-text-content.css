@@ -1,0 +1,238 @@
+:root {
+    --rdg-brand-primary: #fc5000;
+    --rdg-brand-secondary: #38b4e7;
+    --rdg-neutral-50: #fff9f5;
+    --rdg-neutral-100: #f6f7f8;
+    --rdg-neutral-200: #d9dee3;
+    --rdg-neutral-700: #374151;
+    --rdg-neutral-800: #181818;
+    --rdg-neutral-900: #101010;
+}
+
+body {
+    color: var(--rdg-neutral-800);
+    font-family: 'IBM Plex Sans', 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+h2,
+h3,
+h4 {
+    margin: 1.35rem 0 0.7rem;
+    color: var(--rdg-neutral-900);
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.55rem;
+}
+
+h4 {
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+p,
+ul,
+ol,
+blockquote,
+table,
+.pf-columns,
+.pf-callout,
+.pf-card,
+.pf-steps,
+.pf-kpis {
+    margin: 0 0 1rem;
+}
+
+a {
+    color: var(--rdg-brand-primary);
+    font-weight: 700;
+}
+
+img,
+figure img {
+    max-width: 100%;
+    height: auto;
+}
+
+.pf-lead {
+    font-size: 1.12rem;
+    font-weight: 500;
+}
+
+.pf-highlight {
+    padding: 0.08rem 0.28rem;
+    background: rgba(252, 80, 0, 0.12);
+    color: var(--rdg-neutral-900);
+}
+
+.pf-callout,
+.pf-card {
+    padding: 1.15rem 1.25rem;
+    border: 1px solid var(--rdg-neutral-200);
+    background: #ffffff;
+}
+
+.pf-callout--accent {
+    border-left: 4px solid var(--rdg-brand-primary);
+    background: var(--rdg-neutral-50);
+}
+
+.pf-callout--muted {
+    background: var(--rdg-neutral-100);
+}
+
+.pf-columns {
+    display: grid;
+    gap: 1rem;
+}
+
+.pf-columns--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pf-columns--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.pf-steps {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.pf-step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.9rem;
+    align-items: start;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--rdg-neutral-200);
+    background: #ffffff;
+}
+
+.pf-step__index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: var(--rdg-brand-primary);
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.pf-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.pf-kpi {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--rdg-neutral-200);
+    background: #ffffff;
+}
+
+.pf-kpi strong {
+    color: var(--rdg-brand-primary);
+    font-size: 1.7rem;
+    line-height: 1;
+}
+
+.pf-table,
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.pf-table th,
+.pf-table td,
+table th,
+table td {
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--rdg-neutral-200);
+    vertical-align: top;
+}
+
+.pf-table thead th,
+table thead th {
+    background: #fff4eb;
+    color: var(--rdg-neutral-900);
+    text-align: left;
+}
+
+.pf-table--striped tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.pf-table--compact th,
+.pf-table--compact td {
+    padding: 0.45rem 0.6rem;
+}
+
+.pf-media-left,
+.pf-media-right,
+.pf-media-center,
+.pf-media-full,
+.pf-media-framed {
+    display: block;
+}
+
+img.pf-media-left,
+figure.pf-media-left {
+    float: left;
+    width: min(44%, 22rem);
+    margin: 0.35rem 1.25rem 1rem 0;
+}
+
+img.pf-media-right,
+figure.pf-media-right {
+    float: right;
+    width: min(44%, 22rem);
+    margin: 0.35rem 0 1rem 1.25rem;
+}
+
+img.pf-media-center,
+figure.pf-media-center {
+    margin: 1rem auto;
+}
+
+img.pf-media-full,
+figure.pf-media-full {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+img.pf-media-framed,
+figure.pf-media-framed {
+    padding: 0.4rem;
+    border: 1px solid var(--rdg-neutral-200);
+    background: #ffffff;
+}
+
+@media (max-width: 900px) {
+    .pf-columns--2,
+    .pf-columns--3,
+    .pf-kpis {
+        grid-template-columns: 1fr;
+    }
+
+    img.pf-media-left,
+    figure.pf-media-left,
+    img.pf-media-right,
+    figure.pf-media-right {
+        float: none;
+        width: 100%;
+        margin: 1rem 0;
+    }
+}

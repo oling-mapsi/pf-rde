@@ -26,6 +26,7 @@ use App\Domain\Content\Entity\News;
 use App\Domain\Content\Entity\Page;
 use App\Domain\Content\Entity\Partner;
 use App\Domain\Content\Entity\QuickLink;
+use App\Domain\Taxonomy\MapThemeCatalog;
 use App\Domain\Taxonomy\Entity\TaxonomyTerm;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -376,12 +377,21 @@ HTML)
             ->setCreatedBy($admin)
             ->setUpdatedBy($admin);
 
-        $themeMob = (new TaxonomyTerm())
-            ->setTaxonomy('map_theme')
-            ->setSlug('mobilite')
-            ->setLabel('Mobilité')
-            ->setDescription('Données de mobilité et infrastructures de transport')
-            ->setActive(true);
+        $mapThemes = [];
+        foreach (MapThemeCatalog::definitions() as $themeDefinition) {
+            $mapTheme = (new TaxonomyTerm())
+                ->setTaxonomy(TaxonomyTerm::MAP_THEME_TAXONOMY)
+                ->setSlug($themeDefinition['slug'])
+                ->setLabel($themeDefinition['label'])
+                ->setDescription($themeDefinition['description'])
+                ->setIconKey($themeDefinition['icon'])
+                ->setColorHex($themeDefinition['color'])
+                ->setPosition($themeDefinition['position'])
+                ->setFeaturedOnHomepage(true)
+                ->setActive(true);
+
+            $mapThemes[] = $mapTheme;
+        }
 
         $metadata = (new MetadataRecord())
             ->setIdentifier('MD-RDG-001')
@@ -395,7 +405,7 @@ HTML)
             ->setTitle('Réseau routier principal')
             ->setSummary('Carte statique du réseau routier principal.')
             ->setDescription('Version PDF et PNG du réseau routier principal. Jeux de données associés disponibles.')
-            ->setTheme('Mobilité')
+            ->setTheme(MapThemeCatalog::labelForSlug('chaussees-et-accotements'))
             ->setVisibilityScope(VisibilityScope::PUBLIC)
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-1 day'))
@@ -482,7 +492,7 @@ HTML)
             ->setTitle('Visualisation réseau routier')
             ->setSourceType(DataSource::TYPE_CARTOGRAPHY_LINK)
             ->setSummary('Accès direct à la cartographie interactive du réseau routier.')
-            ->setTheme('Mobilité')
+            ->setTheme(MapThemeCatalog::labelForSlug('circulation-routiere'))
             ->setVisibilityScope(VisibilityScope::EXTERNAL)
             ->setFormat('websig')
             ->setLinkedInteractiveMap($interactiveMap)
@@ -496,7 +506,7 @@ HTML)
             ->setTitle('Service WMS - Réseau principal')
             ->setSourceType(DataSource::TYPE_WMS)
             ->setSummary('Service cartographique WMS de consultation du réseau principal.')
-            ->setTheme('Mobilité')
+            ->setTheme(MapThemeCatalog::labelForSlug('chaussees-et-accotements'))
             ->setVisibilityScope(VisibilityScope::INTERNAL)
             ->setFormat('wms')
             ->setSourceUrl('https://mock-wms-up.local/service')
@@ -511,7 +521,7 @@ HTML)
             ->setTitle('Service WFS - Travaux planifiés')
             ->setSourceType(DataSource::TYPE_WFS)
             ->setSummary('Service WFS exposant les travaux planifiés et événements opérationnels.')
-            ->setTheme('Mobilité')
+            ->setTheme(MapThemeCatalog::labelForSlug('circulation-routiere'))
             ->setVisibilityScope(VisibilityScope::INTERNAL)
             ->setFormat('wfs')
             ->setSourceUrl('https://mock-down.local/service')
@@ -526,7 +536,7 @@ HTML)
             ->setTitle('Fichier réseau routier GeoJSON')
             ->setSourceType(DataSource::TYPE_DATA_FILE)
             ->setSummary('Fichier de données réutilisable du réseau routier principal.')
-            ->setTheme('Mobilité')
+            ->setTheme(MapThemeCatalog::labelForSlug('chaussees-et-accotements'))
             ->setVisibilityScope(VisibilityScope::PUBLIC)
             ->setFormat('geojson')
             ->setSourceUrl('https://example.local/datasets/reseau-routier.geojson')
@@ -541,7 +551,7 @@ HTML)
             ->setTitle('Carte statique réseau routier principal')
             ->setSourceType(DataSource::TYPE_STATIC_MAP)
             ->setSummary('Fiche source associée à la carte statique du réseau routier principal.')
-            ->setTheme('Mobilité')
+            ->setTheme(MapThemeCatalog::labelForSlug('chaussees-et-accotements'))
             ->setVisibilityScope(VisibilityScope::PUBLIC)
             ->setFormat('pdf/png')
             ->setLinkedStaticMap($staticMap)
@@ -689,7 +699,6 @@ HTML)
             $homeSponsors,
             $homeNews,
             $partner,
-            $themeMob,
             $metadata,
             $staticMap,
             $endpointUp,
@@ -713,6 +722,10 @@ HTML)
             $externalRequest,
         ] as $entity) {
             $manager->persist($entity);
+        }
+
+        foreach ($mapThemes as $mapTheme) {
+            $manager->persist($mapTheme);
         }
 
         $manager->flush();

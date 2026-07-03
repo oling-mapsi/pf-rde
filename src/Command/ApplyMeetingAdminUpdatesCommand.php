@@ -7,6 +7,7 @@ namespace App\Command;
 use App\Domain\Access\Entity\User;
 use App\Domain\Content\Entity\HomepageSection;
 use App\Domain\Content\Entity\Page;
+use App\Domain\Taxonomy\MapThemeCatalog;
 use App\Domain\Taxonomy\Entity\TaxonomyTerm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -214,15 +215,7 @@ final class ApplyMeetingAdminUpdatesCommand extends Command
 
     private function alignFeaturedThemes(): void
     {
-        $featuredSlugs = [
-            'circulation',
-            'chaussees-et-accotements',
-            'patrimoine',
-            'mobilite',
-            'securite-routiere',
-            'ouvrages-art',
-            'territoire',
-        ];
+        $featuredSlugs = MapThemeCatalog::featuredSlugs();
 
         $repository = $this->entityManager->getRepository(TaxonomyTerm::class);
         $themes = $repository->findActiveMapThemes();

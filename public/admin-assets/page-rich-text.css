@@ -1,77 +1,35 @@
 :root {
     --rdg-brand-primary: #fc5000;
-    --rdg-brand-primary-hover: #f05000;
     --rdg-brand-secondary: #38b4e7;
-    --rdg-neutral-100: #f0f0f0;
+    --rdg-neutral-100: #f8f8f8;
     --rdg-neutral-200: #d8d8d8;
     --rdg-neutral-800: #181818;
     --rdg-neutral-900: #101010;
-    --color-brand-primary: var(--rdg-brand-primary);
-    --color-text-primary: var(--rdg-neutral-800);
-    --color-text-heading: var(--rdg-neutral-900);
-    --font-body: 'IBM Plex Sans', 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
-    --font-heading: 'IBM Plex Sans', 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
-    --font-size-body: 1rem;
-    --line-height-body: 1.5;
 }
 
-.admin-rich-text-toolbar .trix-button-group--file-tools {
-    display: flex;
+.field-textarea textarea[data-admin-rich-text='site'] {
+    min-height: 30rem;
+    font-family: 'IBM Plex Sans', 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
 }
 
-.admin-rich-text-editor {
-    min-height: 24rem;
-    padding: 1.1rem 1.2rem;
+.tox.tox-tinymce {
     border: 1px solid rgba(16, 16, 16, 0.18);
     border-radius: 0;
-    color: var(--color-text-primary, #1f2933);
+    box-shadow: none;
+}
+
+.tox .tox-toolbar,
+.tox .tox-toolbar__primary,
+.tox .tox-editor-header {
     background: #ffffff;
-    font-family: var(--font-body);
-    font-size: var(--font-size-body);
-    line-height: var(--line-height-body);
 }
 
-.admin-rich-text-editor:focus {
-    border-color: var(--rdg-brand-primary, #005ea8);
-    box-shadow: 0 0 0 0.2rem rgba(0, 94, 168, 0.14);
+.tox .tox-statusbar {
+    border-top: 1px solid rgba(16, 16, 16, 0.1);
 }
 
-.admin-rich-text-editor h1,
-.admin-rich-text-editor h2 {
-    margin: 1.4rem 0 0.7rem;
-    color: var(--color-text-heading, #101828);
-    font-family: var(--font-heading);
-    font-size: 2rem;
-    line-height: 1.2;
-    letter-spacing: 0;
-}
-
-.admin-rich-text-editor h3 {
-    margin: 1.2rem 0 0.6rem;
-    color: var(--color-text-heading, #101828);
-    font-family: var(--font-heading);
-    font-size: 1.75rem;
-    line-height: 1.25;
-}
-
-.admin-rich-text-editor p,
-.admin-rich-text-editor ul,
-.admin-rich-text-editor ol,
-.admin-rich-text-editor blockquote,
-.admin-rich-text-editor pre {
-    margin-block: 0 1rem;
-}
-
-.admin-rich-text-editor a {
-    color: var(--color-brand-primary, #005ea8);
-    font-weight: 700;
-}
-
-.admin-rich-text-editor img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    margin: 1rem 0;
+.tox .tox-edit-area::before {
+    border: 0;
 }
 
 .admin-rich-text-error {

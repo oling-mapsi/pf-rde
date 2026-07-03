@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\UI\Controller\Admin;
 
 use App\Domain\Content\Entity\HomepageSection;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -12,15 +14,27 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 final class HomepageSectionCrudController extends AbstractCrudController
 {
+    public function __construct(private readonly CsrfTokenManagerInterface $csrfTokenManager)
+    {
+    }
+
     public static function getEntityFqcn(): string
     {
         return HomepageSection::class;
+    }
+
+    public function configureAssets(Assets $assets): Assets
+    {
+        return $assets
+            ->addJsFile(Asset::new('/vendor/tinymce/tinymce.min.js')->onlyOnForms())
+            ->addCssFile(Asset::new('/admin-assets/page-rich-text.css')->onlyOnForms())
+            ->addJsFile(Asset::new('/admin-assets/page-rich-text.js')->onlyOnForms()->defer());
     }
 
     public function configureCrud(Crud $crud): Crud
@@ -68,7 +82,14 @@ final class HomepageSectionCrudController extends AbstractCrudController
         yield FormField::addTab('Contenu WYSIWYG');
         yield TextField::new('title', 'Titre public')->setColumns(12);
         yield TextareaField::new('intro', 'Introduction courte')->hideOnIndex()->setNumOfRows(3)->setColumns(12);
-        yield TextEditorField::new('body', 'Contenu riche')->hideOnIndex()->setNumOfRows(10)->setColumns(12);
+        yield TextareaField::new('body', 'Contenu riche')
+            ->hideOnIndex()
+            ->setNumOfRows(18)
+            ->setColumns(12)
+            ->setHelp('Éditeur avancé PF : tableaux, images, colonnes et blocs éditoriaux réutilisables.')
+            ->setFormTypeOption('attr.data-rich-text-upload-url', $this->generateUrl('admin_page_content_image_upload'))
+            ->setFormTypeOption('attr.data-rich-text-upload-token', (string) $this->csrfTokenManager->getToken('page_content_image_upload'))
+            ->setFormTypeOption('attr.data-admin-rich-text', 'site');
         yield TextField::new('imagePath', 'Image')->hideOnIndex()->setHelp('Chemin public ou URL, ex. /images/hero-guadeloupe-map-v5.png')->setColumns(6);
         yield TextField::new('ctaLabel', 'Libellé du bouton')->hideOnIndex()->setColumns(3);
         yield TextField::new('ctaUrl', 'URL du bouton')->hideOnIndex()->setColumns(3);
