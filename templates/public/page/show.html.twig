@@ -2,7 +2,7 @@
 
 {% set resolvedTitle = page ? page.title : (fallbackTitle ?? 'Page') %}
 {% set isLegal = (page and page.systemPage) or fallbackTitle is defined %}
-{% set breadcrumbHomePath = app.user ? path('app_private_home') : path('app_home') %}
+{% set breadcrumbHomePath = path('app_home') %}
 {% set breadcrumbHomeLabel = app.user ? 'Extranet' : 'Accueil' %}
 
 {% block title %}{{ resolvedTitle }}{% endblock %}

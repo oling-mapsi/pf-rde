@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-{% set breadcrumbHomePath = app.user ? path('app_private_home') : path('app_home') %}
+{% set breadcrumbHomePath = path('app_home') %}
 {% set breadcrumbHomeLabel = app.user ? 'Extranet' : 'Accueil' %}
 
 {% block title %}{{ article.title }}{% endblock %}

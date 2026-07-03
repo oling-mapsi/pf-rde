@@ -221,9 +221,13 @@ final class ApplyMeetingAdminUpdatesCommand extends Command
         $themes = $repository->findActiveMapThemes();
         foreach ($themes as $theme) {
             $position = array_search($theme->getSlug(), $featuredSlugs, true);
+            if ($position === false) {
+                continue;
+            }
+
             $theme
-                ->setFeaturedOnHomepage($position !== false)
-                ->setPosition($position === false ? $theme->getPosition() : ((int) $position + 1) * 10);
+                ->setFeaturedOnHomepage(true)
+                ->setPosition(((int) $position + 1) * 10);
         }
     }
 
