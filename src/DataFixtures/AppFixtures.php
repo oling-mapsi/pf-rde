@@ -106,9 +106,34 @@ final class AppFixtures extends Fixture
 
         $presentation = (new Page())
             ->setSlug('presentation-portail')
-            ->setTitle('Présentation du portail')
-            ->setSummary('Portail public SIG dédié aux infrastructures routières de la Guadeloupe.')
-            ->setContent('Ce portail centralise les informations cartographiques publiques et les services agents. Il est conçu pour une évolution progressive et interopérable.')
+            ->setTitle('Nous sommes Routes de Guadeloupe')
+            ->setSummary('Présentation de Routes de Guadeloupe, du service SIGR, de la démarche Open Data et des partenaires.')
+            ->setContent(<<<'HTML'
+<p>Nous sommes Routes de Guadeloupe, un acteur engagé au service du territoire et de ses habitants. Chaque jour, nous œuvrons à la gestion, à l’aménagement et à l’entretien du réseau routier afin de garantir des déplacements sûrs, fluides et durables pour tous.</p>
+<h2>Une expertise au service du territoire</h2>
+<p>Nos équipes, composées de professionnels aux compétences complémentaires, interviennent à toutes les étapes de la vie des infrastructures :</p>
+<ul>
+    <li>Études et prospective, pour anticiper les besoins de demain</li>
+    <li>Conception et aménagement, pour développer des projets adaptés et durables</li>
+    <li>Entretien et exploitation, pour garantir sécurité et qualité au quotidien</li>
+</ul>
+<p>Pour renforcer cette expertise, nous nous appuyons sur un Système d’Information Géographique (SIG) routier performant. Véritable outil d’aide à la décision, le SIG des Routes de Guadeloupe permet de mieux connaître le patrimoine routier, de suivre son évolution, d’analyser les usages et d’optimiser nos interventions. Grâce à la cartographie et à la donnée, nous adaptons plus efficacement nos actions aux réalités du terrain.</p>
+<p><a href="https://www.routesdeguadeloupe.fr/" rel="noopener" target="_blank">Consulter le site institutionnel Routes de Guadeloupe</a></p>
+<h2>L’open data : partager la donnée pour mieux agir</h2>
+<p>L’open data, ou données ouvertes, consiste à mettre à disposition du public des données produites ou collectées par les acteurs publics, de manière libre et accessible.</p>
+<p>Ces données, structurées et régulièrement mises à jour, peuvent être consultées, réutilisées et partagées par tous : citoyens, entreprises, collectivités.</p>
+<p>Pour Routes de Guadeloupe, ces données représentent un levier stratégique, qu’il s’agisse du réseau, des équipements, des travaux ou des conditions de circulation. Cette ouverture nous permet d’améliorer la connaissance du territoire par les thématiques suivantes :</p>
+<ul>
+    <li>Surveillance de réseau</li>
+    <li>Anomalies et dégâts au domaine public routier</li>
+    <li>Fauchage</li>
+    <li>Patrimoine (ouvrage d’art, signalisation, équipements Trafikéra)</li>
+    <li>Gestion de crise</li>
+</ul>
+<h2>Nous sommes à votre écoute</h2>
+<p>Parce que la route appartient à tous, nous attachons une importance particulière au dialogue avec les usagers et les acteurs locaux. Votre expérience et vos attentes, enrichies par les données et les analyses issues de notre SIG, nous permettent de construire ensemble des solutions adaptées et durables.</p>
+<p><em>Anwout Ansanm !</em></p>
+HTML)
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable('-2 days'))
             ->setCreatedBy($admin)

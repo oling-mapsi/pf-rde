@@ -2,16 +2,15 @@
 
 {% set resolvedTitle = page ? page.title : (fallbackTitle ?? 'Page') %}
 {% set isLegal = (page and page.systemPage) or fallbackTitle is defined %}
-{% set isPresentationPage = page and page.slug == 'presentation-portail' %}
 {% set breadcrumbHomePath = app.user ? path('app_private_home') : path('app_home') %}
 {% set breadcrumbHomeLabel = app.user ? 'Extranet' : 'Accueil' %}
 
 {% block title %}{{ resolvedTitle }}{% endblock %}
-{% block body_class %}public-page{{ isPresentationPage ? ' public-page--presentation' : '' }}{% endblock %}
+{% block body_class %}public-page{% endblock %}
 
 {% block body %}
-    <section class="page-shell {{ isPresentationPage ? 'page-shell--presentation' : '' }}">
-        <div class="{{ isPresentationPage ? 'container' : 'container container--content' }}">
+    <section class="page-shell">
+        <div class="container container--content">
             <nav class="breadcrumb" aria-label="Fil d'Ariane">
                 <ol>
                     <li><a href="{{ breadcrumbHomePath }}">{{ breadcrumbHomeLabel }}</a></li>
@@ -19,107 +18,15 @@
                 </ol>
             </nav>
 
-            {% if isPresentationPage %}
-                <div class="presentation-layout">
-                    <aside class="presentation-sidebar" aria-label="Navigation de la page Nous sommes Routes de Guadeloupe">
-                        <p class="presentation-sidebar__title">Navigation rapide</p>
-                        <nav class="presentation-sidebar__nav">
-                            <a class="presentation-sidebar__link" href="#presentation-overview">Routes de Guadeloupe</a>
-                            <a class="presentation-sidebar__link" href="#demarche-open-data">La démarche open data</a>
-                            <a class="presentation-sidebar__link" href="#services-sigr">Nos services</a>
-                            <a class="presentation-sidebar__link" href="#partenaires-financeurs">Les partenaires</a>
-                        </nav>
-                    </aside>
-
-                    <article class="presentation-flow">
-                        <header id="presentation-overview" class="presentation-welcome">
-                            <p class="presentation-welcome__eyebrow">Portail SIG public</p>
-                            <h1>{{ resolvedTitle }}</h1>
-                            <p class="presentation-welcome__lead">
-                                Routes de Guadeloupe administre, gère, exploite et diffuse les données géographiques routières du domaine public lié aux routes nationales et départementales.
-                            </p>
-                            <p>
-                                Le portail SIGR accompagne cette mission en rendant les données routières plus faciles à trouver, comprendre et réutiliser, avec des accès adaptés au grand public, aux professionnels, aux partenaires et aux agents.
-                            </p>
-                            <div class="sigr-org-card" aria-label="Organisation du service SIGR">
-                                <p class="sigr-org-card__title">Service Système d’Information Géographique Routier</p>
-                                <div class="sigr-org-card__grid">
-                                    <span>Cartographies</span>
-                                    <span>Applications web</span>
-                                    <span>Analyses spatiales</span>
-                                    <span>Tableaux de bord</span>
-                                </div>
-                            </div>
-                            <p class="presentation-welcome__actions">
-                                <a href="https://www.routesdeguadeloupe.fr/" rel="noopener" target="_blank">Consulter le site institutionnel Routes de Guadeloupe</a>
-                            </p>
-                        </header>
-
-                        <section id="demarche-open-data" class="presentation-section" aria-labelledby="demarche-open-data-title">
-                            <h2 id="demarche-open-data-title">La démarche open data de Routes de Guadeloupe</h2>
-                            <p>
-                                Dans le cadre de ses missions de service public, Routes de Guadeloupe produit et reçoit des documents administratifs. Ces documents peuvent contenir des informations publiques représentées sous forme de données : données budgétaires, financières, cartographiques ou liées à l’organisation des services et des événements.
-                            </p>
-                            <p>
-                                L’ouverture des données publiques (open data) consiste à mettre ces données à disposition en accès libre et gratuit, dans des formats numériques facilement réutilisables. Une donnée est publique lorsqu’elle est produite ou reçue dans le cadre d’une mission de service public, y compris lorsqu’elle est collectée via un délégataire ou un prestataire.
-                            </p>
-                            <p>
-                                Le cadre juridique repose sur les textes relatifs à l’accès, à la diffusion et à la réutilisation des documents administratifs. Ce cadre a évolué jusqu’à la loi pour une République numérique (2016), qui pose l’ouverture des données publiques comme règle de principe.
-                            </p>
-                            <p>
-                                Au-delà du respect du cadre légal, Routes de Guadeloupe poursuit une démarche d’ouverture proactive pour améliorer la transparence, la qualité de service et la réutilisation concrète des informations publiques.
-                            </p>
-                            <ul class="presentation-list">
-                                <li>Respecter les fondements démocratiques : l’accès à l’information publique est un droit fondamental.</li>
-                                <li>Valoriser l’action publique : donner de la visibilité aux actions et aux résultats de Routes de Guadeloupe.</li>
-                                <li>Renforcer l’efficacité des services : faciliter la circulation des données entre équipes et partenaires.</li>
-                                <li>Améliorer la qualité des données : détecter plus rapidement les anomalies et encourager les corrections.</li>
-                                <li>Favoriser la création de nouveaux services numériques utiles aux usagers et aux professionnels.</li>
-                                <li>Soutenir l’innovation territoriale : mobilité, sécurité routière, transition et services connectés.</li>
-                            </ul>
-                        </section>
-
-                        <section id="services-sigr" class="presentation-section" aria-labelledby="services-sigr-title">
-                            <h2 id="services-sigr-title">Nos services</h2>
-                            <p>
-                                Le service SIGR met à disposition des productions et outils utiles au pilotage du domaine public routier et à la diffusion des données auprès des publics autorisés.
-                            </p>
-                            <ul class="presentation-list">
-                                <li><strong>Cartographies :</strong> production et publication de cartes statiques ou dynamiques.</li>
-                                <li><strong>Applications web :</strong> accès aux cartes interactives, services métiers et espaces sécurisés.</li>
-                                <li><strong>Analyses spatiales :</strong> croisement des données et appui aux études territoriales.</li>
-                                <li><strong>Tableaux de bord :</strong> visualisation d’indicateurs pour le suivi et l’aide à la décision.</li>
-                            </ul>
-                        </section>
-
-                        <section id="partenaires-financeurs" class="presentation-section" aria-labelledby="partenaires-financeurs-title">
-                            <h2 id="partenaires-financeurs-title">Les partenaires</h2>
-                            <p>
-                                La démarche open data et SIG de Routes de Guadeloupe s’inscrit dans un cadre partenarial avec les acteurs publics du territoire, les financeurs et les plateformes de mutualisation de l’information géographique.
-                            </p>
-                            <ul class="presentation-partner-list">
-                                <li><strong>FEDER :</strong> visibilité et conformité aux obligations de communication du programme.</li>
-                                <li><strong>Région Guadeloupe :</strong> articulation avec les politiques territoriales et la diffusion de l’information publique.</li>
-                                <li><strong>Département et services publics :</strong> coordination des données utiles aux politiques routières et territoriales.</li>
-                                <li><strong>KaruGéo :</strong> mutualisation et diffusion des données géographiques à l’échelle régionale.</li>
-                            </ul>
-                            <p class="presentation-section__link">
-                                <a href="https://www.karugeo.fr/" rel="noopener" target="_blank">Découvrir KaruGéo</a>
-                            </p>
-                        </section>
-                    </article>
-                </div>
-            {% else %}
-                <article class="card {{ isLegal ? 'legal-content' : 'rich-content' }}">
-                    <h1>{{ resolvedTitle }}</h1>
-                    {% if page %}
-                        {% if page.summary %}<p><strong>{{ page.summary }}</strong></p>{% endif %}
-                        <div>{{ page.content|raw }}</div>
-                    {% else %}
-                        <p>Cette page n’est pas encore configurée.</p>
-                    {% endif %}
-                </article>
-            {% endif %}
+            <article class="{{ isLegal ? 'legal-content' : 'rich-content' }}">
+                <h1>{{ resolvedTitle }}</h1>
+                {% if page %}
+                    {% if page.summary %}<p><strong>{{ page.summary }}</strong></p>{% endif %}
+                    <div>{{ page.content|raw }}</div>
+                {% else %}
+                    <p>Cette page n’est pas encore configurée.</p>
+                {% endif %}
+            </article>
         </div>
     </section>
 {% endblock %}
