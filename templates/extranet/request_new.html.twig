@@ -26,24 +26,62 @@
                 </div>
 
                 {{ form_start(form) }}
-                    {{ form_row(form.lastName) }}
-                    {{ form_row(form.firstName) }}
-                    {{ form_row(form.email) }}
-                    {{ form_row(form.phoneNumber) }}
-                    {{ form_row(form.organizationName) }}
-                    {{ form_row(form.companySiret) }}
-                    {{ form_row(form.postalCode) }}
-                    {{ form_row(form.city) }}
-                    {{ form_row(form.subject) }}
-                    {{ form_row(form.requestKinds) }}
-                    {{ form_row(form.networkTypes) }}
-                    {{ form_row(form.message) }}
-                    {{ form_row(form.additionalInformation) }}
-                    {{ form_row(form.dataFormats) }}
-                    {{ form_row(form.projectionSystem) }}
-                    {{ form_row(form.mapFormats) }}
-                    {{ form_row(form.mapScale) }}
-                    {{ form_row(form.privacyConsent) }}
+                    <div class="request-form-layout">
+                        <section class="request-form-section">
+                            <div class="request-form-section__head">
+                                <h2 class="request-form-section__title">Coordonnées</h2>
+                            </div>
+                            <div class="request-form-grid">
+                                <div>{{ form_row(form.lastName) }}</div>
+                                <div>{{ form_row(form.firstName) }}</div>
+                                <div>{{ form_row(form.email) }}</div>
+                                <div>{{ form_row(form.phoneNumber) }}</div>
+                                <div>{{ form_row(form.postalCode) }}</div>
+                                <div>{{ form_row(form.city) }}</div>
+                            </div>
+                        </section>
+
+                        <section class="request-form-section">
+                            <div class="request-form-section__head">
+                                <h2 class="request-form-section__title">Entreprise</h2>
+                            </div>
+                            <div class="request-form-grid">
+                                <div>{{ form_row(form.organizationName) }}</div>
+                                <div>{{ form_row(form.companySiret) }}</div>
+                            </div>
+                        </section>
+
+                        <section class="request-form-section">
+                            <div class="request-form-section__head">
+                                <h2 class="request-form-section__title">Demande</h2>
+                            </div>
+                            <div class="request-form-grid">
+                                <div class="request-form-grid__full">{{ form_row(form.subject) }}</div>
+                                <div>{{ form_row(form.requestKinds) }}</div>
+                                <div>{{ form_row(form.networkTypes) }}</div>
+                                <div class="request-form-grid__full">{{ form_row(form.message) }}</div>
+                                <div class="request-form-grid__full">{{ form_row(form.additionalInformation) }}</div>
+                            </div>
+                        </section>
+
+                        <section class="request-form-section">
+                            <div class="request-form-section__head">
+                                <h2 class="request-form-section__title">Livrable attendu</h2>
+                            </div>
+                            <div class="request-form-grid">
+                                <div>{{ form_row(form.dataFormats) }}</div>
+                                <div>{{ form_row(form.projectionSystem) }}</div>
+                                <div>{{ form_row(form.mapFormats) }}</div>
+                                <div>{{ form_row(form.mapScale) }}</div>
+                            </div>
+                        </section>
+
+                        <section class="request-form-section request-form-section--consent">
+                            <div class="request-form-grid">
+                                <div class="request-form-grid__full">{{ form_row(form.privacyConsent) }}</div>
+                            </div>
+                        </section>
+                    </div>
                     <div class="request-form-shell__actions">
                         <button type="submit" class="btn btn-primary">Soumettre la demande</button>
                     </div>

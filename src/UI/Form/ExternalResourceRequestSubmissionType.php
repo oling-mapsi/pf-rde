@@ -234,7 +234,12 @@ final class ExternalResourceRequestSubmissionType extends AbstractType
                 ],
             ])
             ->add('privacyConsent', CheckboxType::class, [
-                'label' => 'Je confirme avoir pris connaissance de la politique de confidentialité et du traitement de mes données pour instruire cette demande.',
+                'label' => "Je consens au traitement de mes donnees pour l'instruction et le suivi de ma demande de carte ou de donnees.",
+                'help' => "Finalite : enregistrer, instruire, suivre et archiver votre demande de carte ou de donnees, ainsi que vous recontacter pour toute precision utile a son traitement.<br>Donnees traitees : identite, coordonnees, informations de structure professionnelle le cas echeant et contenu detaille de la demande.<br>Duree de conservation : pendant le temps necessaire a l'instruction du dossier, puis au maximum 3 ans apres sa cloture pour assurer le suivi administratif et la tracabilite des echanges.<br>Destinataires : seuls les services et agents habilites de Routes de Guadeloupe intervenant dans le traitement de la demande.<br>Droits : acces, rectification, effacement, limitation, opposition et reclamation aupres de la CNIL, dans les conditions prevues par la reglementation applicable.<br>Contact DPO : via le <a href=\"/contact\">formulaire de contact</a> en precisant \"DPO\" dans l'objet de votre demande, ainsi que via les informations figurant dans la <a href=\"/politique-confidentialite\">politique de confidentialite</a>.",
+                'help_html' => true,
+                'row_attr' => [
+                    'class' => 'form-row--consent',
+                ],
             ]);
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($isPublicContext): void {

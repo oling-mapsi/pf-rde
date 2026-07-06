@@ -75,6 +75,24 @@ final class HomepageQueryService
             'searchPlaceholder' => $homepage?->getSearchPlaceholder() ?: 'Rechercher une carte, un jeu de données ou une ressource SIG',
             'primaryCtaLabel' => $homepage?->getPrimaryCtaLabel(),
             'primaryCtaUrl' => $homepage?->getPrimaryCtaUrl(),
+            'styles' => array_filter([
+                '--home-hero-title-color' => $this->normalizeCssColor($homepage?->getHeroTitleColor()),
+                '--home-hero-baseline-color' => $this->normalizeCssColor($homepage?->getHeroBaselineColor()),
+                '--home-hero-title-size' => $this->normalizeCssSize($homepage?->getHeroTitleFontSize()),
+                '--home-hero-baseline-size' => $this->normalizeCssSize($homepage?->getHeroBaselineFontSize()),
+                '--home-hero-search-background' => $this->normalizeCssColor($homepage?->getHeroSearchBackgroundColor()),
+                '--home-hero-search-border' => $this->normalizeCssColor($homepage?->getHeroSearchBorderColor()),
+                '--home-hero-search-text' => $this->normalizeCssColor($homepage?->getHeroSearchTextColor()),
+                '--home-hero-search-placeholder' => $this->normalizeCssColor($homepage?->getHeroSearchPlaceholderColor()),
+                '--home-hero-search-button-color' => $this->normalizeCssColor($homepage?->getHeroSearchButtonColor()),
+                '--home-hero-search-button-background' => $this->normalizeCssColor($homepage?->getHeroSearchButtonBackgroundColor()),
+                '--home-hero-primary-cta-background' => $this->normalizeCssColor($homepage?->getHeroPrimaryCtaBackgroundColor()),
+                '--home-hero-primary-cta-color' => $this->normalizeCssColor($homepage?->getHeroPrimaryCtaTextColor()),
+                '--home-hero-themes-gap' => $this->normalizeCssSize($homepage?->getHeroThemesGap(), true),
+                '--home-hero-theme-padding' => $this->normalizeCssSize($homepage?->getHeroThemeButtonPadding(), true),
+                '--home-hero-theme-radius' => $this->normalizeCssSize($homepage?->getHeroThemeButtonRadius()),
+                '--home-hero-theme-label-color' => $this->normalizeCssColor($homepage?->getHeroThemeLabelColor()),
+            ]),
         ];
     }
 
@@ -118,6 +136,54 @@ final class HomepageQueryService
         $lines = array_values(array_filter(array_map('trim', $lines)));
 
         return $lines !== [] ? $lines : [$text];
+    }
+
+    private function normalizeCssColor(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim($value);
+        if ($value === '') {
+            return null;
+        }
+
+        if (preg_match('/^#[0-9a-fA-F]{3,8}$/', $value) === 1) {
+            return $value;
+        }
+
+        if (preg_match('/^(?:rgb|rgba|hsl|hsla)\([\d\s.,%+-]+\)$/', $value) === 1) {
+            return $value;
+        }
+
+        if (preg_match('/^var\(--[a-zA-Z0-9-]+\)$/', $value) === 1) {
+            return $value;
+        }
+
+        if (preg_match('/^[a-zA-Z]+$/', $value) === 1) {
+            return strtolower($value);
+        }
+
+        return null;
+    }
+
+    private function normalizeCssSize(?string $value, bool $allowCompound = false): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim($value);
+        if ($value === '') {
+            return null;
+        }
+
+        $pattern = $allowCompound
+            ? '/^[\d\s.,%()+\-\/a-zA-Z]+$|^var\(--[a-zA-Z0-9-]+\)$/'
+            : '/^[\d.,%()+\-\/a-zA-Z]+$|^var\(--[a-zA-Z0-9-]+\)$/';
+
+        return preg_match($pattern, $value) === 1 ? $value : null;
     }
 
     /**

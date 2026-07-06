@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['requesterType', 'professionalField', 'requestKindInput', 'dataSection', 'mapSection'];
+    static targets = ['requesterType', 'professionalField', 'professionalSection', 'requestKindInput', 'dataSection', 'mapSection', 'deliverySection'];
 
     connect() {
         this.refresh();
@@ -12,10 +12,14 @@ export default class extends Controller {
         this.professionalFieldTargets.forEach((field) => {
             field.hidden = !isProfessional;
         });
+        this.professionalSectionTargets.forEach((section) => {
+            section.hidden = !isProfessional;
+        });
 
         const selectedKinds = this.selectedRequestKinds();
         const wantsData = selectedKinds.includes('data');
         const wantsMap = selectedKinds.includes('map');
+        const hasDeliveryOptions = wantsData || wantsMap;
 
         this.dataSectionTargets.forEach((field) => {
             field.hidden = !wantsData;
@@ -23,6 +27,10 @@ export default class extends Controller {
 
         this.mapSectionTargets.forEach((field) => {
             field.hidden = !wantsMap;
+        });
+
+        this.deliverySectionTargets.forEach((section) => {
+            section.hidden = !hasDeliveryOptions;
         });
     }
 

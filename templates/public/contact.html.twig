@@ -20,11 +20,33 @@
             <section class="card form-panel" data-controller="async-form">
                 <div data-async-form-target="feedback"></div>
                 {{ form_start(form, { attr: { 'data-action': 'submit->async-form#submit' } }) }}
-                    {{ form_row(form.fullName) }}
-                    {{ form_row(form.email) }}
-                    {{ form_row(form.subject) }}
-                    {{ form_row(form.message) }}
-                    {{ form_row(form.privacyConsent) }}
+                    <div class="request-form-layout">
+                        <section class="request-form-section">
+                            <div class="request-form-section__head">
+                                <h2 class="request-form-section__title">Vos coordonnées</h2>
+                            </div>
+                            <div class="request-form-grid">
+                                <div>{{ form_row(form.fullName) }}</div>
+                                <div>{{ form_row(form.email) }}</div>
+                            </div>
+                        </section>
+
+                        <section class="request-form-section">
+                            <div class="request-form-section__head">
+                                <h2 class="request-form-section__title">Votre message</h2>
+                            </div>
+                            <div class="request-form-grid">
+                                <div class="request-form-grid__full">{{ form_row(form.subject) }}</div>
+                                <div class="request-form-grid__full">{{ form_row(form.message) }}</div>
+                            </div>
+                        </section>
+
+                        <section class="request-form-section request-form-section--consent">
+                            <div class="request-form-grid">
+                                <div class="request-form-grid__full">{{ form_row(form.privacyConsent) }}</div>
+                            </div>
+                        </section>
+                    </div>
                     <button type="submit" class="btn btn-primary">Envoyer le message</button>
                 {{ form_end(form) }}
             </section>

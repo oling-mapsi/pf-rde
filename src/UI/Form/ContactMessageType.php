@@ -49,7 +49,12 @@ final class ContactMessageType extends AbstractType
                 'attr' => ['rows' => 6],
             ])
             ->add('privacyConsent', CheckboxType::class, [
-                'label' => 'Je consens au traitement de mes données conformément à la politique de confidentialité.',
+                'label' => "Je consens au traitement de mes données pour l'envoi et le traitement de ma demande de contact.",
+                'help' => "Finalite : permettre a Routes de Guadeloupe de recevoir, instruire et traiter votre message, puis de vous recontacter si necessaire.<br>Donnees traitees : identite, adresse e-mail, objet et contenu du message.<br>Duree de conservation : pendant le temps necessaire au traitement de la demande, puis au maximum 3 ans apres le dernier echange si un suivi administratif le justifie.<br>Droits : acces, rectification, effacement, limitation, opposition et reclamation aupres de la CNIL, dans les conditions prevues par la reglementation applicable.<br>Contact DPO : via le <a href=\"/contact\">formulaire de contact</a> en precisant \"DPO\" dans l'objet de votre demande, ainsi que via les informations figurant dans la <a href=\"/politique-confidentialite\">politique de confidentialite</a>.",
+                'help_html' => true,
+                'row_attr' => [
+                    'class' => 'form-row--consent',
+                ],
                 'constraints' => [new Assert\IsTrue(message: 'Le consentement est requis.')],
             ]);
     }

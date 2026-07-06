@@ -6,12 +6,18 @@
 
 {% block body %}
     <div class="home-hero-kpis-shell">
-        <section class="home-banner hero hero--standard home-banner--institutional" aria-labelledby="home-title">
+        <section
+            class="home-banner hero hero--standard home-banner--institutional"
+            aria-labelledby="home-title"
+            {% if homepageHero.styles is not empty %}
+                style="{% for name, value in homepageHero.styles %}{{ name }}: {{ value }}; {% endfor %}"
+            {% endif %}
+        >
             <div class="home-feder-badge" aria-label="Opération cofinancée par l'Union européenne via le FEDER">
                 <img src="{{ asset('images/bloc-marque-feder.png') }}" alt="L'Europe s'engage en Guadeloupe - cofinancé par l'Union européenne">
                 <p class="visually-hidden">Cet outil s’inscrit dans une opération de transformation numérique du Système d’Information Géographique Routier cofinancée par l’Union européenne via le FEDER.</p>
             </div>
-            <div class="container container--content hero__content">
+            <div class="container hero__content">
                 <div class="hero__intro">
                     <h1 id="home-title" class="home-hero-title">
                         {% for line in homepageHero.titleLines %}
@@ -34,11 +40,17 @@
                         <input id="home-search-input" class="search-bar__input" type="search" name="q" placeholder="{{ homepageHero.searchPlaceholder }}" aria-label="Recherche dans la cartothèque">
                         <button class="search-bar__icon-submit" type="submit" aria-label="Lancer la recherche">
                             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <circle cx="11" cy="11" r="6.5" stroke="#4f5460" stroke-width="2"/>
-                                <path d="M16 16l4.5 4.5" stroke="#4f5460" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2"/>
+                                <path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </button>
                     </form>
+
+                    {% if homepageHero.primaryCtaLabel and homepageHero.primaryCtaUrl %}
+                        <a class="home-hero-primary-cta" href="{{ homepageHero.primaryCtaUrl }}">
+                            {{ homepageHero.primaryCtaLabel }}
+                        </a>
+                    {% endif %}
                 </section>
 
                 {% if homeHeroThemes is not empty %}

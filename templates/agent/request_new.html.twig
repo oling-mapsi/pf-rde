@@ -31,32 +31,73 @@
                 </div>
 
                 {{ form_start(form) }}
-                    {{ form_row(form.structureType) }}
-                    {{ form_row(form.directionService) }}
-                    {{ form_row(form.center) }}
-                    {{ form_row(form.lastName) }}
-                    {{ form_row(form.firstName) }}
-                    {{ form_row(form.email) }}
-                    {{ form_row(form.emailConfirmation) }}
-                    {{ form_row(form.phoneNumber) }}
-                    {{ form_row(form.orderReference) }}
-                    {{ form_row(form.urgencyLevel) }}
-                    {{ form_row(form.urgencyJustification) }}
-                    {{ form_row(form.subject) }}
-                    {{ form_row(form.requestKinds) }}
-                    {{ form_row(form.networkTypes) }}
-                    {{ form_row(form.routeDetails) }}
-                    {{ form_row(form.geographicArea) }}
-                    {{ form_row(form.description) }}
-                    {{ form_row(form.additionalInformation) }}
-                    {{ form_row(form.hasProvidedData) }}
-                    {{ form_row(form.deliveryDestination) }}
-                    {{ form_row(form.dataFormats) }}
-                    {{ form_row(form.projectionSystem) }}
-                    {{ form_row(form.mapFormats) }}
-                    {{ form_row(form.mapScale) }}
-                    {{ form_row(form.attachment) }}
-                    {{ form_row(form.attachmentDescription) }}
+                    <div class="request-form-layout">
+                        <section class="request-form-section">
+                            <div class="request-form-section__head">
+                                <h2 class="request-form-section__title">Profil demandeur</h2>
+                            </div>
+                            <div class="request-form-grid">
+                                <div>{{ form_row(form.structureType) }}</div>
+                                <div>{{ form_row(form.directionService) }}</div>
+                                <div>{{ form_row(form.center) }}</div>
+                                <div>{{ form_row(form.orderReference) }}</div>
+                            </div>
+                        </section>
+
+                        <section class="request-form-section">
+                            <div class="request-form-section__head">
+                                <h2 class="request-form-section__title">Coordonnées</h2>
+                            </div>
+                            <div class="request-form-grid">
+                                <div>{{ form_row(form.lastName) }}</div>
+                                <div>{{ form_row(form.firstName) }}</div>
+                                <div>{{ form_row(form.email) }}</div>
+                                <div>{{ form_row(form.emailConfirmation) }}</div>
+                                <div>{{ form_row(form.phoneNumber) }}</div>
+                                <div>{{ form_row(form.urgencyLevel) }}</div>
+                                <div class="request-form-grid__full">{{ form_row(form.urgencyJustification) }}</div>
+                            </div>
+                        </section>
+
+                        <section class="request-form-section">
+                            <div class="request-form-section__head">
+                                <h2 class="request-form-section__title">Expression du besoin</h2>
+                            </div>
+                            <div class="request-form-grid">
+                                <div class="request-form-grid__full">{{ form_row(form.subject) }}</div>
+                                <div>{{ form_row(form.requestKinds) }}</div>
+                                <div>{{ form_row(form.networkTypes) }}</div>
+                                <div>{{ form_row(form.routeDetails) }}</div>
+                                <div>{{ form_row(form.geographicArea) }}</div>
+                                <div class="request-form-grid__full">{{ form_row(form.description) }}</div>
+                                <div class="request-form-grid__full">{{ form_row(form.additionalInformation) }}</div>
+                            </div>
+                        </section>
+
+                        <section class="request-form-section">
+                            <div class="request-form-section__head">
+                                <h2 class="request-form-section__title">Livrables</h2>
+                            </div>
+                            <div class="request-form-grid">
+                                <div>{{ form_row(form.hasProvidedData) }}</div>
+                                <div>{{ form_row(form.deliveryDestination) }}</div>
+                                <div>{{ form_row(form.dataFormats) }}</div>
+                                <div>{{ form_row(form.projectionSystem) }}</div>
+                                <div>{{ form_row(form.mapFormats) }}</div>
+                                <div>{{ form_row(form.mapScale) }}</div>
+                            </div>
+                        </section>
+
+                        <section class="request-form-section">
+                            <div class="request-form-section__head">
+                                <h2 class="request-form-section__title">Pièces jointes</h2>
+                            </div>
+                            <div class="request-form-grid">
+                                <div>{{ form_row(form.attachment) }}</div>
+                                <div>{{ form_row(form.attachmentDescription) }}</div>
+                            </div>
+                        </section>
+                    </div>
                     <button type="submit" class="btn btn-primary">Soumettre la demande</button>
                 {{ form_end(form) }}
             </section>
