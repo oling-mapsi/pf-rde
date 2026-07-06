@@ -147,10 +147,11 @@ final class HomepageBuilderController extends AbstractController
             ->setName(trim((string) $request->request->get('name', 'Accueil principal')))
             ->setHeroTitle(trim((string) $request->request->get('heroTitle', '')))
             ->setHeroBaseline($this->nullIfBlank($request->request->get('heroBaseline')))
-            ->setSearchIntro($this->nullIfBlank($request->request->get('searchIntro')))
-            ->setSearchPlaceholder($this->nullIfBlank($request->request->get('searchPlaceholder')))
+            ->setSearchIntro(null)
+            ->setSearchPlaceholder(null)
             ->setPrimaryCtaLabel($this->nullIfBlank($request->request->get('primaryCtaLabel')))
             ->setPrimaryCtaUrl($this->nullIfBlank($request->request->get('primaryCtaUrl')))
+            ->setHeroBackgroundImagePath($this->nullIfBlank($request->request->get('heroBackgroundImagePath')))
             ->setStatus('published')
             ->setPublishedAt(new \DateTimeImmutable());
     }

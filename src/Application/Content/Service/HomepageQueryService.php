@@ -62,7 +62,6 @@ final class HomepageQueryService
     /** @return array<string, mixed> */
     private function buildHeroViewModel(?HomepageContent $homepage, int $datasetCount, int $themeCount): array
     {
-        $searchIntro = $homepage?->getSearchIntro();
         $title = $homepage?->getHeroTitle() ?: 'La plateforme Open Data et SIG de Routes de Guadeloupe';
         $baseline = $homepage?->getHeroBaseline() ?: 'Plateforme de référence pour la cartographie routière de la Guadeloupe. Cartothèque statique, cartes interactives, information usagers et services agents.';
 
@@ -71,11 +70,11 @@ final class HomepageQueryService
             'titleLines' => $this->splitHeroTitle($title),
             'baseline' => $baseline,
             'baselineLines' => $this->splitHeroBaseline($baseline),
-            'searchIntro' => $searchIntro ?: sprintf('Explorer les %d jeux de données dans les %d thèmes', $datasetCount, $themeCount),
-            'searchPlaceholder' => $homepage?->getSearchPlaceholder() ?: 'Rechercher une carte, un jeu de données ou une ressource SIG',
+            'searchPlaceholder' => sprintf('Recherchez dans les %d thématiques, %d cartes ou jeux de données', $themeCount, $datasetCount),
             'primaryCtaLabel' => $homepage?->getPrimaryCtaLabel(),
             'primaryCtaUrl' => $homepage?->getPrimaryCtaUrl(),
             'styles' => array_filter([
+                '--home-hero-background-image' => $this->normalizeHeroBackgroundImage($homepage?->getHeroBackgroundImagePath()),
                 '--home-hero-title-color' => $this->normalizeCssColor($homepage?->getHeroTitleColor()),
                 '--home-hero-baseline-color' => $this->normalizeCssColor($homepage?->getHeroBaselineColor()),
                 '--home-hero-title-size' => $this->normalizeCssSize($homepage?->getHeroTitleFontSize()),
@@ -184,6 +183,32 @@ final class HomepageQueryService
             : '/^[\d.,%()+\-\/a-zA-Z]+$|^var\(--[a-zA-Z0-9-]+\)$/';
 
         return preg_match($pattern, $value) === 1 ? $value : null;
+    }
+
+    private function normalizeHeroBackgroundImage(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim($value);
+        if ($value === '') {
+            return null;
+        }
+
+        if (str_starts_with($value, '/')) {
+            return sprintf("url('%s')", $value);
+        }
+
+        if (preg_match('#^https?://#i', $value) === 1) {
+            return sprintf("url('%s')", $value);
+        }
+
+        if (preg_match('/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/', $value) === 1) {
+            return sprintf("url('/uploads/content/%s')", $value);
+        }
+
+        return null;
     }
 
     /**

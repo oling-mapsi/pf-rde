@@ -10,6 +10,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 
@@ -71,14 +72,19 @@ final class HomepageContentCrudController extends AbstractCrudController
             ->setNumOfRows(3)
             ->setColumns(12);
         yield TextareaField::new('heroBaseline', 'Texte d’introduction')->setNumOfRows(4)->setColumns(12);
+        yield ImageField::new('heroBackgroundImagePath', 'Image de fond du héros')
+            ->setBasePath('/uploads/content')
+            ->setUploadDir('public/uploads/content')
+            ->setUploadedFileNamePattern('hero-home-[timestamp].[extension]')
+            ->setRequired(false)
+            ->hideOnIndex()
+            ->setHelp('Téléversez une image de fond pour le héros d’accueil.');
         yield ChoiceField::new('heroTitleColor', 'Couleur du titre')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
         yield ChoiceField::new('heroBaselineColor', 'Couleur du texte d’introduction')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
         yield ChoiceField::new('heroTitleFontSize', 'Taille du titre')->setChoices(self::TITLE_SIZE_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
         yield ChoiceField::new('heroBaselineFontSize', 'Taille du texte d’introduction')->setChoices(self::BODY_SIZE_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
 
         yield FormField::addTab('Recherche et CTA');
-        yield TextField::new('searchIntro', 'Texte au-dessus de la recherche')->setColumns(6);
-        yield TextField::new('searchPlaceholder', 'Placeholder de recherche')->setColumns(6);
         yield TextField::new('primaryCtaLabel', 'Libellé du bouton principal')->hideOnIndex()->setColumns(6);
         yield TextField::new('primaryCtaUrl', 'URL du bouton principal')->hideOnIndex()->setColumns(6);
         yield ChoiceField::new('heroSearchBackgroundColor', 'Fond du formulaire')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);

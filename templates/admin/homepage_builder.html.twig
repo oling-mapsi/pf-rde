@@ -253,10 +253,6 @@
                         <label for="homepage-name">Nom interne</label>
                         <input id="homepage-name" name="name" value="{{ homepage.name }}">
                     </div>
-                    <div class="homepage-builder__field">
-                        <label for="homepage-search-intro">Texte recherche</label>
-                        <input id="homepage-search-intro" name="searchIntro" value="{{ homepage.searchIntro }}">
-                    </div>
                     <div class="homepage-builder__field homepage-builder__field--wide">
                         <label for="homepage-title">Titre</label>
                         <input id="homepage-title" name="heroTitle" value="{{ homepage.heroTitle }}" required>
@@ -264,6 +260,15 @@
                     <div class="homepage-builder__field homepage-builder__field--wide">
                         <label for="homepage-baseline">Introduction</label>
                         <textarea id="homepage-baseline" name="heroBaseline" rows="3">{{ homepage.heroBaseline }}</textarea>
+                    </div>
+                    <div class="homepage-builder__field homepage-builder__field--wide">
+                        <label for="homepage-background-image">Image de fond du héros</label>
+                        <input
+                            id="homepage-background-image"
+                            name="heroBackgroundImagePath"
+                            value="{{ homepage.heroBackgroundImagePath }}"
+                            placeholder="/uploads/content/... ou https://..."
+                        >
                     </div>
                     <div class="homepage-builder__field homepage-builder__field--wide">
                         <label for="homepage-search-placeholder">Placeholder de recherche</label>

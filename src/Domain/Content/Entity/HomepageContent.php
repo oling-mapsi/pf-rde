@@ -43,6 +43,9 @@ class HomepageContent
     #[ORM\Column(type: Types::STRING, length: 512, nullable: true)]
     private ?string $primaryCtaUrl = null;
 
+    #[ORM\Column(type: Types::STRING, length: 512, nullable: true)]
+    private ?string $heroBackgroundImagePath = null;
+
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
     private ?string $heroTitleColor = null;
 
@@ -171,6 +174,18 @@ class HomepageContent
     public function setPrimaryCtaUrl(?string $primaryCtaUrl): static
     {
         $this->primaryCtaUrl = $primaryCtaUrl;
+
+        return $this;
+    }
+
+    public function getHeroBackgroundImagePath(): ?string
+    {
+        return $this->heroBackgroundImagePath;
+    }
+
+    public function setHeroBackgroundImagePath(?string $heroBackgroundImagePath): static
+    {
+        $this->heroBackgroundImagePath = $heroBackgroundImagePath;
 
         return $this;
     }

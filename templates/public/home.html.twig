@@ -14,7 +14,7 @@
             {% endif %}
         >
             <div class="home-feder-badge" aria-label="Opération cofinancée par l'Union européenne via le FEDER">
-                <img src="{{ asset('images/bloc-marque-feder.png') }}" alt="L'Europe s'engage en Guadeloupe - cofinancé par l'Union européenne">
+                <img src="{{ asset('images/logo-feder-gp-clean.png') }}" alt="L'Europe s'engage en Guadeloupe - cofinancé par l'Union européenne">
                 <p class="visually-hidden">Cet outil s’inscrit dans une opération de transformation numérique du Système d’Information Géographique Routier cofinancée par l’Union européenne via le FEDER.</p>
             </div>
             <div class="container hero__content">
@@ -31,10 +31,6 @@
                     </p>
                 </div>
                 <section class="home-hero-search" aria-label="Recherche principale">
-                    <p class="home-kpis__search-subtitle">
-                        {{ homepageHero.searchIntro }}
-                    </p>
-
                     <form class="search-bar search-bar--hero-floating" role="search" action="{{ path('app_data_catalog') }}" method="get" aria-label="Recherche principale">
                         <label class="visually-hidden" for="home-search-input">Recherche dans la cartothèque</label>
                         <input id="home-search-input" class="search-bar__input" type="search" name="q" placeholder="{{ homepageHero.searchPlaceholder }}" aria-label="Recherche dans la cartothèque">

@@ -212,10 +212,10 @@ small {
     top: 0;
     z-index: 1000;
     overflow: visible;
-    border-bottom: 1px solid var(--color-border-default);
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 1px 0 rgba(16, 16, 16, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 1px 0 rgba(16, 16, 16, 0.06);
     transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
     will-change: transform;
 }
@@ -1064,8 +1064,8 @@ small {
     display: grid;
     grid-template-rows: minmax(0, 1fr) auto;
     align-items: stretch;
-    min-height: calc(100vh - var(--site-header-height));
-    min-height: calc(100svh - var(--site-header-height));
+    min-height: 100vh;
+    min-height: 100svh;
     background-color: #ffffff;
     background-image: none;
     background-repeat: no-repeat;
@@ -1075,8 +1075,11 @@ small {
 
 .home-banner--institutional {
     position: relative;
+    min-height: 100%;
     background: transparent;
     isolation: isolate;
+    --hero-padding-top: calc(var(--spacing-10) + var(--site-header-height));
+    --home-hero-background-image: url('/images/home-hero-dji-0474.jpg');
     --home-hero-title-color: #ffffff;
     --home-hero-baseline-color: rgba(255, 255, 255, 0.92);
     --home-hero-title-size: clamp(2rem, 4.8vw, 3.55rem);
@@ -1101,9 +1104,9 @@ small {
     inset: 0;
     z-index: 0;
     background:
-        linear-gradient(180deg, rgba(6, 18, 33, 0.5) 0%, rgba(6, 18, 33, 0.42) 35%, rgba(6, 18, 33, 0.58) 100%),
-        linear-gradient(90deg, rgba(6, 18, 33, 0.68) 0%, rgba(6, 18, 33, 0.26) 45%, rgba(6, 18, 33, 0.4) 100%),
-        url('/images/home-hero-dji-0474.jpg') center center / cover no-repeat;
+        linear-gradient(180deg, rgba(6, 18, 33, 0.05) 0%, rgba(6, 18, 33, 0.03) 35%, rgba(6, 18, 33, 0.08) 100%),
+        linear-gradient(90deg, rgba(6, 18, 33, 0.04) 0%, rgba(6, 18, 33, 0.01) 45%, rgba(6, 18, 33, 0.03) 100%),
+        var(--home-hero-background-image) center top / cover no-repeat;
 }
 
 .home-hero-search {
@@ -1122,10 +1125,14 @@ small {
     display: grid;
     align-items: start;
     justify-items: center;
-    gap: var(--spacing-3);
+    gap: var(--spacing-4);
     text-align: center;
     width: 100%;
     min-height: 100%;
+}
+
+.home-banner--institutional .hero__content {
+    padding-top: 3.7rem;
 }
 
 .hero__intro {
@@ -1149,7 +1156,7 @@ small {
 
 .rdg-home .home-banner.hero h1 {
     color: var(--home-hero-title-color) !important;
-    text-shadow: 0 0.2rem 1.25rem rgba(0, 0, 0, 0.35);
+    text-shadow: 0 0.18rem 0.45rem rgba(0, 0, 0, 0.55), 0 0.5rem 1.6rem rgba(0, 0, 0, 0.42);
 }
 
 .hero-title-line {
@@ -1170,7 +1177,7 @@ small {
     color: var(--home-hero-baseline-color);
     font-size: var(--home-hero-baseline-size);
     line-height: 1.5;
-    text-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.3);
+    text-shadow: 0 0.14rem 0.38rem rgba(0, 0, 0, 0.52), 0 0.4rem 1.2rem rgba(0, 0, 0, 0.34);
 }
 
 .hero-baseline-line {
@@ -1381,7 +1388,7 @@ small {
     font-weight: 700;
     line-height: 1.2;
     text-align: center;
-    text-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.28);
+    text-shadow: 0 0.14rem 0.32rem rgba(0, 0, 0, 0.45), 0 0.35rem 0.9rem rgba(0, 0, 0, 0.28);
 }
 
 .home-thematics {
@@ -5537,7 +5544,7 @@ tbody tr:hover {
     padding: clamp(0.85rem, 1.4vw, 1.1rem) clamp(0.9rem, 1.5vw, 1.2rem);
     border: 0;
     border-radius: 1.6rem 0 0 1.6rem;
-    background: rgba(255, 255, 255, 0.98);
+    background: #ffffff;
     box-shadow: 0 18px 40px rgba(16, 16, 16, 0.14);
     transform: translateX(14%);
     pointer-events: none;
@@ -6157,20 +6164,52 @@ tbody tr:hover {
     }
 
     .site-header.is-nav-collapsed .main-nav {
-        height: 0 !important;
-        min-height: 0 !important;
-        max-height: 0 !important;
-        width: 0;
+        justify-content: flex-end;
+        height: 2.9rem;
+        min-height: 2.9rem;
+        max-height: 2.9rem;
+        width: auto;
         min-width: 0;
-        flex-basis: 0;
-        margin: 0;
+        flex-basis: auto;
+        margin: 0 0 0 auto;
         padding: 0;
-        gap: 0;
+        gap: 0.35rem;
         border-color: transparent;
-        opacity: 0;
-        overflow: hidden;
-        pointer-events: none;
-        transform: translateY(-0.35rem);
+        opacity: 1;
+        overflow: visible;
+        pointer-events: auto;
+        transform: none;
+    }
+
+    .site-header.is-nav-collapsed .main-nav__link,
+    .site-header.is-nav-collapsed .main-nav__separator {
+        display: none;
+    }
+
+    .site-header.is-nav-collapsed .main-nav__icon-link,
+    .site-header.is-nav-collapsed .main-nav__account,
+    .site-header.is-nav-collapsed .main-nav__account-toggle {
+        display: inline-flex;
+        align-items: center;
+        width: auto;
+        min-width: 0;
+        min-height: 2.9rem;
+        height: 2.9rem;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .site-header.is-nav-collapsed .main-nav__icon-link {
+        width: 2.9rem;
+        min-width: 2.9rem;
+    }
+
+    .site-header.is-nav-collapsed .main-nav__account-toggle {
+        padding-inline: 0.5rem;
+    }
+
+    .site-header.is-nav-collapsed .main-nav__icon-label {
+        display: none;
     }
 
     .main-nav__link {
@@ -6731,7 +6770,7 @@ tbody tr:hover {
     }
 
     .home-hero-kpis-shell {
-        min-height: calc(100dvh - var(--site-header-height));
+        min-height: 100dvh;
     }
 
     .rdg-hero {
@@ -7211,6 +7250,7 @@ tbody tr:hover {
 .rdg-home .home-hero-kpis-shell {
     position: relative;
     overflow: hidden;
+    margin-top: calc(var(--site-header-height) * -1);
     border-bottom: 0;
     background: #091a2d;
 }
@@ -10663,9 +10703,9 @@ tbody tr:hover {
 @media (max-width: 47.99em) {
     .home-banner--institutional::before {
         background:
-            linear-gradient(180deg, rgba(6, 18, 33, 0.58) 0%, rgba(6, 18, 33, 0.46) 34%, rgba(6, 18, 33, 0.66) 100%),
-            linear-gradient(90deg, rgba(6, 18, 33, 0.52) 0%, rgba(6, 18, 33, 0.2) 100%),
-            url('/images/home-hero-dji-0474.jpg') 54% center / cover no-repeat;
+            linear-gradient(180deg, rgba(6, 18, 33, 0.08) 0%, rgba(6, 18, 33, 0.05) 34%, rgba(6, 18, 33, 0.12) 100%),
+            linear-gradient(90deg, rgba(6, 18, 33, 0.06) 0%, rgba(6, 18, 33, 0.02) 100%),
+            var(--home-hero-background-image) 54% center / cover no-repeat;
     }
 
     .home-hero-themes {
