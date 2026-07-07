@@ -3,7 +3,7 @@
 {% block title %}Demande de carte ou de données{% endblock %}
 
 {% block body %}
-    <section class="page-shell">
+    <section class="page-shell {{ requestMode|default('public') != 'public' ? 'page-shell--agent' : '' }}">
         <div class="container container--content">
             <nav class="breadcrumb" aria-label="Fil d'Ariane">
                 <ol>
@@ -13,94 +13,211 @@
             </nav>
 
             <header class="page-header">
-                <p class="page-header__eyebrow">Demandes externes</p>
-                <h1 class="page-header__title">Demander une carte ou des données</h1>
-                <p class="page-header__lead">Ce formulaire permet aux usagers et professionnels de transmettre un besoin précis. Les professionnels disposant déjà d’un compte peuvent aussi déposer leur demande depuis l’espace privé.</p>
+                <p class="page-header__eyebrow">
+                    {% if requestMode|default('public') == 'agent' %}
+                        Espace agent
+                    {% elseif requestMode|default('public') == 'professional' %}
+                        Espace professionnel
+                    {% else %}
+                        Demandes externes
+                    {% endif %}
+                </p>
+                <h1 class="page-header__title">
+                    {% if requestMode|default('public') == 'agent' %}
+                        Nouvelle demande SIG
+                    {% elseif requestMode|default('public') == 'professional' %}
+                        Nouvelle demande de carte ou de données
+                    {% else %}
+                        Demander une carte ou des données
+                    {% endif %}
+                </h1>
+                <p class="page-header__lead">
+                    {% if requestMode|default('public') == 'agent' %}
+                        Saisissez votre besoin, joignez les éléments utiles puis suivez le traitement depuis votre tableau de bord.
+                    {% elseif requestMode|default('public') == 'professional' %}
+                        Les informations de votre compte sont préremplies. Vous pouvez les ajuster pour cette demande si nécessaire.
+                    {% else %}
+                        Ce formulaire permet aux usagers et professionnels de transmettre un besoin précis. Les professionnels disposant déjà d’un compte peuvent aussi déposer leur demande depuis l’espace privé.
+                    {% endif %}
+                </p>
             </header>
 
-            <section class="card request-intro-card">
-                <div>
-                    <h2 class="h4">Professionnels</h2>
-                    <p>Si vous êtes un professionnel régulier, l’usage recommandé est la demande depuis votre espace privé pour suivre plus facilement vos échanges.</p>
-                </div>
-                <div class="request-intro-card__actions">
-                    <a class="btn btn-primary" href="{{ path('app_login') }}">Connexion</a>
-                    <a class="btn btn-outline" href="{{ path('app_register_external') }}">Créer un compte professionnel</a>
-                </div>
-            </section>
-
-            <section class="card form-panel request-form-shell" data-controller="request-submission">
-                {{ form_start(form) }}
-                    <div class="request-form-layout">
-                        <section class="request-form-section">
-                            <div class="request-form-section__head">
-                                <h2 class="request-form-section__title">Identité</h2>
-                                <p class="request-form-section__intro">Les coordonnées de contact servent au suivi de la demande.</p>
-                            </div>
-                            <div class="request-form-grid">
-                                {% if form.requesterType is defined %}
-                                    <div class="request-form-grid__full">{{ form_row(form.requesterType) }}</div>
-                                {% endif %}
-
-                                <div>{{ form_row(form.lastName) }}</div>
-                                <div>{{ form_row(form.firstName) }}</div>
-
-                                <div>{{ form_row(form.email) }}</div>
-                                <div>{{ form_row(form.emailConfirmation) }}</div>
-
-                                <div>{{ form_row(form.phoneNumber) }}</div>
-                                <div>{{ form_row(form.postalCode) }}</div>
-
-                                <div class="request-form-grid__full">{{ form_row(form.city) }}</div>
-                            </div>
-                        </section>
-
-                        <section class="request-form-section" data-request-submission-target="professionalSection" hidden>
-                            <div class="request-form-section__head">
-                                <h2 class="request-form-section__title">Structure</h2>
-                            </div>
-                            <div class="request-form-grid">
-                                <div>{{ form_row(form.organizationName) }}</div>
-                                <div>{{ form_row(form.companySiret) }}</div>
-                            </div>
-                        </section>
-
-                        <section class="request-form-section">
-                            <div class="request-form-section__head">
-                                <h2 class="request-form-section__title">Besoin</h2>
-                            </div>
-                            <div class="request-form-grid">
-                                <div class="request-form-grid__full">{{ form_row(form.subject) }}</div>
-                                <div>{{ form_row(form.requestKinds) }}</div>
-                                <div>{{ form_row(form.networkTypes) }}</div>
-                                <div class="request-form-grid__full">{{ form_row(form.message) }}</div>
-                                <div class="request-form-grid__full">{{ form_row(form.additionalInformation) }}</div>
-                            </div>
-                        </section>
-
-                        <section class="request-form-section" data-request-submission-target="deliverySection" hidden>
-                            <div class="request-form-section__head">
-                                <h2 class="request-form-section__title">Livrable souhaité</h2>
-                            </div>
-                            <div class="request-form-grid">
-                                <div>{{ form_row(form.dataFormats) }}</div>
-                                <div>{{ form_row(form.projectionSystem) }}</div>
-                                <div>{{ form_row(form.mapFormats) }}</div>
-                                <div>{{ form_row(form.mapScale) }}</div>
-                            </div>
-                        </section>
-
-                        <section class="request-form-section request-form-section--consent">
-                            <div class="request-form-grid">
-                                <div class="request-form-grid__full">{{ form_row(form.privacyConsent) }}</div>
-                            </div>
-                        </section>
+            {% if requestMode|default('public') == 'public' %}
+                <section class="card request-intro-card">
+                    <div>
+                        <h2 class="h4">Professionnels</h2>
+                        <p>Si vous êtes un professionnel régulier, l’usage recommandé est la demande depuis votre espace privé pour suivre plus facilement vos échanges.</p>
                     </div>
-                    <div class="request-form-shell__actions">
-                        <button type="submit" class="btn btn-primary">Envoyer ma demande</button>
+                    <div class="request-intro-card__actions">
+                        <a class="btn btn-primary" href="{{ path('app_login') }}">Connexion</a>
+                        <a class="btn btn-outline" href="{{ path('app_register_external') }}">Créer un compte professionnel</a>
                     </div>
-                {{ form_end(form) }}
-            </section>
+                </section>
+            {% endif %}
+
+            {% if requestMode|default('public') == 'agent' %}
+                <section class="card form-panel request-form-shell" data-controller="agent-request-submission">
+                    <div class="request-form-shell__legal">
+                        <p><strong>Délais indicatifs :</strong> normal 1 à 2 semaines, urgent moins de 5 jours ouvrés, très urgent moins de 48h sous réserve.</p>
+                        <p><strong>Traçabilité :</strong> précisez autant que possible l’emprise, le contexte métier et la destination de la production.</p>
+                    </div>
+
+                    {{ form_start(form) }}
+                        <div class="request-form-layout">
+                            <section class="request-form-section">
+                                <div class="request-form-section__head">
+                                    <h2 class="request-form-section__title">Profil demandeur</h2>
+                                </div>
+                                <div class="request-form-grid">
+                                    <div>{{ form_row(form.structureType) }}</div>
+                                    <div>{{ form_row(form.directionService) }}</div>
+                                    <div>{{ form_row(form.center) }}</div>
+                                    <div>{{ form_row(form.orderReference) }}</div>
+                                </div>
+                            </section>
+
+                            <section class="request-form-section">
+                                <div class="request-form-section__head">
+                                    <h2 class="request-form-section__title">Coordonnées</h2>
+                                </div>
+                                <div class="request-form-grid">
+                                    <div>{{ form_row(form.lastName) }}</div>
+                                    <div>{{ form_row(form.firstName) }}</div>
+                                    <div>{{ form_row(form.email) }}</div>
+                                    <div>{{ form_row(form.emailConfirmation) }}</div>
+                                    <div>{{ form_row(form.phoneNumber) }}</div>
+                                    <div>{{ form_row(form.urgencyLevel) }}</div>
+                                    <div class="request-form-grid__full">{{ form_row(form.urgencyJustification) }}</div>
+                                </div>
+                            </section>
+
+                            <section class="request-form-section">
+                                <div class="request-form-section__head">
+                                    <h2 class="request-form-section__title">Expression du besoin</h2>
+                                </div>
+                                <div class="request-form-grid">
+                                    <div class="request-form-grid__full">{{ form_row(form.subject) }}</div>
+                                    <div>{{ form_row(form.requestKinds) }}</div>
+                                    <div>{{ form_row(form.networkTypes) }}</div>
+                                    <div>{{ form_row(form.routeDetails) }}</div>
+                                    <div>{{ form_row(form.geographicArea) }}</div>
+                                    <div class="request-form-grid__full">{{ form_row(form.description) }}</div>
+                                    <div class="request-form-grid__full">{{ form_row(form.additionalInformation) }}</div>
+                                </div>
+                            </section>
+
+                            <section class="request-form-section">
+                                <div class="request-form-section__head">
+                                    <h2 class="request-form-section__title">Livrables</h2>
+                                </div>
+                                <div class="request-form-grid">
+                                    <div>{{ form_row(form.hasProvidedData) }}</div>
+                                    <div>{{ form_row(form.deliveryDestination) }}</div>
+                                    <div>{{ form_row(form.dataFormats) }}</div>
+                                    <div>{{ form_row(form.projectionSystem) }}</div>
+                                    <div>{{ form_row(form.mapFormats) }}</div>
+                                    <div>{{ form_row(form.mapScale) }}</div>
+                                </div>
+                            </section>
+
+                            <section class="request-form-section">
+                                <div class="request-form-section__head">
+                                    <h2 class="request-form-section__title">Pièces jointes</h2>
+                                </div>
+                                <div class="request-form-grid">
+                                    <div>{{ form_row(form.attachment) }}</div>
+                                    <div>{{ form_row(form.attachmentDescription) }}</div>
+                                </div>
+                            </section>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Soumettre la demande</button>
+                    {{ form_end(form) }}
+                </section>
+            {% else %}
+                <section class="card form-panel request-form-shell" data-controller="request-submission">
+                    {% if requestMode|default('public') == 'professional' %}
+                        <div class="request-form-shell__legal">
+                            <p><strong>Traitement :</strong> votre demande sera instruite par l’équipe habilitée de la plateforme.</p>
+                            <p><strong>Suivi :</strong> le numéro de demande sera disponible dans votre tableau de bord après soumission.</p>
+                        </div>
+                    {% endif %}
+
+                    {{ form_start(form) }}
+                        <div class="request-form-layout">
+                            <section class="request-form-section">
+                                <div class="request-form-section__head">
+                                    <h2 class="request-form-section__title">{{ requestMode|default('public') == 'professional' ? 'Coordonnées' : 'Identité' }}</h2>
+                                    {% if requestMode|default('public') == 'public' %}
+                                        <p class="request-form-section__intro">Les coordonnées de contact servent au suivi de la demande.</p>
+                                    {% endif %}
+                                </div>
+                                <div class="request-form-grid">
+                                    {% if form.requesterType is defined %}
+                                        <div class="request-form-grid__full">{{ form_row(form.requesterType) }}</div>
+                                    {% endif %}
+
+                                    <div>{{ form_row(form.lastName) }}</div>
+                                    <div>{{ form_row(form.firstName) }}</div>
+
+                                    <div>{{ form_row(form.email) }}</div>
+                                    {% if form.emailConfirmation is defined %}
+                                        <div>{{ form_row(form.emailConfirmation) }}</div>
+                                    {% endif %}
+
+                                    <div>{{ form_row(form.phoneNumber) }}</div>
+                                    <div>{{ form_row(form.postalCode) }}</div>
+
+                                    <div class="{{ requestMode|default('public') == 'professional' ? '' : 'request-form-grid__full' }}">{{ form_row(form.city) }}</div>
+                                </div>
+                            </section>
+
+                            <section class="request-form-section" {% if requestMode|default('public') == 'public' %}data-request-submission-target="professionalSection" hidden{% endif %}>
+                                <div class="request-form-section__head">
+                                    <h2 class="request-form-section__title">{{ requestMode|default('public') == 'professional' ? 'Entreprise' : 'Structure' }}</h2>
+                                </div>
+                                <div class="request-form-grid">
+                                    <div>{{ form_row(form.organizationName) }}</div>
+                                    <div>{{ form_row(form.companySiret) }}</div>
+                                </div>
+                            </section>
+
+                            <section class="request-form-section">
+                                <div class="request-form-section__head">
+                                    <h2 class="request-form-section__title">{{ requestMode|default('public') == 'professional' ? 'Demande' : 'Besoin' }}</h2>
+                                </div>
+                                <div class="request-form-grid">
+                                    <div class="request-form-grid__full">{{ form_row(form.subject) }}</div>
+                                    <div>{{ form_row(form.requestKinds) }}</div>
+                                    <div>{{ form_row(form.networkTypes) }}</div>
+                                    <div class="request-form-grid__full">{{ form_row(form.message) }}</div>
+                                    <div class="request-form-grid__full">{{ form_row(form.additionalInformation) }}</div>
+                                </div>
+                            </section>
+
+                            <section class="request-form-section" {% if requestMode|default('public') == 'public' %}data-request-submission-target="deliverySection" hidden{% endif %}>
+                                <div class="request-form-section__head">
+                                    <h2 class="request-form-section__title">{{ requestMode|default('public') == 'professional' ? 'Livrable attendu' : 'Livrable souhaité' }}</h2>
+                                </div>
+                                <div class="request-form-grid">
+                                    <div>{{ form_row(form.dataFormats) }}</div>
+                                    <div>{{ form_row(form.projectionSystem) }}</div>
+                                    <div>{{ form_row(form.mapFormats) }}</div>
+                                    <div>{{ form_row(form.mapScale) }}</div>
+                                </div>
+                            </section>
+
+                            <section class="request-form-section request-form-section--consent">
+                                <div class="request-form-grid">
+                                    <div class="request-form-grid__full">{{ form_row(form.privacyConsent) }}</div>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="request-form-shell__actions">
+                            <button type="submit" class="btn btn-primary">{{ requestMode|default('public') == 'professional' ? 'Soumettre la demande' : 'Envoyer ma demande' }}</button>
+                        </div>
+                    {{ form_end(form) }}
+                </section>
+            {% endif %}
         </div>
     </section>
 {% endblock %}
