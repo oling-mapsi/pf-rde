@@ -8,6 +8,16 @@
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
+        {% set siteDesignStyles = app_site_design_styles() %}
+        {% if siteDesignStyles is not empty %}
+            <style>
+                :root {
+                {% for name, value in siteDesignStyles %}
+                    {{ name }}: {{ value }};
+                {% endfor %}
+                }
+            </style>
+        {% endif %}
     </head>
     {% set currentRoute = app.request.attributes.get('_route')|default('') %}
     {% set isCatalogRoute = currentRoute == 'app_data_catalog' or currentRoute starts with 'app_static_map_' or currentRoute starts with 'app_interactive_map_' %}
@@ -45,15 +55,12 @@
                     <a class="main-nav__link {{ currentRoute starts with 'app_content_news_' ? 'is-active' : '' }}" href="{{ path('app_content_news_index') }}" {{ currentRoute starts with 'app_content_news_' ? 'aria-current="page"' : '' }}>Actualités</a>
                     <span class="main-nav__separator" aria-hidden="true"></span>
                     <a
-                        class="main-nav__icon-link {{ isCatalogRoute ? 'is-active' : '' }}"
+                        class="main-nav__icon-link main-nav__icon-link--catalog {{ isCatalogRoute ? 'is-active' : '' }}"
                         href="{{ path('app_data_catalog') }}"
                         aria-label="Rechercher dans le catalogue"
                         title="Rechercher dans le catalogue"
                     >
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z" stroke="currentColor" stroke-width="1.8"/>
-                            <circle cx="12" cy="10" r="2" stroke="currentColor" stroke-width="1.8"/>
-                        </svg>
+                        <img class="main-nav__icon-image" src="{{ asset('images/icons/catalog-map-pin.png') }}" alt="" aria-hidden="true" style="width: 1.5em; height: 1.5em; flex: 0 0 1.5em;">
                         <span class="main-nav__icon-label">Catalogue</span>
                     </a>
 
@@ -191,7 +198,12 @@
                         <ul class="footer-links">
                             <li><a href="{{ path('app_content_legal_mentions') }}">Mentions légales</a></li>
                             <li><a href="{{ path('app_content_legal_privacy') }}">Confidentialité</a></li>
-                            <li><a href="{{ path('app_content_legal_cookies') }}">Cookies</a></li>
+                            <li>
+                                <a href="{{ path('app_content_legal_cookies') }}">Cookies</a>
+                                {% if app_cookie_consent_enabled is defined and app_cookie_consent_enabled %}
+                                    - <button id="footer-cookie-open" type="button" class="footer-link-button">Gérer les cookies</button>
+                                {% endif %}
+                            </li>
                             <li><a href="{{ path('app_content_legal_accessibility') }}">Accessibilité</a></li>
                         </ul>
                     </section>
@@ -222,9 +234,6 @@
                         <img src="{{ asset('images/bloc-marque-feder.png') }}" alt="L'Europe s'engage en Guadeloupe - cofinancé par l'Union européenne">
                         <p class="footer-note">Opération de transformation numérique du Système d’Information Géographique Routier cofinancée par l’Union européenne via le FEDER.</p>
                     </div>
-                    {% if app_cookie_consent_enabled is defined and app_cookie_consent_enabled %}
-                        <button id="footer-cookie-open" type="button" class="footer-cookie-link">Gérer les cookies</button>
-                    {% endif %}
                 </div>
             </div>
         </footer>
@@ -325,6 +334,8 @@
                 const showDirectionDelta = 2;
                 const hideToggleDistance = 64;
                 const pinnedClass = 'is-nav-pinned';
+                const atTopClass = 'is-at-top';
+                const supportsTransparentTopHeader = document.body.classList.contains('rdg-home');
                 const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
                 const accountMenu = header.querySelector('.main-nav__account');
                 const accountToggle = header.querySelector('.main-nav__account-toggle');
@@ -394,6 +405,10 @@
                     setHeaderHeightVar();
                 };
 
+                const syncTopState = (scrollY) => {
+                    header.classList.toggle(atTopClass, supportsTransparentTopHeader && scrollY <= revealAt);
+                };
+
                 const hideDesktopHeader = () => {
                     isHeaderCollapsed = true;
                     header.classList.remove(pinnedClass);
@@ -423,6 +438,7 @@
 
                 const updateDesktopOnScroll = () => {
                     const y = Math.max(window.scrollY, 0);
+                    syncTopState(y);
                     setHeaderHeightVar();
 
                     if (!mediaQuery.matches) {

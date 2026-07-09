@@ -73,7 +73,7 @@ final class HomepageSectionCrudController extends AbstractCrudController
         yield ChoiceField::new('backgroundStyle', 'Ambiance')
             ->setChoices([
                 'Clair' => 'light',
-                'Fond doux' => 'muted',
+                'Fond secondaire' => 'muted',
                 'Institutionnel' => 'institutional',
                 'Accès rapides' => 'kpi',
             ])

@@ -16,26 +16,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 
 final class HomepageContentCrudController extends AbstractCrudController
 {
-    private const COLOR_TOKEN_CHOICES = [
-        'Bleu principal' => 'var(--color-brand-primary)',
-        'Bleu secondaire' => 'var(--color-brand-secondary)',
-        'Orange RDG' => 'var(--rdg-orange-road)',
-        'Accent jaune' => 'var(--color-brand-accent)',
-        'Vert succès' => 'var(--color-success)',
-        'Texte standard' => 'var(--color-text-default)',
-        'Texte titre' => 'var(--color-text-heading)',
-        'Texte atténué' => 'var(--color-text-muted)',
-        'Texte inverse' => 'var(--color-text-inverse)',
-        'Fond défaut' => 'var(--color-bg-default)',
-        'Fond doux' => 'var(--color-bg-surface-alt)',
-        'Bordure standard' => 'var(--color-border-default)',
-        'Bordure focus' => 'var(--color-border-focus)',
-        'Bouton primaire fond' => 'var(--component-button-primary-bg)',
-        'Bouton primaire texte' => 'var(--component-button-primary-text)',
-        'Bouton outline fond' => 'var(--component-button-outline-bg)',
-        'Bouton outline texte' => 'var(--component-button-outline-text)',
-    ];
-
     private const TITLE_SIZE_CHOICES = [
         'H1' => 'var(--font-size-h1)',
         'H2' => 'var(--font-size-h2)',
@@ -76,31 +56,44 @@ final class HomepageContentCrudController extends AbstractCrudController
             ->setBasePath('/uploads/content')
             ->setUploadDir('public/uploads/content')
             ->setUploadedFileNamePattern('hero-home-[timestamp].[extension]')
+            ->maxSize('3M')
             ->setRequired(false)
             ->hideOnIndex()
-            ->setHelp('Téléversez une image de fond pour le héros d’accueil.');
-        yield ChoiceField::new('heroTitleColor', 'Couleur du titre')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
-        yield ChoiceField::new('heroBaselineColor', 'Couleur du texte d’introduction')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
+            ->setHelp('Téléversez une image de fond pour le héros d’accueil (3 Mo max).');
+        yield TextField::new('heroDarkOverlayOpacity', 'Voile sombre sur l’image')
+            ->hideOnIndex()
+            ->setColumns(3)
+            ->setHelp('Ex: 0.08 ou 8%');
+        yield TextField::new('heroWhiteVeilOpacity', 'Voile blanc sur l’image')
+            ->hideOnIndex()
+            ->setColumns(3)
+            ->setHelp('Ex: 0.20 ou 20%');
+        yield ChoiceField::new('heroTitleColor', 'Couleur du titre')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
+        yield ChoiceField::new('heroBaselineColor', 'Couleur du texte d’introduction')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
         yield ChoiceField::new('heroTitleFontSize', 'Taille du titre')->setChoices(self::TITLE_SIZE_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
         yield ChoiceField::new('heroBaselineFontSize', 'Taille du texte d’introduction')->setChoices(self::BODY_SIZE_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
 
         yield FormField::addTab('Recherche et CTA');
         yield TextField::new('primaryCtaLabel', 'Libellé du bouton principal')->hideOnIndex()->setColumns(6);
         yield TextField::new('primaryCtaUrl', 'URL du bouton principal')->hideOnIndex()->setColumns(6);
-        yield ChoiceField::new('heroSearchBackgroundColor', 'Fond du formulaire')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
-        yield ChoiceField::new('heroSearchBorderColor', 'Bordure du formulaire')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
-        yield ChoiceField::new('heroSearchTextColor', 'Couleur du texte du formulaire')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
-        yield ChoiceField::new('heroSearchPlaceholderColor', 'Couleur du placeholder')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
-        yield ChoiceField::new('heroSearchButtonBackgroundColor', 'Fond du bouton de recherche')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
-        yield ChoiceField::new('heroSearchButtonColor', 'Couleur du bouton de recherche')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
-        yield ChoiceField::new('heroPrimaryCtaBackgroundColor', 'Fond du CTA principal')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
-        yield ChoiceField::new('heroPrimaryCtaTextColor', 'Texte du CTA principal')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
+        yield ChoiceField::new('heroSearchBackgroundColor', 'Fond du formulaire')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
+        yield ChoiceField::new('heroSearchBorderColor', 'Bordure du formulaire')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
+        yield ChoiceField::new('heroSearchTextColor', 'Couleur du texte du formulaire')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
+        yield ChoiceField::new('heroSearchPlaceholderColor', 'Couleur du placeholder')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
+        yield ChoiceField::new('heroSearchButtonBackgroundColor', 'Fond du bouton de recherche')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
+        yield ChoiceField::new('heroSearchButtonColor', 'Couleur du bouton de recherche')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
+        yield ChoiceField::new('heroPrimaryCtaBackgroundColor', 'Fond du CTA principal')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
+        yield ChoiceField::new('heroPrimaryCtaTextColor', 'Texte du CTA principal')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(3);
 
         yield FormField::addTab('Boutons des thèmes');
         yield TextField::new('heroThemesGap', 'Espacement entre les boutons')->hideOnIndex()->setHelp('Ex: 1rem 2rem ou 1.25rem')->setColumns(4);
         yield TextField::new('heroThemeButtonPadding', 'Padding des boutons')->hideOnIndex()->setHelp('Ex: 0.5rem 0.75rem')->setColumns(4);
         yield TextField::new('heroThemeButtonRadius', 'Rayon des boutons')->hideOnIndex()->setHelp('Ex: 14px, 1rem')->setColumns(4);
-        yield ChoiceField::new('heroThemeLabelColor', 'Couleur du texte des boutons')->setChoices(self::COLOR_TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(4);
+        yield ChoiceField::new('heroThemeLabelColor', 'Couleur du texte des boutons')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(4);
+        yield ChoiceField::new('heroThemeIconBackgroundColor', 'Fond du bloc thème')->setChoices(AdminColorPalette::TOKEN_CHOICES)->setRequired(false)->setFormTypeOption('placeholder', 'Défaut du composant')->hideOnIndex()->setColumns(4);
+        yield TextField::new('heroThemeIconBackgroundOpacity', 'Transparence du fond du bloc')->hideOnIndex()->setHelp('Ex: 0.12 ou 12%')->setColumns(4);
+        yield TextField::new('heroThemeIconPadding', 'Padding interne de l’icône')->hideOnIndex()->setHelp('Ex: 0.4rem ou 0.3rem 0.45rem')->setColumns(4);
+        yield TextField::new('heroThemeIconMargin', 'Margin du bloc thème')->hideOnIndex()->setHelp('Ex: 0 auto 0.25rem')->setColumns(4);
 
         yield FormField::addTab('Publication');
         yield TextField::new('status', 'Statut');

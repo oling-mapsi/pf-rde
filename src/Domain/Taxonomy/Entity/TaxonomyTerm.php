@@ -183,18 +183,7 @@ class TaxonomyTerm
 
     public function getColorHex(): string
     {
-        $color = strtoupper($this->readMetadataString('colorHex'));
-        if ($color === '') {
-            return '#3CB4DF';
-        }
-        if (!str_starts_with($color, '#')) {
-            $color = '#'.$color;
-        }
-        if (!preg_match('/^#[0-9A-F]{6}$/', $color)) {
-            return '#3CB4DF';
-        }
-
-        return $color;
+        return $this->getStoredColorHex() ?? '#3CB4DF';
     }
 
     public function setColorHex(?string $colorHex): static
@@ -211,6 +200,25 @@ class TaxonomyTerm
         }
 
         return $this->writeMetadataValue('colorHex', $color);
+    }
+
+    public function getStoredColorHex(): ?string
+    {
+        $color = strtoupper($this->readMetadataString('colorHex'));
+        if ($color === '') {
+            return null;
+        }
+        if (!str_starts_with($color, '#')) {
+            $color = '#'.$color;
+        }
+        if (!preg_match('/^#[0-9A-F]{6}$/', $color)) {
+            return null;
+        }
+        if ($color === '#3CB4DF') {
+            return null;
+        }
+
+        return $color;
     }
 
     public function isFeaturedOnHomepage(): bool

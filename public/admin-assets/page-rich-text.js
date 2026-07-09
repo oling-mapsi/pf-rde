@@ -236,7 +236,7 @@
             quickbars_selection_toolbar: 'bold italic | quicklink blockquote | alignleft aligncenter alignright',
             quickbars_insert_toolbar: 'image table hr',
             content_css: editorContentCss,
-            content_style: 'body{padding:24px;background:#fff;}',
+            content_style: 'body{padding:24px;background:transparent;}',
             setup: (editor) => {
                 editor.on('init', () => {
                     textarea.form?.addEventListener('submit', () => editor.save(), { once: false });

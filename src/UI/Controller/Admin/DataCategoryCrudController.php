@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UI\Controller\Admin;
 
+use App\Application\Design\LogoPaletteService;
 use App\Domain\Cartography\Entity\DataCategory;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
@@ -13,7 +14,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ColorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
@@ -25,6 +25,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 
 final class DataCategoryCrudController extends AbstractCrudController
 {
+    public function __construct(private readonly LogoPaletteService $logoPaletteService)
+    {
+    }
+
     private const STATUS_CHOICES = [
         'Brouillon' => 'draft',
         'Publié' => 'published',
@@ -71,7 +75,9 @@ final class DataCategoryCrudController extends AbstractCrudController
             ->setFormTypeOption('placeholder', 'Choisir une icône')
             ->setFormTypeOption('attr.data-icon-selector', 'true')
             ->setHelp('<div class="ds-icon-preview" data-icon-preview aria-live="polite">Sélectionnez une icône pour prévisualiser.</div>');
-        yield ColorField::new('colorHex', 'Couleur')->showValue();
+        yield ChoiceField::new('colorHex', 'Couleur')
+            ->setChoices($this->logoPaletteService->getAdminChoices())
+            ->setFormTypeOption('placeholder', 'Couleur auto issue du logo');
         yield IntegerField::new('position', 'Ordre');
         yield BooleanField::new('featuredOnHomepage', 'Mise en avant accueil');
 

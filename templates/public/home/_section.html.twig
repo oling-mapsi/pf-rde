@@ -22,9 +22,9 @@
     aria-labelledby="{{ sectionId }}-title"
     data-home-section-type="{{ section.type }}"
     data-home-section-layout="{{ section.layout }}"
-    {% if isVisualHighlightSection %}style="background:#ffffff !important;"{% endif %}
+    {% if isVisualHighlightSection %}style="background:var(--component-visual-highlight-shell-bg) !important;"{% endif %}
 >
-    <div class="container home-section-container" {% if isVisualHighlightSection %}style="background:#FC5000 !important;"{% endif %}>
+    <div class="container home-section-container" {% if isVisualHighlightSection %}style="background:var(--component-visual-highlight-container-bg) !important;"{% endif %}>
         {% if section.backgroundStyle != 'kpi' %}
             <div
                 class="home-section-heading {{ section.layout == 'banner' ? 'home-section-heading--wide' : '' }}"

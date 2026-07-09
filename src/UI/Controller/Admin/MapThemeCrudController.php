@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UI\Controller\Admin;
 
+use App\Application\Design\LogoPaletteService;
 use App\Domain\Taxonomy\Entity\TaxonomyTerm;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -18,16 +19,20 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ColorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
+use Twig\Markup;
 
 final class MapThemeCrudController extends AbstractCrudController
 {
+    public function __construct(private readonly LogoPaletteService $logoPaletteService)
+    {
+    }
+
     public function configureAssets(Assets $assets): Assets
     {
         return $assets
@@ -67,7 +72,23 @@ final class MapThemeCrudController extends AbstractCrudController
             ->setFormTypeOption('placeholder', 'Choisir une icône')
             ->setFormTypeOption('attr.data-icon-selector', 'true')
             ->setHelp('<div class="ds-icon-preview" data-icon-preview aria-live="polite">Sélectionnez une icône pour prévisualiser.</div>');
-        yield ColorField::new('colorHex', 'Couleur')->showValue();
+        yield TextField::new('colorHex', 'Couleur')
+            ->onlyOnIndex()
+            ->formatValue(function ($value, ?TaxonomyTerm $theme): Markup {
+                $color = $theme?->getStoredColorHex();
+                if ($color === null) {
+                    return new Markup('<span style="display:inline-flex;align-items:center;gap:.5rem;"><span style="width:.9rem;height:.9rem;border-radius:999px;background:linear-gradient(135deg,#E84B17,#40C0E0,#B0B011,#20A241);border:1px solid rgba(0,0,0,.12);display:inline-block;"></span><span>Auto</span></span>', 'UTF-8');
+                }
+
+                return new Markup(sprintf(
+                    '<span style="display:inline-flex;align-items:center;gap:.5rem;"><span style="width:.9rem;height:.9rem;border-radius:999px;background:%1$s;border:1px solid rgba(0,0,0,.12);display:inline-block;"></span><span>%1$s</span></span>',
+                    htmlspecialchars($color, \ENT_QUOTES)
+                ), 'UTF-8');
+            });
+        yield ChoiceField::new('colorHex', 'Couleur')
+            ->onlyOnForms()
+            ->setChoices($this->logoPaletteService->getAdminChoices())
+            ->setFormTypeOption('placeholder', 'Couleur auto issue du logo');
         yield IntegerField::new('position', 'Ordre');
         yield BooleanField::new('featuredOnHomepage', 'Mise en avant sous le héros');
 

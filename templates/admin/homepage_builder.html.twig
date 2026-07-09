@@ -127,7 +127,7 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             background: var(--body-bg);
-            box-shadow: 0 .8rem 2rem rgba(16, 16, 16, .18);
+            box-shadow: 0 .8rem 2rem rgba(var(--rdg-ink-rgb), .18);
         }
 
         .homepage-builder__icon-select-menu[hidden] {
@@ -141,14 +141,14 @@
 
         .homepage-builder__icon-select-option:hover,
         .homepage-builder__icon-select-option:focus-visible {
-            color: #fc5000;
-            background: rgba(252, 80, 0, .08);
+            color: var(--color-brand-primary);
+            background: rgba(var(--rdg-orange-road-rgb), .08);
         }
 
         .homepage-builder__icon-select-option.is-selected {
-            color: #fc5000;
-            border-color: rgba(252, 80, 0, .35);
-            background: rgba(252, 80, 0, .1);
+            color: var(--color-brand-primary);
+            border-color: rgba(var(--rdg-orange-road-rgb), .35);
+            background: rgba(var(--rdg-orange-road-rgb), .1);
         }
 
         .homepage-builder__sections {
@@ -223,7 +223,7 @@
             padding: .7rem;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            background: color-mix(in srgb, var(--body-bg) 92%, #000 8%);
+            background: color-mix(in srgb, var(--body-bg) 92%, var(--rdg-ink) 8%);
         }
 
         @media (max-width: 760px) {

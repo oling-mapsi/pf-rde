@@ -175,6 +175,12 @@ export default class extends Controller {
         return map;
     }
 
+    getCssColorVariable(name) {
+        const value = window.getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+        return value;
+    }
+
     buildMapStyle(mapConfig) {
         if (this.basemapConfig !== null) {
             const maxZoom = Number.isFinite(this.basemapConfig.maxZoom)
@@ -210,7 +216,7 @@ export default class extends Controller {
                     id: 'rdg-sea-background',
                     type: 'background',
                     paint: {
-                        'background-color': '#dceef9',
+                        'background-color': this.getCssColorVariable('--color-map-sea-background'),
                     },
                 },
             ],
@@ -236,7 +242,7 @@ export default class extends Controller {
                 source: 'rdg-local-basemap',
                 filter: ['==', ['get', 'basemap_type'], 'land'],
                 paint: {
-                    'fill-color': '#eef4dc',
+                    'fill-color': this.getCssColorVariable('--color-map-land-fill'),
                     'fill-opacity': 0.96,
                 },
             });
@@ -249,7 +255,7 @@ export default class extends Controller {
                 source: 'rdg-local-basemap',
                 filter: ['==', ['get', 'basemap_type'], 'land'],
                 paint: {
-                    'line-color': '#5e7750',
+                    'line-color': this.getCssColorVariable('--color-map-land-outline'),
                     'line-width': [
                         'interpolate',
                         ['linear'],
@@ -277,7 +283,7 @@ export default class extends Controller {
                     'line-join': 'round',
                 },
                 paint: {
-                    'line-color': '#a9b8c6',
+                    'line-color': this.getCssColorVariable('--color-map-road-local'),
                     'line-width': [
                         'interpolate',
                         ['linear'],
@@ -305,7 +311,7 @@ export default class extends Controller {
                     'line-join': 'round',
                 },
                 paint: {
-                    'line-color': '#88a8be',
+                    'line-color': this.getCssColorVariable('--color-map-road-secondary'),
                     'line-width': [
                         'interpolate',
                         ['linear'],
@@ -333,7 +339,7 @@ export default class extends Controller {
                     'line-join': 'round',
                 },
                 paint: {
-                    'line-color': '#6d95b3',
+                    'line-color': this.getCssColorVariable('--color-map-road-primary-soft'),
                     'line-width': [
                         'interpolate',
                         ['linear'],
@@ -361,7 +367,7 @@ export default class extends Controller {
                     'line-join': 'round',
                 },
                 paint: {
-                    'line-color': '#4f7fa4',
+                    'line-color': this.getCssColorVariable('--color-map-road-trunk'),
                     'line-width': [
                         'interpolate',
                         ['linear'],
@@ -385,8 +391,8 @@ export default class extends Controller {
                 source: 'rdg-local-basemap',
                 filter: ['==', ['get', 'basemap_type'], 'place'],
                 paint: {
-                    'circle-color': '#4e6680',
-                    'circle-stroke-color': '#ffffff',
+                    'circle-color': this.getCssColorVariable('--color-map-place'),
+                    'circle-stroke-color': this.getCssColorVariable('--color-map-stroke'),
                     'circle-stroke-width': 1,
                     'circle-radius': [
                         'interpolate',
@@ -472,12 +478,12 @@ export default class extends Controller {
                     'match',
                     ['get', 'category'],
                     'nationale',
-                    '#0E5AA7',
+                    this.getCssColorVariable('--color-map-road-primary'),
                     'departementale',
-                    '#2FA7D9',
+                    this.getCssColorVariable('--color-map-layer-active'),
                     'communale',
-                    '#7AA63A',
-                    '#0E5AA7',
+                    this.getCssColorVariable('--color-map-road-secondary'),
+                    this.getCssColorVariable('--color-map-road-primary'),
                 ],
                 'line-width': [
                     'interpolate',
@@ -495,7 +501,7 @@ export default class extends Controller {
         }
 
         return {
-            'line-color': '#0E5AA7',
+            'line-color': this.getCssColorVariable('--color-map-road-primary'),
             'line-width': 3.5,
             'line-opacity': 0.9,
         };
@@ -508,12 +514,12 @@ export default class extends Controller {
                     'match',
                     ['get', 'status'],
                     'planned',
-                    '#F3C623',
+                    this.getCssColorVariable('--color-map-worksite-planned'),
                     'in_progress',
-                    '#E57A22',
+                    this.getCssColorVariable('--color-map-worksite-progress'),
                     'done',
-                    '#7AA63A',
-                    '#2FA7D9',
+                    this.getCssColorVariable('--color-map-worksite-done'),
+                    this.getCssColorVariable('--color-map-worksite-default'),
                 ],
                 'circle-radius': [
                     'interpolate',
@@ -527,16 +533,16 @@ export default class extends Controller {
                     9.5,
                 ],
                 'circle-stroke-width': 1.5,
-                'circle-stroke-color': '#ffffff',
+                'circle-stroke-color': this.getCssColorVariable('--color-map-stroke'),
                 'circle-opacity': 0.95,
             };
         }
 
         return {
-            'circle-color': '#E57A22',
+            'circle-color': this.getCssColorVariable('--color-map-worksite-progress'),
             'circle-radius': 6,
             'circle-stroke-width': 1.25,
-            'circle-stroke-color': '#ffffff',
+            'circle-stroke-color': this.getCssColorVariable('--color-map-stroke'),
         };
     }
 
@@ -657,7 +663,7 @@ export default class extends Controller {
 
         this.legendListTarget.innerHTML = legendItems
             .map((item) => {
-                const color = this.escapeHtml(String(item.color || '#0E5AA7'));
+                const color = this.escapeHtml(String(item.color || this.getCssColorVariable('--color-map-road-primary')));
                 const label = this.escapeHtml(String(item.label || 'Element'));
                 const count = Number.isFinite(item.count) ? Number(item.count) : 0;
 

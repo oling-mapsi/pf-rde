@@ -1,10 +1,10 @@
 :root {
-    --rdg-brand-primary: #fc5000;
-    --rdg-brand-secondary: #38b4e7;
-    --rdg-neutral-100: #f8f8f8;
-    --rdg-neutral-200: #d8d8d8;
-    --rdg-neutral-800: #181818;
-    --rdg-neutral-900: #101010;
+    --rdg-brand-primary: var(--color-brand-primary);
+    --rdg-brand-secondary: var(--color-brand-secondary);
+    --rdg-neutral-100: var(--color-bg-surface-alt);
+    --rdg-neutral-200: var(--color-border-default);
+    --rdg-neutral-800: var(--color-text-default);
+    --rdg-neutral-900: var(--color-text-heading);
 }
 
 .field-textarea textarea[data-admin-rich-text='site'] {
@@ -13,7 +13,7 @@
 }
 
 .tox.tox-tinymce {
-    border: 1px solid rgba(16, 16, 16, 0.18);
+    border: 1px solid rgba(var(--rdg-ink-rgb), 0.18);
     border-radius: 0;
     box-shadow: none;
 }
@@ -21,11 +21,11 @@
 .tox .tox-toolbar,
 .tox .tox-toolbar__primary,
 .tox .tox-editor-header {
-    background: #ffffff;
+    background: var(--color-bg-default);
 }
 
 .tox .tox-statusbar {
-    border-top: 1px solid rgba(16, 16, 16, 0.1);
+    border-top: 1px solid rgba(var(--rdg-ink-rgb), 0.1);
 }
 
 .tox .tox-edit-area::before {
@@ -34,7 +34,7 @@
 
 .admin-rich-text-error {
     margin: 0.5rem 0 0;
-    color: #b42318;
+    color: var(--color-danger);
     font-size: 0.9rem;
     font-weight: 700;
 }

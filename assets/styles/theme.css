@@ -4,19 +4,22 @@
     --rdg-sky: #2FA7D9;
     --rdg-yellow: #F3C623;
     --rdg-green: #7AA63A;
-    --rdg-orange-road: #E57A22;
+    --rdg-orange-road: #EA5D29;
     --rdg-text: #1F2937;
     --rdg-muted: #6B7280;
     --rdg-bg: #FFFFFF;
     --rdg-surface: #F7F9FB;
     --rdg-border: #D9E2EC;
+    --rdg-ink: #101010;
 
     --rdg-blue-rgb: 14, 90, 167;
     --rdg-sky-rgb: 47, 167, 217;
     --rdg-yellow-rgb: 243, 198, 35;
     --rdg-green-rgb: 122, 166, 58;
-    --rdg-orange-road-rgb: 229, 122, 34;
+    --rdg-orange-road-rgb: 234, 93, 41;
     --rdg-text-rgb: 31, 41, 55;
+    --rdg-bg-rgb: 255, 255, 255;
+    --rdg-ink-rgb: 16, 16, 16;
 
     /* Compatibility aliases used by existing components */
     --rdg-brand-primary-raw: var(--rdg-blue);
@@ -55,7 +58,7 @@
     --color-brand-primary-raw: var(--rdg-brand-primary-raw);
     --color-brand-primary-hover: var(--rdg-brand-primary-hover);
     --color-brand-primary-active: var(--rdg-brand-primary-active);
-    --color-brand-primary-soft: rgba(252, 80, 0, 0.1);
+    --color-brand-primary-soft: rgba(var(--rdg-orange-road-rgb), 0.1);
     --color-brand-secondary: var(--rdg-brand-secondary);
     --color-brand-secondary-hover: var(--rdg-brand-secondary-hover);
     --color-brand-accent: var(--rdg-brand-accent);
@@ -90,8 +93,8 @@
     --color-link: var(--rdg-brand-primary);
     --color-link-hover: var(--rdg-brand-primary-hover);
 
-    --color-overlay: rgba(16, 16, 16, 0.64);
-    --color-overlay-soft: rgba(16, 16, 16, 0.5);
+    --color-overlay: rgba(var(--rdg-ink-rgb), 0.64);
+    --color-overlay-soft: rgba(var(--rdg-ink-rgb), 0.5);
 
     /* Component tokens */
     --component-card-bg: var(--color-bg-surface);
@@ -113,7 +116,7 @@
     --component-button-outline-border-hover: var(--color-brand-primary);
     --component-button-outline-text-hover: var(--color-brand-primary);
 
-    --component-badge-bg: rgba(252, 80, 0, 0.12);
+    --component-badge-bg: rgba(var(--rdg-orange-road-rgb), 0.12);
     --component-badge-text: var(--color-brand-primary);
     --component-badge-border: transparent;
 
@@ -121,20 +124,20 @@
     --component-filter-border: var(--color-border-default);
     --component-filter-border-focus: var(--color-border-focus);
 
-    --component-chip-bg: rgba(56, 180, 231, 0.12);
-    --component-chip-border: rgba(56, 180, 231, 0.35);
+    --component-chip-bg: rgba(var(--rdg-sky-rgb), 0.12);
+    --component-chip-border: rgba(var(--rdg-sky-rgb), 0.35);
     --component-chip-text: var(--color-text-heading);
 
     --component-facet-option-bg: var(--color-bg-default);
-    --component-facet-option-bg-hover: rgba(56, 180, 231, 0.08);
-    --component-facet-option-bg-selected: rgba(56, 180, 231, 0.14);
+    --component-facet-option-bg-hover: rgba(var(--rdg-sky-rgb), 0.08);
+    --component-facet-option-bg-selected: rgba(var(--rdg-sky-rgb), 0.14);
     --component-facet-option-border: var(--color-border-default);
     --component-facet-option-border-selected: var(--color-brand-accent-2);
 
     --component-table-head-bg: var(--color-bg-surface-alt);
     --component-table-head-text: var(--color-text-heading);
     --component-table-row-alt: var(--rdg-neutral-50);
-    --component-table-row-hover: rgba(56, 180, 231, 0.08);
+    --component-table-row-hover: rgba(var(--rdg-sky-rgb), 0.08);
     --component-table-border: var(--color-border-default);
     --component-table-sort-icon: var(--color-text-muted);
     --component-table-sort-icon-active: var(--color-brand-primary);
@@ -145,17 +148,32 @@
     --component-data-state-error-border: var(--color-danger);
 
     --component-skeleton-base: var(--rdg-neutral-150);
-    --component-skeleton-highlight: rgba(255, 255, 255, 0.66);
+    --component-skeleton-highlight: rgba(var(--rdg-bg-rgb), 0.66);
 
-    --state-hover-overlay-soft: rgba(16, 16, 16, 0.03);
-    --state-active-overlay-soft: rgba(16, 16, 16, 0.06);
+    --state-hover-overlay-soft: rgba(var(--rdg-ink-rgb), 0.03);
+    --state-active-overlay-soft: rgba(var(--rdg-ink-rgb), 0.06);
 
-    --color-map-water: rgba(56, 180, 231, 0.25);
+    --color-map-water: rgba(var(--rdg-sky-rgb), 0.25);
     --color-map-land: var(--rdg-neutral-50);
     --color-map-road-primary: var(--rdg-brand-primary);
     --color-map-road-secondary: var(--rdg-brand-accent-3);
     --color-map-layer-active: var(--rdg-brand-accent-2);
     --color-map-selection: var(--rdg-brand-accent);
+    --color-map-sea-background: color-mix(in srgb, var(--color-brand-secondary) 18%, var(--color-bg-default));
+    --color-map-land-fill: color-mix(in srgb, var(--color-success) 10%, var(--color-bg-default));
+    --color-map-land-outline: color-mix(in srgb, var(--color-success) 52%, var(--color-text-default));
+    --color-map-road-local: color-mix(in srgb, var(--color-brand-secondary) 18%, var(--color-text-default));
+    --color-map-road-secondary: color-mix(in srgb, var(--color-brand-secondary) 34%, var(--color-text-default));
+    --color-map-road-primary-soft: color-mix(in srgb, var(--color-brand-primary) 48%, var(--color-brand-secondary));
+    --color-map-road-trunk: color-mix(in srgb, var(--color-brand-primary) 72%, var(--color-brand-secondary));
+    --color-map-place: color-mix(in srgb, var(--color-text-default) 68%, var(--color-brand-secondary));
+    --color-map-stroke: var(--color-bg-default);
+    --color-map-worksite-planned: var(--color-brand-accent);
+    --color-map-worksite-progress: var(--rdg-orange-road);
+    --color-map-worksite-done: var(--color-success);
+    --color-map-worksite-default: var(--color-brand-secondary);
+    --component-visual-highlight-shell-bg: var(--color-bg-default);
+    --component-visual-highlight-container-bg: var(--rdg-orange-road);
 
     /* Typography */
     --font-body: 'IBM Plex Sans', 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
@@ -199,17 +217,17 @@
     --radius-lg: 1.5rem;
     --radius-pill: 999px;
 
-    --shadow-xs: 0 1px 0 rgba(16, 16, 16, 0.05);
-    --shadow-sm: 0 4px 14px rgba(16, 16, 16, 0.08);
-    --shadow-md: 0 10px 28px rgba(16, 16, 16, 0.12);
+    --shadow-xs: 0 1px 0 rgba(var(--rdg-ink-rgb), 0.05);
+    --shadow-sm: 0 4px 14px rgba(var(--rdg-ink-rgb), 0.08);
+    --shadow-md: 0 10px 28px rgba(var(--rdg-ink-rgb), 0.12);
 
-    --focus-ring: 0 0 0 3px rgba(56, 180, 231, 0.35);
+    --focus-ring: 0 0 0 3px rgba(var(--rdg-sky-rgb), 0.35);
     --transition-fast: 0.2s ease-in-out;
 
-    --component-shell-bg: rgba(255, 255, 255, 0.92);
-    --component-shell-border: rgba(16, 16, 16, 0.08);
-    --component-hero-panel-bg: rgba(255, 255, 255, 0.9);
-    --component-hero-panel-border: rgba(16, 16, 16, 0.08);
+    --component-shell-bg: rgba(var(--rdg-bg-rgb), 0.92);
+    --component-shell-border: rgba(var(--rdg-ink-rgb), 0.08);
+    --component-hero-panel-bg: rgba(var(--rdg-bg-rgb), 0.9);
+    --component-hero-panel-border: rgba(var(--rdg-ink-rgb), 0.08);
 
     /* Compatibility aliases for previous styles */
     --color-primary: var(--color-brand-primary);

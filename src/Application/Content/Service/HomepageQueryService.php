@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Content\Service;
 
+use App\Application\Design\LogoPaletteService;
 use App\Domain\Access\VisibilityScope;
 use App\Domain\Content\Entity\HomepageContent;
 use App\Domain\Content\Entity\HomepageSection;
@@ -27,6 +28,7 @@ final class HomepageQueryService
         private readonly HomepageContentRepository $homepageContentRepository,
         private readonly HomepageSectionRepository $homepageSectionRepository,
         private readonly TaxonomyTermRepository $taxonomyTermRepository,
+        private readonly LogoPaletteService $logoPaletteService,
     ) {
     }
 
@@ -75,6 +77,8 @@ final class HomepageQueryService
             'primaryCtaUrl' => $homepage?->getPrimaryCtaUrl(),
             'styles' => array_filter([
                 '--home-hero-background-image' => $this->normalizeHeroBackgroundImage($homepage?->getHeroBackgroundImagePath()),
+                '--home-hero-dark-overlay-opacity' => $this->normalizeOpacity($homepage?->getHeroDarkOverlayOpacity()),
+                '--home-hero-white-veil-opacity' => $this->normalizeOpacity($homepage?->getHeroWhiteVeilOpacity()),
                 '--home-hero-title-color' => $this->normalizeCssColor($homepage?->getHeroTitleColor()),
                 '--home-hero-baseline-color' => $this->normalizeCssColor($homepage?->getHeroBaselineColor()),
                 '--home-hero-title-size' => $this->normalizeCssSize($homepage?->getHeroTitleFontSize()),
@@ -91,7 +95,11 @@ final class HomepageQueryService
                 '--home-hero-theme-padding' => $this->normalizeCssSize($homepage?->getHeroThemeButtonPadding(), true),
                 '--home-hero-theme-radius' => $this->normalizeCssSize($homepage?->getHeroThemeButtonRadius()),
                 '--home-hero-theme-label-color' => $this->normalizeCssColor($homepage?->getHeroThemeLabelColor()),
-            ]),
+                '--home-hero-theme-icon-background' => $this->normalizeCssColor($homepage?->getHeroThemeIconBackgroundColor()),
+                '--home-hero-theme-icon-background-opacity' => $this->normalizeOpacity($homepage?->getHeroThemeIconBackgroundOpacity()),
+                '--home-hero-theme-icon-padding' => $this->normalizeCssSize($homepage?->getHeroThemeIconPadding(), true),
+                '--home-hero-theme-icon-margin' => $this->normalizeCssSize($homepage?->getHeroThemeIconMargin(), true),
+            ], static fn (mixed $value): bool => $value !== null && $value !== ''),
         ];
     }
 
@@ -183,6 +191,38 @@ final class HomepageQueryService
             : '/^[\d.,%()+\-\/a-zA-Z]+$|^var\(--[a-zA-Z0-9-]+\)$/';
 
         return preg_match($pattern, $value) === 1 ? $value : null;
+    }
+
+    private function normalizeOpacity(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim(str_replace(',', '.', $value));
+        if ($value === '') {
+            return null;
+        }
+
+        if (str_ends_with($value, '%')) {
+            $number = (float) rtrim($value, '%');
+            if ($number < 0 || $number > 100) {
+                return null;
+            }
+
+            return (string) round($number / 100, 3);
+        }
+
+        if (!is_numeric($value)) {
+            return null;
+        }
+
+        $number = (float) $value;
+        if ($number < 0 || $number > 1) {
+            return null;
+        }
+
+        return (string) round($number, 3);
     }
 
     private function normalizeHeroBackgroundImage(?string $value): ?string
@@ -329,6 +369,7 @@ final class HomepageQueryService
         }
 
         $fallbackAccents = ['orange', 'blue', 'yellow', 'green'];
+        $fallbackColors = $this->logoPaletteService->getThemePalette(4);
         $items = [];
 
         foreach ($themes as $index => $theme) {
@@ -338,7 +379,7 @@ final class HomepageQueryService
                 'url' => '/donnees-cartes?theme%5B0%5D='.rawurlencode($themeName),
                 'label' => sprintf('Filtrer le catalogue sur le thème %s', $themeName),
                 'icon' => $theme->getIconKey(),
-                'color' => $theme->getColorHex(),
+                'color' => $theme->getStoredColorHex() ?? $fallbackColors[$index % \count($fallbackColors)],
                 'accent' => $fallbackAccents[$index % \count($fallbackAccents)],
             ];
         }
@@ -352,7 +393,6 @@ final class HomepageQueryService
             $this->staticMapRepository->findAvailableThemes(VisibilityScope::all()),
         )));
 
-        $fallbackColors = ['#FC5000', '#38B4E7', '#FBD002', '#AAAE02'];
         $fallbackIcons = ['map', 'layers', 'route', 'shield'];
 
         foreach (array_slice(array_values($fallbackThemes), 0, $limit) as $index => $themeName) {

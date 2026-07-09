@@ -46,6 +46,12 @@ class HomepageContent
     #[ORM\Column(type: Types::STRING, length: 512, nullable: true)]
     private ?string $heroBackgroundImagePath = null;
 
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: true)]
+    private ?string $heroDarkOverlayOpacity = null;
+
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: true)]
+    private ?string $heroWhiteVeilOpacity = null;
+
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
     private ?string $heroTitleColor = null;
 
@@ -93,6 +99,99 @@ class HomepageContent
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
     private ?string $heroThemeLabelColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $heroThemeIconBackgroundColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: true)]
+    private ?string $heroThemeIconBackgroundOpacity = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $heroThemeIconPadding = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $heroThemeIconMargin = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $brandPrimaryColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $brandSecondaryColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $brandAccentColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $brandSuccessColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $brandOrangeRoadColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $textDefaultColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $textHeadingColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $textMutedColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $textInverseColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $backgroundDefaultColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $backgroundSurfaceAltColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $borderDefaultColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $borderFocusColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $linkColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $linkHoverColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonPrimaryBackgroundColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonPrimaryBorderColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonPrimaryTextColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonPrimaryBackgroundHoverColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonPrimaryBorderHoverColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonPrimaryTextHoverColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonOutlineBackgroundColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonOutlineBorderColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonOutlineTextColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonOutlineBackgroundHoverColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonOutlineBorderHoverColor = null;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    private ?string $buttonOutlineTextHoverColor = null;
 
     public function getName(): string
     {
@@ -186,6 +285,30 @@ class HomepageContent
     public function setHeroBackgroundImagePath(?string $heroBackgroundImagePath): static
     {
         $this->heroBackgroundImagePath = $heroBackgroundImagePath;
+
+        return $this;
+    }
+
+    public function getHeroDarkOverlayOpacity(): ?string
+    {
+        return $this->heroDarkOverlayOpacity;
+    }
+
+    public function setHeroDarkOverlayOpacity(?string $heroDarkOverlayOpacity): static
+    {
+        $this->heroDarkOverlayOpacity = $heroDarkOverlayOpacity;
+
+        return $this;
+    }
+
+    public function getHeroWhiteVeilOpacity(): ?string
+    {
+        return $this->heroWhiteVeilOpacity;
+    }
+
+    public function setHeroWhiteVeilOpacity(?string $heroWhiteVeilOpacity): static
+    {
+        $this->heroWhiteVeilOpacity = $heroWhiteVeilOpacity;
 
         return $this;
     }
@@ -378,6 +501,378 @@ class HomepageContent
     public function setHeroThemeLabelColor(?string $heroThemeLabelColor): static
     {
         $this->heroThemeLabelColor = $heroThemeLabelColor;
+
+        return $this;
+    }
+
+    public function getHeroThemeIconBackgroundColor(): ?string
+    {
+        return $this->heroThemeIconBackgroundColor;
+    }
+
+    public function setHeroThemeIconBackgroundColor(?string $heroThemeIconBackgroundColor): static
+    {
+        $this->heroThemeIconBackgroundColor = $heroThemeIconBackgroundColor;
+
+        return $this;
+    }
+
+    public function getHeroThemeIconBackgroundOpacity(): ?string
+    {
+        return $this->heroThemeIconBackgroundOpacity;
+    }
+
+    public function setHeroThemeIconBackgroundOpacity(?string $heroThemeIconBackgroundOpacity): static
+    {
+        $this->heroThemeIconBackgroundOpacity = $heroThemeIconBackgroundOpacity;
+
+        return $this;
+    }
+
+    public function getHeroThemeIconPadding(): ?string
+    {
+        return $this->heroThemeIconPadding;
+    }
+
+    public function setHeroThemeIconPadding(?string $heroThemeIconPadding): static
+    {
+        $this->heroThemeIconPadding = $heroThemeIconPadding;
+
+        return $this;
+    }
+
+    public function getHeroThemeIconMargin(): ?string
+    {
+        return $this->heroThemeIconMargin;
+    }
+
+    public function setHeroThemeIconMargin(?string $heroThemeIconMargin): static
+    {
+        $this->heroThemeIconMargin = $heroThemeIconMargin;
+
+        return $this;
+    }
+
+    public function getBrandPrimaryColor(): ?string
+    {
+        return $this->brandPrimaryColor;
+    }
+
+    public function setBrandPrimaryColor(?string $brandPrimaryColor): static
+    {
+        $this->brandPrimaryColor = $brandPrimaryColor;
+
+        return $this;
+    }
+
+    public function getBrandSecondaryColor(): ?string
+    {
+        return $this->brandSecondaryColor;
+    }
+
+    public function setBrandSecondaryColor(?string $brandSecondaryColor): static
+    {
+        $this->brandSecondaryColor = $brandSecondaryColor;
+
+        return $this;
+    }
+
+    public function getBrandAccentColor(): ?string
+    {
+        return $this->brandAccentColor;
+    }
+
+    public function setBrandAccentColor(?string $brandAccentColor): static
+    {
+        $this->brandAccentColor = $brandAccentColor;
+
+        return $this;
+    }
+
+    public function getBrandSuccessColor(): ?string
+    {
+        return $this->brandSuccessColor;
+    }
+
+    public function setBrandSuccessColor(?string $brandSuccessColor): static
+    {
+        $this->brandSuccessColor = $brandSuccessColor;
+
+        return $this;
+    }
+
+    public function getBrandOrangeRoadColor(): ?string
+    {
+        return $this->brandOrangeRoadColor;
+    }
+
+    public function setBrandOrangeRoadColor(?string $brandOrangeRoadColor): static
+    {
+        $this->brandOrangeRoadColor = $brandOrangeRoadColor;
+
+        return $this;
+    }
+
+    public function getTextDefaultColor(): ?string
+    {
+        return $this->textDefaultColor;
+    }
+
+    public function setTextDefaultColor(?string $textDefaultColor): static
+    {
+        $this->textDefaultColor = $textDefaultColor;
+
+        return $this;
+    }
+
+    public function getTextHeadingColor(): ?string
+    {
+        return $this->textHeadingColor;
+    }
+
+    public function setTextHeadingColor(?string $textHeadingColor): static
+    {
+        $this->textHeadingColor = $textHeadingColor;
+
+        return $this;
+    }
+
+    public function getTextMutedColor(): ?string
+    {
+        return $this->textMutedColor;
+    }
+
+    public function setTextMutedColor(?string $textMutedColor): static
+    {
+        $this->textMutedColor = $textMutedColor;
+
+        return $this;
+    }
+
+    public function getTextInverseColor(): ?string
+    {
+        return $this->textInverseColor;
+    }
+
+    public function setTextInverseColor(?string $textInverseColor): static
+    {
+        $this->textInverseColor = $textInverseColor;
+
+        return $this;
+    }
+
+    public function getBackgroundDefaultColor(): ?string
+    {
+        return $this->backgroundDefaultColor;
+    }
+
+    public function setBackgroundDefaultColor(?string $backgroundDefaultColor): static
+    {
+        $this->backgroundDefaultColor = $backgroundDefaultColor;
+
+        return $this;
+    }
+
+    public function getBackgroundSurfaceAltColor(): ?string
+    {
+        return $this->backgroundSurfaceAltColor;
+    }
+
+    public function setBackgroundSurfaceAltColor(?string $backgroundSurfaceAltColor): static
+    {
+        $this->backgroundSurfaceAltColor = $backgroundSurfaceAltColor;
+
+        return $this;
+    }
+
+    public function getBorderDefaultColor(): ?string
+    {
+        return $this->borderDefaultColor;
+    }
+
+    public function setBorderDefaultColor(?string $borderDefaultColor): static
+    {
+        $this->borderDefaultColor = $borderDefaultColor;
+
+        return $this;
+    }
+
+    public function getBorderFocusColor(): ?string
+    {
+        return $this->borderFocusColor;
+    }
+
+    public function setBorderFocusColor(?string $borderFocusColor): static
+    {
+        $this->borderFocusColor = $borderFocusColor;
+
+        return $this;
+    }
+
+    public function getLinkColor(): ?string
+    {
+        return $this->linkColor;
+    }
+
+    public function setLinkColor(?string $linkColor): static
+    {
+        $this->linkColor = $linkColor;
+
+        return $this;
+    }
+
+    public function getLinkHoverColor(): ?string
+    {
+        return $this->linkHoverColor;
+    }
+
+    public function setLinkHoverColor(?string $linkHoverColor): static
+    {
+        $this->linkHoverColor = $linkHoverColor;
+
+        return $this;
+    }
+
+    public function getButtonPrimaryBackgroundColor(): ?string
+    {
+        return $this->buttonPrimaryBackgroundColor;
+    }
+
+    public function setButtonPrimaryBackgroundColor(?string $buttonPrimaryBackgroundColor): static
+    {
+        $this->buttonPrimaryBackgroundColor = $buttonPrimaryBackgroundColor;
+
+        return $this;
+    }
+
+    public function getButtonPrimaryBorderColor(): ?string
+    {
+        return $this->buttonPrimaryBorderColor;
+    }
+
+    public function setButtonPrimaryBorderColor(?string $buttonPrimaryBorderColor): static
+    {
+        $this->buttonPrimaryBorderColor = $buttonPrimaryBorderColor;
+
+        return $this;
+    }
+
+    public function getButtonPrimaryTextColor(): ?string
+    {
+        return $this->buttonPrimaryTextColor;
+    }
+
+    public function setButtonPrimaryTextColor(?string $buttonPrimaryTextColor): static
+    {
+        $this->buttonPrimaryTextColor = $buttonPrimaryTextColor;
+
+        return $this;
+    }
+
+    public function getButtonPrimaryBackgroundHoverColor(): ?string
+    {
+        return $this->buttonPrimaryBackgroundHoverColor;
+    }
+
+    public function setButtonPrimaryBackgroundHoverColor(?string $buttonPrimaryBackgroundHoverColor): static
+    {
+        $this->buttonPrimaryBackgroundHoverColor = $buttonPrimaryBackgroundHoverColor;
+
+        return $this;
+    }
+
+    public function getButtonPrimaryBorderHoverColor(): ?string
+    {
+        return $this->buttonPrimaryBorderHoverColor;
+    }
+
+    public function setButtonPrimaryBorderHoverColor(?string $buttonPrimaryBorderHoverColor): static
+    {
+        $this->buttonPrimaryBorderHoverColor = $buttonPrimaryBorderHoverColor;
+
+        return $this;
+    }
+
+    public function getButtonPrimaryTextHoverColor(): ?string
+    {
+        return $this->buttonPrimaryTextHoverColor;
+    }
+
+    public function setButtonPrimaryTextHoverColor(?string $buttonPrimaryTextHoverColor): static
+    {
+        $this->buttonPrimaryTextHoverColor = $buttonPrimaryTextHoverColor;
+
+        return $this;
+    }
+
+    public function getButtonOutlineBackgroundColor(): ?string
+    {
+        return $this->buttonOutlineBackgroundColor;
+    }
+
+    public function setButtonOutlineBackgroundColor(?string $buttonOutlineBackgroundColor): static
+    {
+        $this->buttonOutlineBackgroundColor = $buttonOutlineBackgroundColor;
+
+        return $this;
+    }
+
+    public function getButtonOutlineBorderColor(): ?string
+    {
+        return $this->buttonOutlineBorderColor;
+    }
+
+    public function setButtonOutlineBorderColor(?string $buttonOutlineBorderColor): static
+    {
+        $this->buttonOutlineBorderColor = $buttonOutlineBorderColor;
+
+        return $this;
+    }
+
+    public function getButtonOutlineTextColor(): ?string
+    {
+        return $this->buttonOutlineTextColor;
+    }
+
+    public function setButtonOutlineTextColor(?string $buttonOutlineTextColor): static
+    {
+        $this->buttonOutlineTextColor = $buttonOutlineTextColor;
+
+        return $this;
+    }
+
+    public function getButtonOutlineBackgroundHoverColor(): ?string
+    {
+        return $this->buttonOutlineBackgroundHoverColor;
+    }
+
+    public function setButtonOutlineBackgroundHoverColor(?string $buttonOutlineBackgroundHoverColor): static
+    {
+        $this->buttonOutlineBackgroundHoverColor = $buttonOutlineBackgroundHoverColor;
+
+        return $this;
+    }
+
+    public function getButtonOutlineBorderHoverColor(): ?string
+    {
+        return $this->buttonOutlineBorderHoverColor;
+    }
+
+    public function setButtonOutlineBorderHoverColor(?string $buttonOutlineBorderHoverColor): static
+    {
+        $this->buttonOutlineBorderHoverColor = $buttonOutlineBorderHoverColor;
+
+        return $this;
+    }
+
+    public function getButtonOutlineTextHoverColor(): ?string
+    {
+        return $this->buttonOutlineTextHoverColor;
+    }
+
+    public function setButtonOutlineTextHoverColor(?string $buttonOutlineTextHoverColor): static
+    {
+        $this->buttonOutlineTextHoverColor = $buttonOutlineTextHoverColor;
 
         return $this;
     }

@@ -3,17 +3,17 @@
     align-items: center;
     gap: 0.45rem;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--color-text-default);
     line-height: 1.2;
 }
 
 .ea-icon-choice .fa {
     width: 1.1rem;
     text-align: center;
-    color: #2f4f81;
+    color: var(--color-link);
 }
 
 .ea-icon-choice--empty {
-    color: #6b7280;
+    color: var(--color-text-muted);
     font-weight: 500;
 }

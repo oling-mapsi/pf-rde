@@ -146,7 +146,7 @@ class DataCategory
 
     public function getColorHex(): string
     {
-        return $this->colorHex;
+        return $this->getStoredColorHex() ?? '#3CB4DF';
     }
 
     public function setColorHex(string $colorHex): static
@@ -162,6 +162,22 @@ class DataCategory
         $this->colorHex = $normalized;
 
         return $this;
+    }
+
+    public function getStoredColorHex(): ?string
+    {
+        $color = strtoupper(trim($this->colorHex));
+        if ($color === '') {
+            return null;
+        }
+        if ($color[0] !== '#') {
+            $color = '#'.$color;
+        }
+        if ($color === '#3CB4DF') {
+            return null;
+        }
+
+        return preg_match('/^#[0-9A-F]{6}$/', $color) === 1 ? $color : null;
     }
 
     public function isFeaturedOnHomepage(): bool

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Cartography\Service;
 
 use App\Application\Cartography\DTO\DataCatalogSearchCriteria;
+use App\Application\Design\LogoPaletteService;
 use App\Domain\Cartography\Entity\DataCategory;
 use App\Domain\Cartography\Entity\DataSource;
 use App\Infrastructure\Repository\DataCategoryRepository;
@@ -15,6 +16,7 @@ final class DataCatalogService
     public function __construct(
         private readonly DataSourceRepository $dataSourceRepository,
         private readonly DataCategoryRepository $dataCategoryRepository,
+        private readonly LogoPaletteService $logoPaletteService,
     ) {
     }
 
@@ -214,14 +216,17 @@ final class DataCatalogService
             ->getQuery()
             ->getResult();
 
+        $palette = $this->logoPaletteService->getThemePalette(4);
+
         return array_map(
-            static fn (DataCategory $category): array => [
+            fn (DataCategory $category, int $index): array => [
                 'slug' => $category->getSlug(),
                 'name' => $category->getName(),
                 'iconKey' => $category->getIconKey(),
-                'colorHex' => $category->getColorHex(),
+                'colorHex' => $category->getStoredColorHex() ?? $palette[$index % count($palette)],
             ],
-            $categories
+            $categories,
+            array_keys($categories),
         );
     }
 

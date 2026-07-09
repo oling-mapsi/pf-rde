@@ -105,5 +105,9 @@ services:
             $apiToken: '%app.sirene.api_token%'
             $timeoutSeconds: '%app.sirene.timeout_seconds%'
 
+    App\Application\Design\LogoPaletteService:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
