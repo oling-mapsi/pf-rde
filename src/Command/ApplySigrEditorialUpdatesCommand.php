@@ -263,6 +263,7 @@ HTML)
             ->setTitle('Lancement du portail SIG de Routes de Guadeloupe')
             ->setSummary('Un point d’accès public pour consulter les données, cartes et services SIGR.')
             ->setBody('Le portail SIG de Routes de Guadeloupe regroupe les accès au catalogue central, aux thématiques routières et aux premiers parcours de demande de cartes et de données.')
+            ->setCoverImagePath('/images/rdg-route-aerienne.webp')
             ->setStatus('published')
             ->setPublishedAt($news->getPublishedAt() ?? $publishedAt)
             ->setUpdatedBy($admin);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UI\Controller;
 
+use App\Domain\Content\Entity\News;
 use App\Infrastructure\Repository\NewsRepository;
 use App\Infrastructure\Repository\PageRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +21,7 @@ final class ContentController extends AbstractController
 
         return $this->render('public/news/index.html.twig', [
             'news' => $news,
+            'newsPreviewImages' => $this->buildNewsPreviewImages($news),
         ]);
     }
 
@@ -115,6 +117,36 @@ final class ContentController extends AbstractController
             'page' => $page,
             'fallbackTitle' => 'Accessibilité',
         ]);
+    }
+
+    /**
+     * @param list<News> $news
+     *
+     * @return array<string, string>
+     */
+    private function buildNewsPreviewImages(array $news): array
+    {
+        $images = [];
+
+        foreach ($news as $article) {
+            $images[$article->getSlug()] = $this->resolveNewsPreviewImage($article);
+        }
+
+        return $images;
+    }
+
+    private function resolveNewsPreviewImage(News $article): string
+    {
+        $coverImagePath = $article->getCoverImagePath();
+        if (is_string($coverImagePath) && $coverImagePath !== '') {
+            return $coverImagePath;
+        }
+
+        if (preg_match('/<img[^>]+src=["\']([^"\']+)["\']/i', $article->getBody(), $matches) === 1) {
+            return $matches[1];
+        }
+
+        return '';
     }
 
     #[Route('/partenaires-financeurs', name: 'partners', methods: ['GET'])]

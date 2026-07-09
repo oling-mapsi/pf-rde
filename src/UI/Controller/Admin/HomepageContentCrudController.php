@@ -16,6 +16,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 
 final class HomepageContentCrudController extends AbstractCrudController
 {
+    private const HERO_BACKGROUND_MAX_SIZE = '3M';
+
     private const TITLE_SIZE_CHOICES = [
         'H1' => 'var(--font-size-h1)',
         'H2' => 'var(--font-size-h2)',
@@ -56,10 +58,11 @@ final class HomepageContentCrudController extends AbstractCrudController
             ->setBasePath('/uploads/content')
             ->setUploadDir('public/uploads/content')
             ->setUploadedFileNamePattern('hero-home-[timestamp].[extension]')
-            ->maxSize('3M')
+            ->maxSize(self::HERO_BACKGROUND_MAX_SIZE)
+            ->setFormTypeOption('invalid_message', 'Le fichier est invalide ou dépasse la limite autorisée de 3 Mo.')
             ->setRequired(false)
             ->hideOnIndex()
-            ->setHelp('Téléversez une image de fond pour le héros d’accueil (3 Mo max).');
+            ->setHelp('Televersez une image de fond pour le heros d’accueil (3 Mo max).');
         yield TextField::new('heroDarkOverlayOpacity', 'Voile sombre sur l’image')
             ->hideOnIndex()
             ->setColumns(3)

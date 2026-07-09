@@ -25,9 +25,17 @@
                     <p>Les prochaines communications seront publiées dans cette rubrique.</p>
                 </div>
             {% else %}
-                <div class="grid grid-2">
+                <div class="grid grid-2 news-index-grid">
                     {% for article in news %}
-                        <article class="card">
+                        {% set articleImage = newsPreviewImages[article.slug] ?? null %}
+                        {% set articleImage = articleImage ? (articleImage starts with '/' or articleImage starts with 'http://' or articleImage starts with 'https://' ? articleImage : asset(articleImage)) : null %}
+                        <article class="card news-index-card{{ articleImage ? ' news-index-card--with-image' : '' }}">
+                            {% if articleImage %}
+                                <a class="news-index-card__media" href="{{ path('app_content_news_show', { slug: article.slug }) }}" aria-hidden="true" tabindex="-1">
+                                    <img src="{{ articleImage }}" alt="" class="news-index-card__image">
+                                </a>
+                            {% endif %}
+                            <div class="news-index-card__body">
                             <p class="card__meta">
                                 <span class="badge badge--neutral">{{ article.publishedAt ? article.publishedAt|date('d/m/Y') : 'Brouillon' }}</span>
                                 <span>Communication institutionnelle</span>
@@ -35,6 +43,7 @@
                             <h2 class="card__title"><a href="{{ path('app_content_news_show', { slug: article.slug }) }}">{{ article.title }}</a></h2>
                             <p class="card__lead">{{ article.summary ?: (article.body|length > 170 ? article.body|slice(0, 170) ~ '...' : article.body) }}</p>
                             <p class="card__link"><a href="{{ path('app_content_news_show', { slug: article.slug }) }}"><span>Lire l'actualité</span></a></p>
+                            </div>
                         </article>
                     {% endfor %}
                 </div>
