@@ -1006,6 +1006,13 @@ body.rdg-home .site-header.is-at-top .main-nav__link[aria-current='page'] {
 
 .page-header__title {
     margin-bottom: var(--spacing-1);
+    -webkit-text-stroke: 0.08rem rgba(255, 255, 255, 0.96);
+    paint-order: stroke fill;
+    text-shadow:
+        -1px -1px 0 rgba(255, 255, 255, 0.96),
+        1px -1px 0 rgba(255, 255, 255, 0.96),
+        -1px 1px 0 rgba(255, 255, 255, 0.96),
+        1px 1px 0 rgba(255, 255, 255, 0.96);
 }
 
 .page-header__lead {
@@ -1248,15 +1255,27 @@ body.rdg-home .site-header.is-at-top .main-nav__link[aria-current='page'] {
     letter-spacing: 0;
 }
 
-.rdg-home .home-banner.hero h1 {
-    color: var(--home-hero-title-color) !important;
-    text-shadow: none;
-}
-
 .hero-title-line {
     display: block;
     width: 100%;
     white-space: nowrap;
+}
+
+.rdg-home .home-hero-title,
+.rdg-home .home-hero-title .hero-title-line {
+    color: var(--home-hero-title-color) !important;
+    -webkit-text-stroke: 0.16rem rgba(255, 255, 255, 0.99);
+    paint-order: stroke fill;
+    text-shadow:
+        -2px -2px 0 rgba(255, 255, 255, 0.99),
+        0 -2px 0 rgba(255, 255, 255, 0.99),
+        2px -2px 0 rgba(255, 255, 255, 0.99),
+        -2px 0 0 rgba(255, 255, 255, 0.99),
+        2px 0 0 rgba(255, 255, 255, 0.99),
+        -2px 2px 0 rgba(255, 255, 255, 0.99),
+        0 2px 0 rgba(255, 255, 255, 0.99),
+        2px 2px 0 rgba(255, 255, 255, 0.99),
+        0 0 14px rgba(255, 255, 255, 0.34);
 }
 
 .home-hero-title {
