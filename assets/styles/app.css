@@ -15,6 +15,16 @@
     --home-hero-title-size: clamp(2.35rem, 5.6vw, 4.25rem) !important;
 }
 
+.rdg-home .home-hero-title,
+.rdg-home .home-hero-baseline {
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.25em 0.5em;
+    border-radius: var(--radius-sm);
+    background: rgba(var(--rdg-ink-rgb), 0.12);
+    backdrop-filter: blur(4px);
+}
+
 :root {
     --site-header-height: 4.5rem;
 }
