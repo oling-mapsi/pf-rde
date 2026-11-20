@@ -11,6 +11,10 @@
     text-shadow: none !important;
 }
 
+.rdg-home .home-banner--institutional {
+    --home-hero-title-size: clamp(2.35rem, 5.6vw, 4.25rem) !important;
+}
+
 :root {
     --site-header-height: 4.5rem;
 }
