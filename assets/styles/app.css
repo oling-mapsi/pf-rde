@@ -4,6 +4,13 @@
     box-sizing: border-box;
 }
 
+/* Hero title: keep letterforms clean on every configured homepage variant. */
+.rdg-home .home-hero-title,
+.rdg-home .home-hero-title .hero-title-line {
+    -webkit-text-stroke: 0 transparent !important;
+    text-shadow: none !important;
+}
+
 :root {
     --site-header-height: 4.5rem;
 }
