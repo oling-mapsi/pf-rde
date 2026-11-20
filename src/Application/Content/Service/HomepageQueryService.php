@@ -127,13 +127,26 @@ final class HomepageQueryService
     {
         $lines = $this->splitEditableLines($baseline);
         if (\count($lines) > 1) {
-            return $lines;
+            return [$lines[0], implode(' ', array_slice($lines, 1))];
         }
 
         $sentences = preg_split('/(?<=\\.)\\s+/', $baseline) ?: [];
         $sentences = array_values(array_filter(array_map('trim', $sentences)));
+        if (\count($sentences) > 1) {
+            return [$sentences[0], implode(' ', array_slice($sentences, 1))];
+        }
 
-        return $sentences !== [] ? $sentences : $lines;
+        $words = preg_split('/\\s+/', trim($baseline)) ?: [];
+        if (\count($words) > 1) {
+            $middle = (int) ceil(\count($words) / 2);
+
+            return [
+                implode(' ', array_slice($words, 0, $middle)),
+                implode(' ', array_slice($words, $middle)),
+            ];
+        }
+
+        return $lines;
     }
 
     /** @return list<string> */
